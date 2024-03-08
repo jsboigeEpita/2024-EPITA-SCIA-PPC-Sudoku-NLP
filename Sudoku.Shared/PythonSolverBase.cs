@@ -38,16 +38,17 @@ namespace Sudoku.Shared
 		protected static async Task InstallPythonComponentsAsync()
 		{
 
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            {
+    //        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+    //        {
 
-				await InstallMac();
-            }
-            else
-            {
-				await InstallEmbedded();
-            }
-        }
+				//await InstallMac();
+    //        }
+    //        else
+    //        {
+				//await InstallEmbedded();
+    //        }
+            await InstallEmbedded();
+		}
 		public static void InstallPipModule(string moduleName, string version = "", bool force = false)
 		{
 			Task task = Task.Run( () => InstallPipModuleAsync(moduleName, version, force));
@@ -58,16 +59,18 @@ namespace Sudoku.Shared
 
 		private static async Task InstallPipModuleAsync(string moduleName, string version = "", bool force = false)
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            {
-               await MacInstaller.PipInstallModule(moduleName, version, force);
-            }
-            else
-            {
-               await Installer.PipInstallModule(moduleName, version, force);
-            }
+			//if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+			//{
+			//   await MacInstaller.PipInstallModule(moduleName, version, force);
+			//}
+			//else
+			//{
+			//   await Installer.PipInstallModule(moduleName, version, force);
+			//}
+			await Installer.PipInstallModule(moduleName, version, force);
         }
 
+        [Obsolete("Newer Python included/deployment should support Mac with embedded distribution")]
         private static async Task InstallMac()
         {
 
@@ -128,11 +131,11 @@ namespace Sudoku.Shared
             //
 
 
-            Runtime.PythonDLL = "python37.dll";
-            Python.Deployment.Installer.Source = new Installer.DownloadInstallationSource()
-            {
-                DownloadUrl = @"https://www.python.org/ftp/python/3.7.3/python-3.7.3-embed-amd64.zip",
-            };
+            //Runtime.PythonDLL = "python37.dll";
+            //Python.Deployment.Installer.Source = new Installer.DownloadInstallationSource()
+            //{
+            //    DownloadUrl = @"https://www.python.org/ftp/python/3.7.3/python-3.7.3-embed-amd64.zip",
+            //};
 
             //Runtime.PythonDLL = "python38.dll";
             //Python.Deployment.Installer.Source = new Installer.DownloadInstallationSource()
@@ -165,11 +168,11 @@ namespace Sudoku.Shared
             //};
 
 
-            //Runtime.PythonDLL = "python311.dll";
-            //Python.Deployment.Installer.Source = new Installer.DownloadInstallationSource()
-            //{
-            //    DownloadUrl = @"https://www.python.org/ftp/python/3.11.2/python-3.11.2-embed-amd64.zip",
-            //};
+            Runtime.PythonDLL = "python311.dll";
+            Python.Deployment.Installer.Source = new Installer.DownloadInstallationSource()
+            {
+                DownloadUrl = @"https://www.python.org/ftp/python/3.11.2/python-3.11.2-embed-amd64.zip",
+            };
 
 
             // see what the installer is doing
@@ -180,8 +183,8 @@ namespace Sudoku.Shared
 
 			await Installer.TryInstallPip();
 
-			Python.Deployment.Installer.SetupPython().Wait();
-			Installer.TryInstallPip();
+			//Python.Deployment.Installer.SetupPython().Wait();
+			//Installer.TryInstallPip();
 
         }
 
