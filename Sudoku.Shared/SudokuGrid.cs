@@ -95,7 +95,7 @@ namespace Sudoku.Shared
         
 
         // The List property makes it easier to manipulate cells,
-        public int[][] Cells { get; set; } = NeighbourIndices.Select(r => new int[9]).ToArray();
+        public int[,] Cells { get; set; } = NeighbourIndices.Select(r => new int[9]).ToArray().To2D();
 
 
 
@@ -118,7 +118,7 @@ namespace Sudoku.Shared
                 for (int column = 1; column <= 9; column++)
                 {
 
-                    var value = Cells[row - 1][column - 1];
+                    var value = Cells[row - 1,column - 1];
 
                     output.Append(value);
                     if (column % 3 == 0)
@@ -166,7 +166,7 @@ namespace Sudoku.Shared
             bool[] used = new bool[9];
             foreach (var cellNeighbour in CellNeighbours[x][y])
             {
-                var neighbourValue = Cells[cellNeighbour.row][cellNeighbour.column];
+                var neighbourValue = Cells[cellNeighbour.row,cellNeighbour.column];
                 if (neighbourValue > 0)
                 {
                     used[neighbourValue - 1] = true;
@@ -254,7 +254,7 @@ namespace Sudoku.Shared
                     // when 9 rows are collected, we create a Sudoku and start collecting rows again.
                     if (rows.Count == 9)
                     {
-                        toReturn.Add(new SudokuGrid() { Cells = rows.ToArray() });
+                        toReturn.Add(new SudokuGrid() { Cells = rows.ToArray().To2D() });
                         // we empty the current cell collector to start building a new SudokuGrid
                         rows.Clear();
                     }
@@ -281,9 +281,13 @@ namespace Sudoku.Shared
             return CloneSudoku();
         }
 
+        
         public SudokuGrid CloneSudoku()
         {
-            return new SudokuGrid(){Cells = this.Cells.Select(r=>r.Select(val=>val).ToArray()).ToArray()};
+            // Performs a deep copy of the 2D cells array
+            var toReturn = new SudokuGrid();
+            toReturn.Cells = (int[,])Cells.Clone();
+            return toReturn;
         }
 
 
@@ -352,14 +356,14 @@ namespace Sudoku.Shared
         public int NbErrors(SudokuGrid originalPuzzle)
         {
             // We use a large lambda expression to count duplicates in rows, columns and boxes
-            var toReturn = SudokuGrid.AllNeighbours.Select(n => n.Select(nx => this.Cells[nx.row][nx.column]))
+            var toReturn = SudokuGrid.AllNeighbours.Select(n => n.Select(nx => this.Cells[nx.row,nx.column]))
                 .Sum(n => n.GroupBy(x => x).Select(g => g.Count() - 1).Sum());
             // We use a loop to count cells differing from original Puzzle Mask
             foreach (var rowIndex in NeighbourIndices)
             {
                 foreach (var colIndex in NeighbourIndices)
                 {
-                    if (originalPuzzle.Cells[rowIndex][colIndex]>0 && originalPuzzle.Cells[rowIndex][colIndex] != Cells[rowIndex][colIndex])
+                    if (originalPuzzle.Cells[rowIndex, colIndex]>0 && originalPuzzle.Cells[rowIndex, colIndex] != Cells[rowIndex,colIndex])
                     {
                         toReturn += 1;
                     }
@@ -374,7 +378,7 @@ namespace Sudoku.Shared
             return NbErrors(originalPuzzle) == 0;
         }
 
-        public int NbEmptyCells() => Cells.SelectMany(r => r).Count(c => c == 0);
+        public int NbEmptyCells() => Cells.Cast<int>().Count(c => c == 0);
 
     }
 }
