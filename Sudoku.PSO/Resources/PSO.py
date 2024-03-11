@@ -48,7 +48,7 @@ class Solver:
         self.rhoG = rhoG
         self.limit = limit
         self.nbParticles = nbParticles
-        # self.preFilledIndexes = np.nonzero(toSolve)
+        #self.preFilledIndexes = np.where(toSolve != 0)[0]
         self.swarm = None
     
     # Init the swarm attribute of the solver
@@ -60,17 +60,26 @@ class Solver:
         particles = np.array([])
 
         for _ in range(self.nbParticles):
+            # Fill grid with randoms
             indices = np.where(self.toSolve == 0)
             grid = self.toSolve.copy()
             grid[indices] = np.random.randint(1, 10, size=len(indices[0]))
-            velocity = np.random.randint(17, size=81) - 8 # or np.zeros(81)
+
+            # velocity = np.random.randint(17, size=81) - 8
+            # for preFilledIndex in self.preFilledIndexes:
+            #     velocity[preFilledIndex] = 0
+
+            # Create velocity and set velocity to 0 for pre filled indexes
+            velocity = np.zeros(81)
+
+            # Score the grid
             _, gridScore = self.fitness(grid)
-            particles = np.append(particles, Particle(grid, velocity, gridScore))
-            
             if gridScore > bestScore:
                 bestScore = gridScore
                 best = grid
-                
+
+            particles = np.append(particles, Particle(grid, velocity, gridScore))
+
         _, bestScore = self.fitness(best)
         self.swarm = Swarm(particles, best, bestScore)
         
@@ -85,12 +94,12 @@ class Solver:
                 for i in range(81):
                     r = np.random.uniform(size=2)
                     # update new velocity
-                    particle.velocity[i] = int((particle.velocity[i] * self.inertiaWeight) + (self.rhoP * r[0] * (particle.best[i] - particle.grid[i])) + (self.rhoG * r[1] * (self.swarm.best[i] - particle.grid[i])))
+                    particle.velocity[i] = (particle.velocity[i] * self.inertiaWeight) + (self.rhoP * r[0] * (particle.best[i] - particle.grid[i])) + (self.rhoG * r[1] * (self.swarm.best[i] - particle.grid[i]))
                 
                 # update new position
                 particle.grid = np.add(particle.grid, particle.velocity)
-                particle.grid[particle.grid > 9] = 9
-                particle.grid[particle.grid < 1] = 1
+                particle.grid[particle.grid >= 9.5] = 1
+                particle.grid[particle.grid < .5] = 9
 
                 # compare new particle score
                 isSolved, particleScore = self.fitness(particle.grid)
@@ -99,27 +108,23 @@ class Solver:
                 if particleScore > particle.bestScore:
                     particle.best = particle.grid
                     particle.bestScore = particleScore
-                    if particleScore < self.swarm.bestScore:
+                    if particleScore > self.swarm.bestScore:
                         self.swarm.best = particle.grid
                         self.swarm.bestScore = particleScore
             count += 1
         return self.swarm.best
 
     # evaluate grid
-    # a good square give ...pts
-    # a good line give ...pts
-    # a good column give ...pts
-    # total = fitness e ]0, 180]
     # our aim is to maximize the fitness
     def fitness(self, grid: np.ndarray) -> int:
-        
-        fitness = 0
-        
-        (squareSolution, squareCount, squareRows, squareColumns) = self.checkSquare(grid)
-        (rowSolution, rowsCount, indexRows) = self.checkLine(grid)
-        (colSolution, columnsCount, indexColumns) = self.checkColumn(grid)
+        vfunc = np.vectorize(lambda x: int(round(x)))
+        copyGrid = vfunc(grid)
 
-        fitness = squareCount * 10 + rowsCount * 9 + columnsCount * 9
+        (squareCount, squareRows, squareColumns) = self.checkSquare(copyGrid)
+        (rowSolution, rowsCount, indexRows) = self.checkLine(copyGrid)
+        (colSolution, columnsCount, indexColumns) = self.checkColumn(copyGrid)
+
+        fitness = (squareCount * 10) + (rowsCount * 9) + (columnsCount * 9) + (rowsCount * columnsCount)
         
         for i in range(len(indexRows)):
             fitness += squareRows.count(indexRows[i]/3) * 3
@@ -127,15 +132,7 @@ class Solver:
         for i in range(len(indexColumns)):
             fitness += squareColumns.count(indexColumns[i]/3) * 3
 
-        return (squareSolution and rowSolution and colSolution, fitness)
-
-    def isSolution(self) -> bool:
-        '''
-            Check if the best grid of the swarm is the solution
-        '''
-        grid = self.swarm.best # voir si il est bon
-        return self.checkLine(grid, -1) and self.checkColumn(grid, -1) and self.checkSquare(grid)
-
+        return (rowSolution and colSolution, fitness)
 
     def checkLine(self, grid: np.ndarray, index = -1):
         '''
@@ -162,7 +159,7 @@ class Solver:
                 start = row * 9
                 end = start + 9
                 values = grid[start:end]
-                if len(set(values)) != len(values):
+                if len(set(values)) != 9:
                     boolean = False
                 else:
                     count += 1
@@ -190,10 +187,10 @@ class Solver:
             l = []
             for column in range(9):
                 values = [grid[i * 9 + column] for i in range(9)]
-                if len(set(values)) != len(values):
+                if len(set(values)) != 9:
                     boolean = False
                 else:
-                    count+=1
+                    count += 1
                     l.append(column)
             return (boolean, count, l)
         
@@ -206,36 +203,23 @@ class Solver:
         rows = [] 
         columns = []
         count = 0
-        for x in range(3):
-            for y in range(3):
-                square = self.getSquare(x, y, grid)
-                seen = set()
-                for num in square:
-                    seen.add(num)
-                if (len(seen) == 9):
+        for y in range(3):
+            for x in range(3):
+                if len(set(self.getSquare(x, y, grid))) == 9:
                     count += 1
-                    rows.append(x)
-                    columns.append(y)
-        return (True, count, rows, columns) if count == 9 else (False, count, rows, columns)
-
-
-def print_sudoku(sudoku):
-    ''''
-        sudoku (ndarray) : sudoku values
-    '''
-    for i in range(9):
-        if i % 3 == 0 and i != 0:
-            print("-" * 21)
-        for j in range(9):
-            if j % 3 == 0 and j != 0:
-                print(" | ", end="")
-            if j == 8:
-                print(sudoku[i * 9 + j])
-            else:
-                print(str(sudoku[i * 9 + j]) + " ", end="")
+                    rows.append(y)
+                    columns.append(x)
+        return (count, rows, columns)
 
 if __name__ == '__main__':
-    solver = Solver(np.array(sudoku_og), inertiaWeight=0.5, rhoP=2, rhoG=2, nbParticles=100, limit=100)
+    rd.seed()
+
+    solver = Solver(np.array(sudoku_og), inertiaWeight=.75, rhoP=.6, rhoG=.8, nbParticles=100, limit=200)
     solver.initSwarm()
     result = solver.solve()
+
+    print(f"Score: {solver.fitness(result)}")
+
+    vfunc = np.vectorize(lambda x: int(round(x)))
+    result = vfunc(result)
     np.savetxt("result", result.reshape((9, 9)), fmt='%d', delimiter='\t')
