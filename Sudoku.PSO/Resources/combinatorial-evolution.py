@@ -57,28 +57,26 @@ def compute_error(sudoku: np.ndarray) -> int:
     check_numbers = [False] * 9
     end_of_sudoku_line = 0
     
+    def check_error(value):
+        nonlocal nb_error, check_numbers
+        if value == 0 or check_numbers[value - 1]: # Missing value or Duplicate number
+            nb_error += 1
+        else: # First encounter so mark the number
+            check_numbers[value - 1] = True
+
+    # Checking columns
     for elt in sudoku:
         if end_of_sudoku_line == 9:
             check_numbers = [False] * 9
             end_of_sudoku_line = 0
-        if elt == 0: # Missing number
-            nb_error += 1
-        elif check_numbers[elt - 1]: # Duplicate number
-            nb_error += 1
-        else: # First encounter so mark the number
-            check_numbers[elt - 1] = True
+        check_error(elt)
         end_of_sudoku_line += 1
 
-    # Check rows i * ligne + colonne
+    # Checking rows
     for j in range(9):
         check_numbers = [False] * 9
         for i in range(9):
-            if sudoku[i * 9 + j] == 0:
-                nb_error += 1
-            elif check_numbers[sudoku[i * 9 + j] - 1]:
-                nb_error += 1
-            else:
-                check_numbers[sudoku[i * 9 + j] - 1] = True
+            check_error(sudoku[i * 9 + j])
         
     # debug_print(f"compute_error(): Finished. Number of error found: {nb_error}")
     return nb_error
