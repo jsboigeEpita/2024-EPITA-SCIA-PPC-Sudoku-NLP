@@ -2,9 +2,40 @@ import numpy as np
 
 # instance is a variable holding a two dimensional integer array representing the Sudoku grid
 # use numpy to convert the instance to a numpy array
+
+# initialize a sudoku grid only if not already defined by PythonNET
+
+
+if 'instance' not in locals():
+    instance = np.array([
+        [0,0,0,0,9,4,0,3,0],
+        [0,0,0,5,1,0,0,0,7],
+        [0,8,9,0,0,0,0,4,0],
+        [0,0,0,0,0,0,2,0,8],
+        [0,6,0,2,0,1,0,5,0],
+        [1,0,2,0,0,0,0,0,0],
+        [0,7,0,0,0,0,5,2,0],
+        [9,0,0,0,6,5,0,0,0],
+        [0,4,0,9,7,0,0,0,0]
+    ], dtype=int)
 np_instance = np.array(instance)
+print("Instance received:")
 print(np_instance)
-result = np_instance
+
+print("hello!")
+
+
+result = np.array([
+    [0,0,0,0,9,4,0,3,0],
+    [0,0,0,5,1,0,0,0,7],
+    [0,8,9,0,0,0,0,4,0],
+    [0,0,0,0,0,0,2,0,8],
+    [0,6,0,2,0,1,0,5,0],
+    [1,0,2,0,0,0,0,0,0],
+    [0,7,0,0,0,0,5,2,0],
+    [9,0,0,0,6,5,0,0,0],
+    [0,4,0,9,7,0,0,0,0]
+])
 
 # def solve_sudoku(grid):
 #     # Recursive function to solve Sudoku

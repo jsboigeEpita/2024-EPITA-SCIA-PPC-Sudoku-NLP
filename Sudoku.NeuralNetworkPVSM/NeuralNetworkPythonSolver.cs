@@ -29,6 +29,7 @@ namespace Sudoku.NeuralNetworkPVSM
                 scope.Set("instance", pyCells);
 
                 // run the Python script
+             
                 string code = Resources.neuralnetwork_py;
                 scope.Exec(code);
 
