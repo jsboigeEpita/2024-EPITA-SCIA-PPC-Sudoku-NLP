@@ -22,6 +22,8 @@ namespace Sudoku.NeuralNetworkPVSM
 
                 // Convertissez le tableau .NET en tableau NumPy
                 var pyCells = AsNumpyArray(s.Cells, scope);
+                
+                // PyObject pyCells = s.Cells.ToJaggedArray().ToPython();
 
                 // create a Python variable "instance"
                 scope.Set("instance", pyCells);

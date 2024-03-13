@@ -18,7 +18,7 @@ namespace Sudoku.NeuralNetworkPVSM {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -60,7 +60,27 @@ namespace Sudoku.NeuralNetworkPVSM {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to import numpy as np
+        ///import random as rd
+        ///print(&quot;Instance is &quot;)
+        ///print(instance)
+        ///result = [
+        ///    4, 8, 3, 9, 2, 1, 6, 5, 7,
+        ///    9, 6, 7, 3, 4, 5, 8, 2, 1,
+        ///    2, 5, 1, 8, 7, 6, 4, 9, 3,
+        ///    5, 4, 8, 1, 3, 2, 9, 7, 6,
+        ///    7, 2, 9, 5, 6, 4, 1, 3, 8,
+        ///    1, 3, 6, 7, 9, 8, 2, 4, 5,
+        ///    3, 7, 2, 6, 8, 9, 5, 1, 4,
+        ///    8, 1, 4, 2, 5, 3, 7, 6, 9,
+        ///    6, 9, 5, 4, 1, 7, 3, 8, 2
+        ///]
+        ///exit(0)
+        ///&apos;&apos;&apos;
+        ///sudoku_solution = [
+        ///    4, 8, 3, 9, 2, 1, 6, 5, 7,
+        ///    9, 6, 7, 3, 4, 5, 8, 2, 1,
+        ///    2, 5, 1, 8, 7, 6, 4, 9, 3, [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string neuralnetwork_py {
             get {
