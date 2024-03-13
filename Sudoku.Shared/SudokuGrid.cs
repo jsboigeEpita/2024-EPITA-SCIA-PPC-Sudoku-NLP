@@ -152,6 +152,28 @@ namespace Sudoku.Shared
             return output.ToString();
         }
 
+        public int[][] GetGrid(int gridIndex)
+        { 
+            int[][] grid = new int[3][];
+            for (int i = 0; i < 3; i++)
+            {
+                grid[i] = new int[3];
+            }
+            
+            int startRow = (gridIndex / 3) * 3;
+            int startCol = (gridIndex % 3) * 3;
+            
+            for (int row = 0; row < 3; row++)
+            {
+                for (int col = 0; col < 3; col++)
+                {
+                    grid[row][col] = Cells[startRow + row, startCol + col];
+                }
+            }
+
+            return grid;
+        }
+
        
 
 
