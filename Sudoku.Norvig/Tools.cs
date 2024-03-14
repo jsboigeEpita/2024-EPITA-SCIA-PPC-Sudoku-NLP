@@ -4,7 +4,7 @@ public class Tools
 {
     public const int SIZE = 9;
     public const int SURFACE = 81;
-#if false
+#if true
     public static void FillPeers(HashSet<int>[] peers)
     {
         Parallel.For(0, SURFACE, (i, state) =>
@@ -15,6 +15,25 @@ public class Tools
             AddSquare(i, set);
             set.Remove(i);
             peers[i] = set;
+        });
+    }
+    
+    public static void FillUnits(HashSet<int>[,] units)
+    {
+        Parallel.For(0, SURFACE, (i, state) =>
+        {
+            HashSet<int> columns = new HashSet<int>();
+            HashSet<int> rows = new HashSet<int>();
+            HashSet<int> squares = new HashSet<int>();
+
+            AddColumn(i, columns);
+            AddRow(i, rows);
+            AddSquare(i, squares);
+
+            units[i, 0] = columns;
+            units[i, 1] = rows;
+            units[i, 2] = squares;
+
         });
     }
 
