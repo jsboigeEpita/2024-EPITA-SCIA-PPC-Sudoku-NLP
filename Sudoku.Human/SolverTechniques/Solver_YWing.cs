@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Sudoku.Human;
 
-partial class Solver
+partial class SolverTest
 {
 	// TODO: Comments
 	private bool YWing()

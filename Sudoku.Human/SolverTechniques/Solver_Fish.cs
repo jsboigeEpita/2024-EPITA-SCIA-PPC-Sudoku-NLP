@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Sudoku.Human;
 
-partial class Solver
+partial class SolverTest
 {
 	private static ReadOnlySpan<string> FishStr => new string[5] { string.Empty, string.Empty, "X-Wing", "Swordfish", "Jellyfish" };
 

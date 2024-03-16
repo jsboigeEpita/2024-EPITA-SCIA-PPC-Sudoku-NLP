@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Sudoku.Human;
 
-partial class Solver
+partial class SolverTest
 {
 	private static ReadOnlySpan<string> OrdinalStr => new string[4] { string.Empty, "1st", "2nd", "3rd" };
 

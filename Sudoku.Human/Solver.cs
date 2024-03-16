@@ -1,4 +1,5 @@
-﻿﻿using System;
+﻿﻿using Sudoku.Shared;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -6,21 +7,21 @@ using System.Threading;
 
 namespace Sudoku.Human;
 
-public sealed partial class Solver
+public sealed partial class SolverTest : ISudokuSolver
 {
 	public Puzzle Puzzle { get; }
 	public BindingList<PuzzleSnapshot> Actions { get; }
 
-	public Solver(Puzzle puzzle)
+	public SolverTest(Puzzle puzzle)
 	{
 		Puzzle = puzzle;
 		Actions = [];
 
 		_techniques = InitSolverTechniques();
 	}
-	public static Solver CreateCustomPuzzle()
+	public static SolverTest CreateCustomPuzzle()
 	{
-		var s = new Solver(Puzzle.CreateCustom());
+		var s = new SolverTest(Puzzle.CreateCustom());
 		s.LogAction("Custom puzzle created");
 		return s;
 	}
@@ -269,5 +270,10 @@ public sealed partial class Solver
 			}
 		}
 		Actions.Add(new PuzzleSnapshot(action, sBoard));
+	}
+
+	public SudokuGrid Solve(SudokuGrid s)
+	{
+		return s;
 	}
 }

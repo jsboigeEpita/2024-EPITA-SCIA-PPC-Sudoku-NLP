@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Sudoku.Human;
 
-partial class Solver
+partial class SolverTest
 {
 	private bool AvoidableRectangle()
 	{
