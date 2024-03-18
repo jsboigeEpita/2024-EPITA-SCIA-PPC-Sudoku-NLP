@@ -9,8 +9,19 @@ namespace Sudoku.Human;
 
 public sealed partial class SolverTest : ISudokuSolver
 {
-	public Puzzle Puzzle { get; }
+	public Puzzle? Puzzle { get; }
 	public BindingList<PuzzleSnapshot> Actions { get; }
+
+	public SudokuGrid Solve(SudokuGrid s)
+	{
+		return s;
+	}
+
+	public SolverTest() {
+		Puzzle = null;
+		Actions = [];
+		_techniques = InitSolverTechniques();
+	}
 
 	public SolverTest(Puzzle puzzle)
 	{
@@ -270,10 +281,5 @@ public sealed partial class SolverTest : ISudokuSolver
 			}
 		}
 		Actions.Add(new PuzzleSnapshot(action, sBoard));
-	}
-
-	public SudokuGrid Solve(SudokuGrid s)
-	{
-		return s;
 	}
 }
