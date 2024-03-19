@@ -7,46 +7,15 @@ using System.Threading;
 
 namespace Sudoku.Human;
 
-public sealed partial class SolverTest : ISudokuSolver
+public sealed partial class SolverTest
 {
-	public Puzzle? Puzzle { get; }
+	public Puzzle Puzzle { get; }
 	public BindingList<PuzzleSnapshot> Actions { get; }
 
-	public SudokuGrid Solve(SudokuGrid s)
-	{
-		return s;
-	}
-
-	public SolverTest() {
-		Puzzle = null;
+	public SolverTest(SudokuGrid s) {
+		Puzzle = Puzzle.CreateFromGrid(s);
 		Actions = [];
 		_techniques = InitSolverTechniques();
-	}
-
-	public SolverTest(Puzzle puzzle)
-	{
-		Puzzle = puzzle;
-		Actions = [];
-
-		_techniques = InitSolverTechniques();
-	}
-	public static SolverTest CreateCustomPuzzle()
-	{
-		var s = new SolverTest(Puzzle.CreateCustom());
-		s.LogAction("Custom puzzle created");
-		return s;
-	}
-
-	public void SetOriginalCellValue(Cell cell, int value)
-	{
-		if (cell.Puzzle != Puzzle)
-		{
-			throw new ArgumentOutOfRangeException(nameof(cell), cell, "Cell belongs to another puzzle");
-		}
-
-		cell.ChangeOriginalValue(value);
-		LogAction(TechniqueFormat("Changed cell", cell.ToString()),
-			cell);
 	}
 
 	public bool TrySolve()
