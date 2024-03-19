@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Sudoku.Human;
 
-partial class SolverTest
+partial class Solver
 {
 	private bool NakedQuadruple()
 	{
@@ -62,10 +62,6 @@ partial class SolverTest
 			{
 				if (Cell.ChangeCandidates(indexes.Select(i => region[i].VisibleCells).IntersectAll(), combo))
 				{
-					LogAction(TechniqueFormat("Naked " + TupleStr[amount],
-						"{0}: {1}",
-						Utils.PrintCells(cells), combo.Print()),
-						(ReadOnlySpan<Cell>)cells);
 					return true;
 				}
 			}

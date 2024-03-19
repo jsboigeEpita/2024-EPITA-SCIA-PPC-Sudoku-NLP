@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Sudoku.Human;
 
-partial class SolverTest
+partial class Solver
 {
 	private static ReadOnlySpan<string> FishStr => new string[5] { string.Empty, string.Empty, "X-Wing", "Swordfish", "Jellyfish" };
 
@@ -50,7 +50,6 @@ partial class SolverTest
 				IEnumerable<Cell> row2D = rowCells.UniteAll();
 				if (Cell.ChangeCandidates(row2D.Select(c => Puzzle.ColumnsI[c.Point.Column]).UniteAll().Except(row2D), candidate))
 				{
-					LogAction(TechniqueFormat(FishStr[amount], "{0}: {1}", row2D.Print(), candidate), row2D);
 					return true;
 				}
 			}
@@ -59,7 +58,6 @@ partial class SolverTest
 				IEnumerable<Cell> col2D = colCells.UniteAll();
 				if (Cell.ChangeCandidates(col2D.Select(c => Puzzle.RowsI[c.Point.Row]).UniteAll().Except(col2D), candidate))
 				{
-					LogAction(TechniqueFormat(FishStr[amount], "{0}: {1}", col2D.Print(), candidate), col2D);
 					return true;
 				}
 			}

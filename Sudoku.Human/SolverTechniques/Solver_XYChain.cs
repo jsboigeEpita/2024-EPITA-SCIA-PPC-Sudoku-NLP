@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Sudoku.Human;
 
-partial class SolverTest
+partial class Solver
 {
 	private bool XYChain()
 	{
@@ -57,10 +57,6 @@ partial class SolverTest
 					{
 						ignore.Remove(startCell); // Remove here because we're now using "ignore" as "semiCulprits" and exiting
 						Cell[] culprits = [startCell, cell];
-						LogAction(TechniqueFormat("XY-Chain",
-							"{0}-{1}: {2}",
-							Utils.PrintCells(culprits), ignore.SingleOrMultiToString(), theOneThatWillEndItAllBaybee),
-							culprits, ignore);
 						return true;
 					}
 				}

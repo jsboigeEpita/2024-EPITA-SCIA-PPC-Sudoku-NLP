@@ -2,7 +2,7 @@
 
 namespace Sudoku.Human;
 
-partial class SolverTest
+partial class Solver
 {
 	private bool LockedCandidate()
 	{
@@ -62,10 +62,6 @@ partial class SolverTest
 
 		if (Candidates.Set(cellsToChange, candidate, false))
 		{
-			LogAction(TechniqueFormat("Locked candidate",
-				"{4} {0} locks within block {1}: {2}: {3}",
-				doRows ? SPoint.RowLetter(i) : SPoint.ColumnLetter(i), blockIndex + 1, Utils.PrintCells(cellsWithCandidates), candidate, doRows ? "Row" : "Column"),
-				cellsWithCandidates);
 			return true;
 		}
 		return false;

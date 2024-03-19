@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Sudoku.Human;
 
-partial class SolverTest
+partial class Solver
 {
 	private bool XYZWing()
 	{
@@ -58,10 +58,6 @@ partial class SolverTest
 						culprits[1] = c3;
 						culprits[2] = c2_2;
 
-						LogAction(TechniqueFormat("XYZ-Wing",
-							"{0}: {1}",
-							Utils.PrintCells(culprits), allHave),
-							culprits);
 						changed = true;
 					}
 				}

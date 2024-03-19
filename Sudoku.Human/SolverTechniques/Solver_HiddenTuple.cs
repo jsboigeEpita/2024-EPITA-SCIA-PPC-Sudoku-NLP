@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Sudoku.Human;
 
-partial class SolverTest
+partial class Solver
 {
 	private bool HiddenQuadruple()
 	{
@@ -74,10 +74,6 @@ partial class SolverTest
 
 			if (Cell.ChangeCandidates(cells, Utils.OneToNine.Except(candidates)))
 			{
-				LogAction(TechniqueFormat("Hidden " + TupleStr[amount],
-					"{0}: {1}",
-					cells.Print(), Utils.PrintCandidates(candidates)),
-					cells);
 				return true;
 			}
 		}

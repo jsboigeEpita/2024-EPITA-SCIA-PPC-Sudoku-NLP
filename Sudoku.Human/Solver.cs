@@ -7,27 +7,23 @@ using System.Threading;
 
 namespace Sudoku.Human;
 
-public sealed partial class SolverTest
+public sealed partial class Solver
 {
 	public Puzzle Puzzle { get; }
-	public BindingList<PuzzleSnapshot> Actions { get; }
 
-	public SolverTest(SudokuGrid s) {
+	public Solver(SudokuGrid s) {
 		Puzzle = Puzzle.CreateFromGrid(s);
-		Actions = [];
 		_techniques = InitSolverTechniques();
 	}
 
 	public bool TrySolve()
 	{
 		Puzzle.RefreshCandidates();
-		LogAction("Begin");
 
 		do
 		{
 			if (CheckForNakedSinglesOrCompletion(out bool changed))
 			{
-				LogAction("Solver completed the puzzle");
 				return true;
 			}
 			if (changed)
@@ -36,7 +32,6 @@ public sealed partial class SolverTest
 			}
 			if (!RunTechnique())
 			{
-				LogAction("Solver failed the puzzle");
 				return false;
 			}
 		} while (true);
@@ -44,13 +39,11 @@ public sealed partial class SolverTest
 	public bool TrySolveAsync(CancellationToken ct)
 	{
 		Puzzle.RefreshCandidates();
-		LogAction("Begin");
 
 		do
 		{
 			if (CheckForNakedSinglesOrCompletion(out bool changed))
 			{
-				LogAction("Solver completed the puzzle");
 				return true;
 			}
 			if (ct.IsCancellationRequested)
@@ -63,7 +56,6 @@ public sealed partial class SolverTest
 			}
 			if (!RunTechnique())
 			{
-				LogAction("Solver failed the puzzle");
 				return false;
 			}
 			if (ct.IsCancellationRequested)
@@ -72,7 +64,6 @@ public sealed partial class SolverTest
 			}
 		} while (true);
 
-		LogAction("Solver cancelled");
 		throw new OperationCanceledException(ct);
 	}
 	private bool CheckForNakedSinglesOrCompletion(out bool changed)
@@ -96,11 +87,6 @@ public sealed partial class SolverTest
 				{
 					cell.SetValue(nakedSingle);
 
-					LogAction(TechniqueFormat("Naked single",
-						"{0}: {1}",
-						cell, nakedSingle),
-						cell);
-
 					changed = true;
 					goto again; // Restart the search for naked singles since we have the potential to create new ones
 				}
@@ -119,136 +105,5 @@ public sealed partial class SolverTest
 			}
 		}
 		return false;
-	}
-
-	private static string TechniqueFormat(string technique, string format, params object[] args)
-	{
-		return string.Format(string.Format("{0,-20}", technique) + format, args);
-	}
-	private void LogAction(string action)
-	{
-		var sBoard = new CellSnapshot[81];
-		for (int col = 0; col < 9; col++)
-		{
-			for (int row = 0; row < 9; row++)
-			{
-				Cell cell = Puzzle[col, row];
-
-				sBoard[Utils.CellIndex(col, row)] = new CellSnapshot(cell, false, false);
-			}
-		}
-		Actions.Add(new PuzzleSnapshot(action, sBoard));
-	}
-	private void LogAction(string action, Cell culprit)
-	{
-		var sBoard = new CellSnapshot[81];
-		for (int col = 0; col < 9; col++)
-		{
-			for (int row = 0; row < 9; row++)
-			{
-				Cell cell = Puzzle[col, row];
-
-				sBoard[Utils.CellIndex(col, row)] = new CellSnapshot(cell, culprit == cell, false);
-			}
-		}
-		Actions.Add(new PuzzleSnapshot(action, sBoard));
-	}
-	private void LogAction(string action, Cell culprit, Cell semiCulprit)
-	{
-		var sBoard = new CellSnapshot[81];
-		for (int col = 0; col < 9; col++)
-		{
-			for (int row = 0; row < 9; row++)
-			{
-				Cell cell = Puzzle[col, row];
-
-				sBoard[Utils.CellIndex(col, row)] = new CellSnapshot(cell, culprit == cell, semiCulprit == cell);
-			}
-		}
-		Actions.Add(new PuzzleSnapshot(action, sBoard));
-	}
-	private void LogAction(string action, ReadOnlySpan<Cell> culprits)
-	{
-		var sBoard = new CellSnapshot[81];
-		for (int col = 0; col < 9; col++)
-		{
-			for (int row = 0; row < 9; row++)
-			{
-				Cell cell = Puzzle[col, row];
-
-				sBoard[Utils.CellIndex(col, row)] = new CellSnapshot(cell, culprits.SimpleIndexOf(cell) != -1, false);
-			}
-		}
-		Actions.Add(new PuzzleSnapshot(action, sBoard));
-	}
-	private void LogAction(string action, ReadOnlySpan<Cell> culprits, Cell semiCulprit)
-	{
-		var sBoard = new CellSnapshot[81];
-		for (int col = 0; col < 9; col++)
-		{
-			for (int row = 0; row < 9; row++)
-			{
-				Cell cell = Puzzle[col, row];
-
-				sBoard[Utils.CellIndex(col, row)] = new CellSnapshot(cell, culprits.SimpleIndexOf(cell) != -1, semiCulprit == cell);
-			}
-		}
-		Actions.Add(new PuzzleSnapshot(action, sBoard));
-	}
-	private void LogAction(string action, Cell culprit, ReadOnlySpan<Cell> semiCulprits)
-	{
-		var sBoard = new CellSnapshot[81];
-		for (int col = 0; col < 9; col++)
-		{
-			for (int row = 0; row < 9; row++)
-			{
-				Cell cell = Puzzle[col, row];
-
-				sBoard[Utils.CellIndex(col, row)] = new CellSnapshot(cell, culprit == cell, semiCulprits.SimpleIndexOf(cell) != -1);
-			}
-		}
-		Actions.Add(new PuzzleSnapshot(action, sBoard));
-	}
-	private void LogAction(string action, ReadOnlySpan<Cell> culprits, ReadOnlySpan<Cell> semiCulprits)
-	{
-		var sBoard = new CellSnapshot[81];
-		for (int col = 0; col < 9; col++)
-		{
-			for (int row = 0; row < 9; row++)
-			{
-				Cell cell = Puzzle[col, row];
-
-				sBoard[Utils.CellIndex(col, row)] = new CellSnapshot(cell, culprits.SimpleIndexOf(cell) != -1, semiCulprits.SimpleIndexOf(cell) != -1);
-			}
-		}
-		Actions.Add(new PuzzleSnapshot(action, sBoard));
-	}
-	public void LogAction(string action, IEnumerable<Cell> culprits)
-	{
-		var sBoard = new CellSnapshot[81];
-		for (int col = 0; col < 9; col++)
-		{
-			for (int row = 0; row < 9; row++)
-			{
-				Cell cell = Puzzle[col, row];
-
-				sBoard[Utils.CellIndex(col, row)] = new CellSnapshot(cell, culprits.Contains(cell), false);
-			}
-		}
-		Actions.Add(new PuzzleSnapshot(action, sBoard));
-	}
-	public void LogAction(string action, IEnumerable<Cell> culprits, IEnumerable<Cell> semiCulprits)
-	{
-		var sBoard = new CellSnapshot[81];
-		for (int col = 0; col < 9; col++)
-		{
-			for (int row = 0; row < 9; row++)
-			{
-				Cell cell = Puzzle[col, row];
-
-				sBoard[Utils.CellIndex(col, row)] = new CellSnapshot(cell, culprits.Contains(cell), semiCulprits.Contains(cell));
-			}
-		}
-		Actions.Add(new PuzzleSnapshot(action, sBoard));
 	}
 }

@@ -2,7 +2,7 @@
 
 namespace Sudoku.Human;
 
-partial class SolverTest
+partial class Solver
 {
 	private bool HiddenSingle()
 	{
@@ -23,10 +23,6 @@ partial class SolverTest
 						if (c.Length == 1)
 						{
 							c[0].SetValue(digit);
-							LogAction(TechniqueFormat("Hidden single",
-								"{0}: {1}",
-								c[0], digit),
-								c[0]);
 							changed = true;
 							restartSearch = true;
 						}

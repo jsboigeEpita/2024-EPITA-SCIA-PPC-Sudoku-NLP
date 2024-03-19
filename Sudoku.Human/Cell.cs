@@ -149,16 +149,6 @@ public sealed class Cell
             Puzzle.RefreshCandidates();
         }
     }
-    public void ChangeOriginalValue(int value)
-    {
-        if (value is < EMPTY_VALUE or > 9)
-        {
-            throw new ArgumentOutOfRangeException(nameof(value), value, null);
-        }
-
-        OriginalValue = value;
-        SetValue(value, refreshOtherCellCandidates: true);
-    }
 
     public override int GetHashCode()
     {
@@ -207,35 +197,4 @@ public sealed class Cell
         }
         return cache.Slice(0, counter);
     }
-    /*/// <summary>Returns the visible cells that this cell, <paramref name="otherA"/>, and <paramref name="otherB"/> all share.
-	/// Result length is 0 or 1 (1 row/column) or 6 (6 block/row/column) or 12 (6 block + 6 row/column)</summary>
-	internal Span<Cell> IntersectVisibleCells(Cell otherA, Cell otherB, Span<Cell> cache)
-	{
-		int counter = 0;
-		for (int i = 0; i < NUM_VISIBLE_CELLS; i++)
-		{
-			Cell cell = VisibleCells[i];
-			if (otherA.VisibleCells.Contains(cell) && otherB.VisibleCells.Contains(cell))
-			{
-				cache[counter++] = cell;
-			}
-		}
-		return cache.Slice(0, counter);
-	}*/
-
-    /*/// <summary>Result length is 12 or 14</summary>
-	internal Span<Cell> VisibleCellsExceptRegion(Region except, Span<Cell> cache)
-	{
-		int counter = 0;
-		for (int i = 0; i < 8 + 6 + 6; i++)
-		{
-			Cell cell = VisibleCells[i];
-			if (except.IndexOf(cell) == -1)
-			{
-				// Add if "except" region does not contain the visible cell
-				cache[counter++] = cell;
-			}
-		}
-		return cache.Slice(0, counter);
-	}*/
 }

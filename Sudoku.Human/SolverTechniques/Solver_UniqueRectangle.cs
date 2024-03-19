@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Sudoku.Human;
 
-partial class SolverTest
+partial class Solver
 {
 	private bool UniqueRectangle()
 	{
@@ -217,10 +217,6 @@ partial class SolverTest
 											}
 									}
 
-									LogAction(TechniqueFormat("Unique rectangle",
-										"{0}: {1}",
-										Utils.PrintCells(cells), Utils.PrintCandidates(candidates)),
-										(ReadOnlySpan<Cell>)cells);
 									return true;
 								}
 							}

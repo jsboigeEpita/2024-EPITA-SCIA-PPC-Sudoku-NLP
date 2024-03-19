@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Sudoku.Human;
 
-partial class SolverTest
+partial class Solver
 {
 	// TODO: Comments
 	private bool YWing()
@@ -120,10 +120,6 @@ partial class SolverTest
 			culprits[1] = cOther;
 			culprits[2] = c3;
 
-			LogAction(TechniqueFormat("Y-Wing",
-				"{0}: {1}",
-				Utils.PrintCells(culprits), candidate),
-				culprits);
 			return true;
 		}
 		return false;

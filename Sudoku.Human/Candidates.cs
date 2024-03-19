@@ -338,7 +338,6 @@ public struct Candidates : IEnumerable<int>
 		return IsCandidate_Fast(can1 - 1) && IsCandidate_Fast(can2 - 1);
 	}
 
-	// TODO: Eventually remove..?
 	public readonly IEnumerator<int> GetEnumerator()
 	{
 		for (int i = 0; i < 9; i++)

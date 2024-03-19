@@ -2,7 +2,7 @@
 
 namespace Sudoku.Human;
 
-partial class SolverTest
+partial class Solver
 {
 	private sealed class SolverTechnique
 	{

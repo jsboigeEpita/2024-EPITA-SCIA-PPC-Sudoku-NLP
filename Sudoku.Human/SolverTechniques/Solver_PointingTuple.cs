@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Sudoku.Human;
 
-partial class SolverTest
+partial class Solver
 {
 	private static ReadOnlySpan<string> OrdinalStr => new string[4] { string.Empty, "1st", "2nd", "3rd" };
 
@@ -51,10 +51,6 @@ partial class SolverTest
 					if (changed)
 					{
 						ReadOnlySpan<Cell> culprits = doRows ? blockrow[r].GetRowInBlock(rcIndex) : blockcol[r].GetColumnInBlock(rcIndex);
-						LogAction(TechniqueFormat("Pointing tuple",
-							"Starting in block{0} {1}'s {2} block, {3} {0}: {4}",
-							doRows ? "row" : "column", i + 1, OrdinalStr[r + 1], OrdinalStr[rcIndex + 1], candidates.SingleOrMultiToString()),
-							culprits);
 					}
 					return changed;
 				}

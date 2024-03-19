@@ -6,7 +6,7 @@ public class HumanSolver : ISudokuSolver
 {
     public SudokuGrid Solve(SudokuGrid s)
     {
-        SolverTest SolverTechnique = new SolverTest(s);
+        Solver SolverTechnique = new Solver(s);
 		SolverTechnique.TrySolve();
 		return SolverTechnique.Puzzle.toGrid(s);
     }
