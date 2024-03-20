@@ -172,7 +172,7 @@ class Solver:
         while epoch < self.max_epochs:
             for worker in workers:
                 worker.evolve()
-                if worker.age > 500:
+                if worker.age > 300:
                     worker.sudoku = random_matrix(self.sudoku)
                     worker.age = 0
             for explorer in explorers:
@@ -180,7 +180,7 @@ class Solver:
 
             best_w_index, best_w_score = 0, 81
             best_e_index, best_e_score = 0, 81
-            worst_w_index, worst_w_score = 0, 0
+            scores = []
             
             for i in range(nb_worker):
                 score = compute_error(workers[i].sudoku)
@@ -189,9 +189,7 @@ class Solver:
                 if score < best_w_score:
                    best_w_index = i
                    best_w_score = score
-                elif score > worst_w_score:
-                   worst_w_index = i
-                   worst_w_score = score
+                scores.append(score)
 
             for i in range(nb_explorer):
                 score = compute_error(explorers[i].sudoku)
@@ -201,9 +199,11 @@ class Solver:
                     best_e_index = i
                     best_e_score = score
 
-            workers[worst_w_index].sudoku = self.merge_matrices(workers[best_w_index].sudoku, explorers[best_e_index].sudoku)
-            if compute_error(workers[worst_w_index].sudoku) == 0:
-                return workers[worst_w_index].sudoku
+            worstIndexes = np.argpartition(np.array(scores), -20)[-20:]
+            for index in worstIndexes:
+                workers[index].sudoku = self.merge_matrices(workers[best_w_index].sudoku, explorers[best_e_index].sudoku)
+                if compute_error(workers[index].sudoku) == 0:
+                    return workers[index].sudoku
 
             epoch += 1
             
@@ -223,7 +223,7 @@ class Solver:
 if __name__ == '__main__':
     random.seed()
 
-    solver = Solver(np.array(sudoku_moyen), nb_organisms=200, max_epochs=4000, max_restarts=20, err_rate=0.001, worker_rate=0.90)
+    solver = Solver(np.array(sudoku_diabolique), nb_organisms=200, max_epochs=3000, max_restarts=20, err_rate=0.009, worker_rate=0.90)
 
     start = time.perf_counter()
     result = solver.solve()
