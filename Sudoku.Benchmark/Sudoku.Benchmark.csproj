@@ -12,6 +12,7 @@
     <PackageReference Include="BenchmarkDotNet" Version="0.13.12" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Sudoku.DancingLinks\Sudoku.DancingLinks.csproj" />
     <ProjectReference Include="..\Sudoku.PSO\Sudoku.PSO.csproj" />
     <ProjectReference Include="..\Sudoku.Shared\Sudoku.Shared.csproj" />
     <ProjectReference Include="..\Sudoku.Backtracking\Sudoku.Backtracking.csproj" />
