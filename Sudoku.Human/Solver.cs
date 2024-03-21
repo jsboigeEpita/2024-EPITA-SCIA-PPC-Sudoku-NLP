@@ -36,36 +36,7 @@ public sealed partial class Solver
 			}
 		} while (true);
 	}
-	public bool TrySolveAsync(CancellationToken ct)
-	{
-		Puzzle.RefreshCandidates();
-
-		do
-		{
-			if (CheckForNakedSinglesOrCompletion(out bool changed))
-			{
-				return true;
-			}
-			if (ct.IsCancellationRequested)
-			{
-				break;
-			}
-			if (changed)
-			{
-				continue;
-			}
-			if (!RunTechnique())
-			{
-				return false;
-			}
-			if (ct.IsCancellationRequested)
-			{
-				break;
-			}
-		} while (true);
-
-		throw new OperationCanceledException(ct);
-	}
+	
 	private bool CheckForNakedSinglesOrCompletion(out bool changed)
 	{
 		changed = false;

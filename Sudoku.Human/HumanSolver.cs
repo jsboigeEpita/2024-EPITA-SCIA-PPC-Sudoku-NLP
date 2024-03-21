@@ -6,14 +6,15 @@ public class HumanSolver : ISudokuSolver
 {
     public SudokuGrid Solve(SudokuGrid s)
     {
-        Solver SolverTechnique = new Solver(s);
-		bool returnResult = SolverTechnique.TrySolve();
+        Solver solver = new Solver(s);
+		bool returnResult = solver.TrySolve();
+        
         if (!returnResult)
         {
             // If Unsuccessful, do Backtracking
-            SolverTechnique.TryBacktrack();
+            solver.TryBacktrack();
         }
         
-        return SolverTechnique.Puzzle.toGrid(s);
+        return solver.Puzzle.toGrid(s);
     }
 }
