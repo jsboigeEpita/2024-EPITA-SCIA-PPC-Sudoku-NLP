@@ -82,19 +82,6 @@ public sealed class Cell
         }
     }
 
-    // TODO: Remove
-    internal bool ChangeCandidates(IEnumerable<int> digits, bool remove = true)
-    {
-        bool changed = false;
-        foreach (int digit in digits)
-        {
-            if (CandI.Set(digit, !remove))
-            {
-                changed = true;
-            }
-        }
-        return changed;
-    }
     internal static bool ChangeCandidates(IEnumerable<Cell> cells, int digit, bool remove = true)
     {
         bool changed = false;
