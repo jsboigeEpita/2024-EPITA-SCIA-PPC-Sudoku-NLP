@@ -48,6 +48,7 @@ namespace Sudoku.NeuralNetworkPVSM
         {
             //declare your pip packages here
             InstallPipModule("numpy");
+            InstallPipModule("tensorflow");
             base.InitializePythonComponents();
         }
     }
