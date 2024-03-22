@@ -94,14 +94,18 @@ def solve_sudoku(game):
 
 x_train, x_test, y_train, y_test = get_data('dataset/sudoku.csv')
 model = get_model()
+train = True
+if train:
+    adam = keras.optimizers.Adam(learning_rate=.001)
+    model.compile(loss='sparse_categorical_crossentropy', optimizer=adam)
 
-adam = keras.optimizers.Adam(learning_rate=.001)
-model.compile(loss='sparse_categorical_crossentropy', optimizer=adam)
+    #model.fit(x_train, y_train, batch_size=32, epochs=2)
+    model.fit(x_train, y_train, batch_size=32, epochs=1)
+    model.save('model.keras')
+    test_accuracy(x_test[:100], y_test[:100])
+else:
+    model = keras.models.load_model('model.keras')
 
-#model.fit(x_train, y_train, batch_size=32, epochs=2)
-model.fit(x_train, y_train, batch_size=32, epochs=1)
-model.save('model.keras')
-test_accuracy(x_test[:100], y_test[:100])
 instance_str = np_instance.flatten()
 instance_str = ''.join(map(str, instance_str))
 instance_str = instance_str.replace('\n', '')
