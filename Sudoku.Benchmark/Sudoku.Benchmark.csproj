@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Sudoku.DancingLinks\Sudoku.DancingLinks.csproj" />
     <ProjectReference Include="..\Sudoku.ORTools\Sudoku.ORTools.csproj" />
+    <ProjectReference Include="..\Sudoku.GeneticAlgorithm\Sudoku.GeneticAlgorithm.csproj" />
     <ProjectReference Include="..\Sudoku.PSO\Sudoku.PSO.csproj" />
     <ProjectReference Include="..\Sudoku.Shared\Sudoku.Shared.csproj" />
     <ProjectReference Include="..\Sudoku.Backtracking\Sudoku.Backtracking.csproj" />
