@@ -9,12 +9,14 @@ namespace Sudoku.Shared;
 public class SudokuChromosome : ChromosomeBase
 {
     private readonly SudokuGrid _target;
+    private readonly Dictionary<int, List<int>> mask;
     private static readonly Random Random = new Random();
 
 
-    public SudokuChromosome(SudokuGrid target) : base(9)
+    public SudokuChromosome(SudokuGrid target, Dictionary<int, List<int>> mask) : base(9)
     {
         _target = target;
+        this.mask = mask;
         CreateGenes();
     }
 
@@ -57,7 +59,7 @@ public class SudokuChromosome : ChromosomeBase
         return solution;
     }
 
-    public override Gene GenerateGene(int geneIndex)
+    public Gene GenerateGene2(int geneIndex) // Put back the override to run this fct
     {
         var availableValues = Enumerable.Range(1, 9).ToList();
         var grid = _target.GetGrid(geneIndex);
@@ -85,6 +87,96 @@ public class SudokuChromosome : ChromosomeBase
 
     public override IChromosome CreateNew()
     {
-        return new SudokuChromosome(_target);
+        return new SudokuChromosome(_target, mask);
     }
+
+
+    /* Lyes version : */
+
+
+    public Dictionary<int, List<int>> removeValue(Dictionary<int, List<int>> dict, int cell_value, int cell_position)
+    {
+
+        dict[cell_position] = new List<int>();
+
+        for (int j = 0; j < 9; j++ ) 
+                dict[j].Remove(cell_value);
+
+        return dict;
+    }
+
+
+    
+    public (int,int) get_unique_values(Dictionary<int, List<int>> dict) 
+    {
+        for  (int cell_value = 1; cell_value <= 9; cell_value++)
+        {
+            var dict_filtered = dict.Where(KeyValuePair => KeyValuePair.Value.Contains(cell_value));
+            if (dict_filtered.Count() == 1)
+                return (dict_filtered.First().Key, cell_value);
+        }
+
+        return (-1, -1);
+    }
+
+
+
+    // This function is used for mutation but could be nice if it does remplace 7 by 7 for ex 
+    // Genes : 0-8
+    public override Gene GenerateGene(int geneIndex)
+    {
+
+        int newCellValue = -1;
+
+        Dictionary<int, List<int>> tmp_dict = new Dictionary<int, List<int>>();
+        for(int i = 0; i < 9; i++)
+            tmp_dict.Add(i, new List<int>(mask[geneIndex * 9 + i]));
+
+
+        List<int> colPositionByHighestPriority = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8 }.OrderBy(x => tmp_dict[x].Count).ToList();
+        int[] NewGene = Enumerable.Range(0,9).Select(i => _target.Cells[geneIndex,i]).ToArray();  // _target.Cells[geneIndex].ToArray(); changed because [,] instead of [][] 
+
+        foreach (int cellPositionOfNewGene in colPositionByHighestPriority)             
+        {
+
+            if (tmp_dict[cellPositionOfNewGene].Count == 0) 
+                continue;
+
+            do 
+            {
+                int randomIndex = Random.Next(0, tmp_dict[cellPositionOfNewGene].Count);
+                newCellValue = tmp_dict[cellPositionOfNewGene][randomIndex];
+
+            } while (NewGene.Contains(newCellValue));
+
+            NewGene[cellPositionOfNewGene] = newCellValue;
+            removeValue(tmp_dict, newCellValue, cellPositionOfNewGene);
+
+
+            while (true)
+            {
+                (int Key, int Value)= get_unique_values(tmp_dict);
+                if (Key == -1)
+                    break;
+
+                NewGene[Key]= Value;
+                removeValue(tmp_dict, Value, Key);
+            }
+
+            // Update the priority
+            colPositionByHighestPriority = colPositionByHighestPriority.OrderBy(x => tmp_dict[x].Count).ToList();
+
+        }
+
+        return new Gene(NewGene);
+
+    }
+
+
+
+
+
+    // There is also another version of generateGenes that I will push if this is necessary
+
+
 }

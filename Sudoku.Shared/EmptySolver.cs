@@ -7,18 +7,18 @@ namespace Sudoku.Shared
     public class EmptySolver : ISudokuSolver
     {
         int population_size = 1000;
-        
+
         public SudokuGrid Solve(SudokuGrid s)
         {
             var cleanSudoku = new SudokuCleaning(s);
-            Dictionary<int, List<int>> mask = cleanSudoku.mask; 
             SudokuGrid sudoku = cleanSudoku.sudoku;
+            Dictionary<int, List<int>> mask = cleanSudoku.mask; 
 
             var selection = new TournamentSelection();
             var crossover = new UniformCrossover();
             var mutation = new UniformMutation();
             var fitness = new SudokuFitness();
-            var chromosome = new SudokuChromosome(sudoku);
+            var chromosome = new SudokuChromosome(sudoku, mask);
             
             Console.WriteLine("GA running...");
             while (true)
@@ -38,12 +38,35 @@ namespace Sudoku.Shared
                 ga.Start();
 
                 if (ga.BestChromosome.Fitness == 1)
+                    return ConvertChromosomeToSudokuGrid(ga.BestChromosome);
+
+                /* To put if we use Ilyas's version
                 {
                     var sudokuChromosome = ga.BestChromosome as SudokuChromosome;
                     return sudokuChromosome.getSolution();
                 }
+                */
+
+
+
                 population_size = (int)Math.Round(population_size * 1.5);
             }
         }
+
+        public static SudokuGrid ConvertChromosomeToSudokuGrid(IChromosome bestChromosome)
+        {
+
+            int[,] sudoku = new int[9,9];
+            for (int i = 0; i < 9; i++) 
+            {
+                var gene = (int[])bestChromosome.GetGene(i).Value;
+
+                for (int j = 0; j < 9; j++)
+                    sudoku[i,j] = gene[j];
+            }
+
+            return new SudokuGrid { Cells = sudoku};
+        }
+
     }
 }

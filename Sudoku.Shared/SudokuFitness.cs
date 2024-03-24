@@ -14,7 +14,8 @@ public class SudokuFitness : IFitness
             throw new InvalidOperationException("Chromosome cannot be cast to SudokuChromosome");
         }
         var target = sudokuChromosome.getTarget();
-        var solution = sudokuChromosome.getSolution();
+        var solution = EmptySolver.ConvertChromosomeToSudokuGrid(chromosome);
+        //var solution = sudokuChromosome.getSolution();
 
         var errors = solution.NbErrors(target);
         return 1.0 / (errors + 1);
