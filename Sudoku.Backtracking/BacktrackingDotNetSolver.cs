@@ -20,9 +20,14 @@ namespace Sudoku.Backtracking
 		public SudokuGrid Solve(SudokuGrid s)
 		{
 			//launch the solver
+			callCount = 0;
 			Search(s, 0, 0);
+			Console.WriteLine("BacktrackingDotNetSolver: " + callCount + " search calls");
 			return s;
 		}
+
+		private int callCount = 0;
+
 		/// <summary>
 		/// Recursively searches for a solution to a Sudoku grid by backtracking
 		/// </summary>
@@ -32,6 +37,7 @@ namespace Sudoku.Backtracking
 		/// <returns>True if a solution is found, false otherwise</returns>
 		private bool Search(SudokuGrid s, int row, int col)
 		{
+			callCount++;
 			//pass to the next row if all the cells in the column are checked     
 			if (col == 9)
 			{
