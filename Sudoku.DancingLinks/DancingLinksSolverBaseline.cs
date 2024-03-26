@@ -3,7 +3,7 @@ using DlxLib;
 
 namespace Sudoku.DancingLinks
 {
-    public class DancingLinksSolver : ISudokuSolver
+    public class DancingLinksSolverBaseline : ISudokuSolver
     {
         /// <summary>
         /// Solves the given Sudoku grid using a dancing links algorithm.
@@ -68,6 +68,7 @@ namespace Sudoku.DancingLinks
                     }
                 }
             }
+
             return matrix;
         }
 
@@ -89,10 +90,12 @@ namespace Sudoku.DancingLinks
                 {
                     if (matrix[row, j] == 1)
                     {
-                        x = j % 9; y = j / 9;
+                        x = j % 9;
+                        y = j / 9;
                         break;
                     }
                 }
+
                 for (int j = 81; j < 162; j++)
                 {
                     if (matrix[row, j] == 1)
@@ -101,7 +104,8 @@ namespace Sudoku.DancingLinks
                         break;
                     }
                 }
-                solution.Cells[x,y] = nb;
+
+                solution.Cells[x, y] = nb;
             }
 
             return solution;
