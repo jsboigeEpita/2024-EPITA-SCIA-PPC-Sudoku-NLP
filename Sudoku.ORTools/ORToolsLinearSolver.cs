@@ -1,113 +1,111 @@
 ﻿using System;
-using Sudoku.Shared;
+using System.Linq;
 using Google.OrTools.LinearSolver;
-using Solver = Google.OrTools.LinearSolver.Solver;
+using Sudoku.Shared;
 
 namespace Sudoku.ORTools
 {
-    public class ORToolsLinearSolver : ISudokuSolver
+    public class SudokuSolver : ISudokuSolver
     {
+        private const int GridSize = 9;
+        private const int CellSize = 3;
+
         public SudokuGrid Solve(SudokuGrid s)
         {
-            // Create a new solver instance
-            Solver solver = Solver.CreateSolver("GLOP");
-            if (solver is null) return s; // Return the input grid if the solver creation fails
+            int[,] inputGrid = s.Cells;
 
-            // Create a 9x9 matrix of integer variables representing the Sudoku grid
-            Variable[,] grid = solver.MakeIntVarMatrix(9, 9, 1, 9, "grid");
-
-            // Add constraints based on the initial Sudoku grid
-            AddInitialConstraints(s, solver, grid);
-
-            // Add constraints for distinct values in rows, columns, and subgrids
-            AddDistinctValueConstraints(solver, grid);
-
-            // Solve the Sudoku problem
-            Solver.ResultStatus resultStatus = solver.Solve();
-
-            // Update the Sudoku grid with the solved values if a feasible solution is found
-            if (resultStatus == Solver.ResultStatus.OPTIMAL)
+            Solver solver = Solver.CreateSolver("SCIP");
+            if (solver == null)
             {
-                UpdateSudokuGrid(s, grid);
+                throw new InvalidOperationException("Solver initialization failed.");
             }
 
-            return s; // Return the solved or partially solved Sudoku grid
-        }
+            Variable[,,] x = new Variable[GridSize, GridSize, GridSize];
 
-        private void AddInitialConstraints(SudokuGrid s, Solver solver, Variable[,] grid)
-        {
-            // Add constraints based on the initial Sudoku grid values
-            for (int i = 0; i < 9; i++)
+            // Step 2: Create variables
+            for (int i = 0; i < GridSize; i++)
             {
-                for (int j = 0; j < 9; j++)
+                for (int j = 0; j < GridSize; j++)
                 {
-                    if (s.Cells[i, j] != 0)
+                    for (int k = 0; k < GridSize; k++)
                     {
-                        solver.Add(s.Cells[i, j] == grid[i, j]); // Add constraint for fixed cell value
-                    }
-                }
-            }
-        }
-
-        private void AddDistinctValueConstraints(Solver solver, Variable[,] grid)
-        {
-            // Add constraints to ensure each cell has a value between 1 and 9
-            foreach (var cellVariable in grid)
-            {
-                solver.Add(cellVariable >= 1);
-                solver.Add(cellVariable <= 9);
-            }
-
-            // Add constraints to ensure each row, column, and subgrid has distinct values
-            for (int i = 0; i < 9; i++)
-            {
-                for (int j = 0; j < 9; j++)
-                {
-                    for (int k = j + 1; k < 9; k++)
-                    {
-                        solver.Add(grid[i, j] != grid[i, k]); // Row constraints
-                        solver.Add(grid[j, i] != grid[k, i]); // Column constraints
+                        x[i, j, k] = solver.MakeBoolVar($"x[{i},{j},{k}]");
                     }
                 }
             }
 
-            // Add constraints for each 3x3 subgrid
-            for (int i = 0; i < 9; i += 3)
+            // Step 3: Initialize variables in case of known values
+            for (int i = 0; i < GridSize; i++)
             {
-                for (int j = 0; j < 9; j += 3)
+                for (int j = 0; j < GridSize; j++)
                 {
-                    AddSubgridConstraints(solver, grid, i, j);
+                    int value = inputGrid[i, j];
+                    bool defined = value != 0;
+                    if (defined)
+                    {
+                        solver.Add(x[i, j, value - 1] == 1);
+                    }
                 }
             }
-        }
 
-        private void AddSubgridConstraints(Solver solver, Variable[,] grid, int rowStart, int colStart)
-        {
-            for (int i = rowStart; i < rowStart + 3; i++)
+            // Step 4: All bins of a cell must have sum equals to 1
+            for (int i = 0; i < GridSize; i++)
             {
-                for (int j = colStart; j < colStart + 3; j++)
+                for (int j = 0; j < GridSize; j++)
                 {
-                    for (int k = i; k < rowStart + 3; k++)
+                    solver.Add(solver.Sum(from k in Enumerable.Range(0, GridSize) select x[i, j, k]) == 1);
+                }
+            }
+
+            // Step 5: AllDifferent on rows, columns, and regions
+            for (int k = 0; k < GridSize; k++)
+            {
+                // AllDifferent on rows
+                for (int i = 0; i < GridSize; i++)
+                {
+                    solver.Add(solver.Sum(from j in Enumerable.Range(0, GridSize) select x[i, j, k]) == 1);
+                }
+
+                // AllDifferent on columns
+                for (int j = 0; j < GridSize; j++)
+                {
+                    solver.Add(solver.Sum(from i in Enumerable.Range(0, GridSize) select x[i, j, k]) == 1);
+                }
+
+                // AllDifferent on regions
+                for (int rowIdx = 0; rowIdx < GridSize; rowIdx += CellSize)
+                {
+                    for (int colIdx = 0; colIdx < GridSize; colIdx += CellSize)
                     {
-                        for (int l = j + 1; l < colStart + 3; l++)
+                        solver.Add((from i in Enumerable.Range(rowIdx, CellSize)
+                            from j in Enumerable.Range(colIdx, CellSize)
+                            select x[i, j, k]).ToArray().Aggregate((a, b) => a + b) == 1);
+
+                    }
+                }
+            }
+
+            // Solve the problem
+            solver.Solve();
+
+            // Extract the solution
+            int[,] result = new int[GridSize, GridSize];
+            for (int i = 0; i < GridSize; i++)
+            {
+                for (int j = 0; j < GridSize; j++)
+                {
+                    for (int k = 0; k < GridSize; k++)
+                    {
+                        if (x[i, j, k].SolutionValue() == 1)
                         {
-                            solver.Add(grid[i, j] != grid[k, l]); // Subgrid constraints
+                            result[i, j] = k + 1;
+                            break; // Only one value can be true
                         }
                     }
                 }
             }
-        }
 
-        private void UpdateSudokuGrid(SudokuGrid s, Variable[,] grid)
-        {
-            // Update the Sudoku grid with the solved values
-            for (int i = 0; i < 9; i++)
-            {
-                for (int j = 0; j < 9; j++)
-                {
-                    s.Cells[i, j] = (int)grid[i, j].SolutionValue();
-                }
-            }
+            return new SudokuGrid(result);
         }
     }
 }
