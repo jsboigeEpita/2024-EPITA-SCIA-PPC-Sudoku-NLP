@@ -6,7 +6,7 @@ namespace Sudoku.ORTools;
 public class OrToolsSatSolver : ISudokuSolver
 {
     private const int Dimension = 9;
-    private const int Subgrid = 3;
+    private const int SubGrid = 3;
     
     private readonly CpSolver _solver = new();
     public SudokuGrid Solve(SudokuGrid s)
@@ -56,9 +56,9 @@ public class OrToolsSatSolver : ISudokuSolver
             AddColumnConstraint(model, grid, i);
         }
 
-        for (int i = 0; i < Dimension; i += Subgrid)
+        for (int i = 0; i < Dimension; i += SubGrid)
         {
-            for (int j = 0; j < Dimension; j += Subgrid)
+            for (int j = 0; j < Dimension; j += SubGrid)
             {
                 AddCellConstraint(model, grid, i, j);
             }
@@ -68,8 +68,8 @@ public class OrToolsSatSolver : ISudokuSolver
     private static void AddCellConstraint(CpModel model, IntVar[,] grid, int i, int j)
     {
         IntVar[] cellVariables = Enumerable
-            .Range(0, Subgrid)
-            .SelectMany(x => Enumerable.Range(0, Subgrid).Select(y => grid[i + x, j + y]))
+            .Range(0, SubGrid)
+            .SelectMany(x => Enumerable.Range(0, SubGrid).Select(y => grid[i + x, j + y]))
             .ToArray();
 
         model.AddAllDifferent(cellVariables);
