@@ -1,23 +1,24 @@
 using System;
 using GeneticSharp;
+using Sudoku.Shared;
 
 namespace Sudoku.GeneticAlg;
 
 public class SudokuFitness : IFitness
 {
+
+    public SudokuGrid initialSudoku;
+
+    public SudokuFitness(SudokuGrid initialSudoku)
+    {
+        this.initialSudoku = initialSudoku;
+    }
+
     public double Evaluate(IChromosome chromosome)
     {
-        var genes = chromosome.GetGenes();
-        var sudokuChromosome = chromosome as SudokuChromosome;
-        if (sudokuChromosome == null)
-        {
-            throw new InvalidOperationException("Chromosome cannot be cast to SudokuChromosome");
-        }
-        var target = sudokuChromosome.getTarget();
         var solution = GeneticSolver.ConvertChromosomeToSudokuGrid(chromosome);
-        //var solution = sudokuChromosome.getSolution();
-
-        var errors = solution.NbErrors(target);
+        var errors = solution.NbErrors(initialSudoku);
         return 1.0 / (errors + 1);
     }
+
 }

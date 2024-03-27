@@ -9,128 +9,39 @@ namespace Sudoku.GeneticAlg;
 
 public class SudokuChromosome : ChromosomeBase
 {
-    private readonly SudokuGrid _target;
+    private readonly SudokuGrid intialSudoku;
     private readonly Dictionary<int, List<int>> mask;
     private static readonly Random Random = new Random();
 
+    int newCellValue = -1;
 
-    public SudokuChromosome(SudokuGrid target, Dictionary<int, List<int>> mask) : base(9)
+    public SudokuChromosome(SudokuGrid intialSudoku, Dictionary<int, List<int>> mask) : base(9)
     {
-        _target = target;
+        this.intialSudoku= intialSudoku;
         this.mask = mask;
         CreateGenes();
     }
 
-    public SudokuGrid getTarget()
-    {
-        return _target;
-    }
-
-    public SudokuGrid getSolution()
-    {
-        var fullGrid = new int[9, 9];
-        var genes = this.GetGenes();
-
-        for (int geneIndex = 0; geneIndex < genes.Length; geneIndex++)
-        {
-            var subgrid = (int[][])genes[geneIndex].Value;
-            int startRow = (geneIndex / 3) * 3;
-            int startColumn = (geneIndex % 3) * 3;
-
-            for (int row = 0; row < 3; row++)
-            {
-                for (int column = 0; column < 3; column++)
-                {
-                    fullGrid[startRow + row, startColumn + column] = subgrid[row][column];
-                }
-            }
-        }
-
-        var stringBuilder = new System.Text.StringBuilder(81);
-
-        for (int row = 0; row < 9; row++)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                stringBuilder.Append(fullGrid[row, col]);
-            }
-        }
-
-        SudokuGrid solution = SudokuGrid.ReadSudoku(stringBuilder.ToString());
-        return solution;
-    }
-        public int[][] GetGrid(int gridIndex, SudokuGrid sudoku)
-        {
-            var Cells = sudoku.Cells;
-            int[][] grid = new int[3][];
-            for (int i = 0; i < 3; i++)
-            {
-                grid[i] = new int[3];
-            }
-            
-            int startRow = (gridIndex / 3) * 3;
-            int startCol = (gridIndex % 3) * 3;
-            
-            for (int row = 0; row < 3; row++)
-            {
-                for (int col = 0; col < 3; col++)
-                {
-                    grid[row][col] = Cells[startRow + row, startCol + col];
-                }
-            }
-
-            return grid;
-        }
-
-
-    public Gene GenerateGene2(int geneIndex) // Put back the override to run this fct
-    {
-        var availableValues = Enumerable.Range(1, 9).ToList();
-        var grid = GetGrid(geneIndex, _target);
-
-        for (int i = 0; i < grid.Length; i++)
-        {
-            for (int j = 0; j < grid[i].Length; j++)
-            {
-                if (grid[i][j] == 0)
-                {
-                    var randomIndex = Random.Next(availableValues.Count);
-                    var randomValue = availableValues[randomIndex];
-                    grid[i][j] = randomValue;
-                    availableValues.Remove(randomValue);
-                }
-                else
-                {
-                    availableValues.Remove(grid[i][j]);
-                }
-            }
-        }
-
-        return new Gene(grid);
-    }
-
     public override IChromosome CreateNew()
     {
-        return new SudokuChromosome(_target, mask);
+        return new SudokuChromosome(intialSudoku, mask);
     }
 
 
-    /* Lyes version : */
 
-
+    // Remove a given a value of our temporary dict 
     public Dictionary<int, List<int>> removeValue(Dictionary<int, List<int>> dict, int cell_value, int cell_position)
     {
-
         dict[cell_position] = new List<int>();
 
         for (int j = 0; j < 9; j++ ) 
-                dict[j].Remove(cell_value);
+            dict[j].Remove(cell_value);
 
         return dict;
     }
 
-
-    
+    // Take value that can be used only in a specific posiiton of the row
+    // Return the tuple (Position of the cell, Value of the cell)
     public (int,int) get_unique_values(Dictionary<int, List<int>> dict) 
     {
         for  (int cell_value = 1; cell_value <= 9; cell_value++)
@@ -143,26 +54,89 @@ public class SudokuChromosome : ChromosomeBase
         return (-1, -1);
     }
 
+        
 
-
-    // This function is used for mutation but could be nice if it does remplace 7 by 7 for ex 
-    // Genes : 0-8
+    // Create A random Gene among the possible values according to the mask
     public override Gene GenerateGene(int geneIndex)
     {
 
-        int newCellValue = -1;
+        int[] NewGene = Enumerable.Range(0,9).Select(i => intialSudoku.Cells[geneIndex,i]).ToArray();  //  Select the intial row of the actual gene 
+
+
+        /* Retrieve all the possibles values of the row corresponding to the geneIndex */
+        Dictionary<int, List<int>> tmp_dict = new Dictionary<int, List<int>>();
+        for(int i = 0; i < 9; i++)
+            tmp_dict.Add(i, new List<int>(mask[geneIndex * 9 + i]));
+
+
+        List<int> randomOrder = Shuffle(Enumerable.Range(0, 9).ToList()); 
+
+        foreach (int cellPositionOfNewGene in randomOrder)
+        {
+
+            if (tmp_dict[cellPositionOfNewGene].Count == 0) 
+                continue;
+
+            do 
+            {
+                int randomIndex = Random.Next(0, tmp_dict[cellPositionOfNewGene].Count);
+                newCellValue = tmp_dict[cellPositionOfNewGene][randomIndex];
+
+            } while (NewGene.Contains(newCellValue));
+
+
+            removeValue(tmp_dict, newCellValue, cellPositionOfNewGene);
+
+            // We edited the mask -> we might have some obvious values that poped up after the edit
+
+            while (true)
+            {
+                (int Key, int Value)= get_unique_values(tmp_dict);
+                if (Key == -1)
+                    break;
+
+                NewGene[Key]= Value;
+                removeValue(tmp_dict, Value, Key);
+            }
+
+        }
+
+        return new Gene(NewGene);
+
+    }
+
+
+     static List<int> Shuffle(List<int> list, int list_size = 9)
+    {
+        int n = list_size;
+        while (n > 1)
+        {
+            n--;
+            int k = Random.Next(n + 1);
+            int value = list[k];
+            list[k] = list[n];
+            list[n] = value;
+        }
+        return list;
+    }
+
+    /*Another implementaion that  generate gene according to the probabily : we fill the cell that has less possibility according to the mask first*/
+    public Gene GenerateGene2(int geneIndex)
+    {
+
+        int[] NewGene = Enumerable.Range(0,9).Select(i => intialSudoku.Cells[geneIndex,i]).ToArray();  //  Select the intial row of the actual gene 
 
         Dictionary<int, List<int>> tmp_dict = new Dictionary<int, List<int>>();
         for(int i = 0; i < 9; i++)
             tmp_dict.Add(i, new List<int>(mask[geneIndex * 9 + i]));
 
 
-        List<int> colPositionByHighestPriority = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8 }.OrderBy(x => tmp_dict[x].Count).ToList();
-        int[] NewGene = Enumerable.Range(0,9).Select(i => _target.Cells[geneIndex,i]).ToArray();  // _target.Cells[geneIndex].ToArray(); changed because [,] instead of [][] 
+        // Sort the cell index of a row by probability -> We start by the gene with less possible values  
+        List<int> rowPositionByHighestPriority = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8 }.OrderBy(x => tmp_dict[x].Count).ToList();
 
-        foreach (int cellPositionOfNewGene in colPositionByHighestPriority)             
+        
+        foreach (int cellPositionOfNewGene in rowPositionByHighestPriority)             
         {
-
             if (tmp_dict[cellPositionOfNewGene].Count == 0) 
                 continue;
 
@@ -176,7 +150,7 @@ public class SudokuChromosome : ChromosomeBase
             NewGene[cellPositionOfNewGene] = newCellValue;
             removeValue(tmp_dict, newCellValue, cellPositionOfNewGene);
 
-
+            // We edited the mask -> According to this we might have new priority
             while (true)
             {
                 (int Key, int Value)= get_unique_values(tmp_dict);
@@ -188,7 +162,7 @@ public class SudokuChromosome : ChromosomeBase
             }
 
             // Update the priority
-            colPositionByHighestPriority = colPositionByHighestPriority.OrderBy(x => tmp_dict[x].Count).ToList();
+            rowPositionByHighestPriority = rowPositionByHighestPriority.OrderBy(x => tmp_dict[x].Count).ToList();
 
         }
 
@@ -200,7 +174,9 @@ public class SudokuChromosome : ChromosomeBase
 
 
 
-    // There is also another version of generateGenes that I will push if this is necessary
+
+
+
 
 
 }

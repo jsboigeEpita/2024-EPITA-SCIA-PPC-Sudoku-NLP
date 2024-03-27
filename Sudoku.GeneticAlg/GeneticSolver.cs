@@ -18,7 +18,7 @@ namespace Sudoku.GeneticAlg
             var selection = new TournamentSelection();
             var crossover = new UniformCrossover();
             var mutation = new UniformMutation();
-            var fitness = new SudokuFitness();
+            var fitness = new SudokuFitness(sudoku);
             var chromosome = new SudokuChromosome(sudoku, mask);
             
             Console.WriteLine("GA running...");
@@ -27,28 +27,16 @@ namespace Sudoku.GeneticAlg
                 var population = new Population(population_size, population_size, chromosome);
                 var ga = new GeneticAlgorithm(population, fitness, selection, crossover, mutation);
                 ga.Termination = new OrTermination(new FitnessStagnationTermination(20), new FitnessThresholdTermination(1));
-                // ga.OperatorsStrategy = new TplOperatorsStrategy();
-	            // ga.TaskExecutor = new TplTaskExecutor();
 
                 ga.GenerationRan += (sender, e) =>
                 {
                     var bestFitness = ga.BestChromosome.Fitness;
                     Console.WriteLine($"Generation {ga.GenerationsNumber}: Best Fitness = {bestFitness}");
                 };
-
                 ga.Start();
 
-                if (ga.BestChromosome.Fitness == 1)
+                if (ga.BestChromosome.Fitness == 1) 
                     return ConvertChromosomeToSudokuGrid(ga.BestChromosome);
-
-                /* To put if we use Ilyas's version
-                {
-                    var sudokuChromosome = ga.BestChromosome as SudokuChromosome;
-                    return sudokuChromosome.getSolution();
-                }
-                */
-
-
 
                 population_size = (int)Math.Round(population_size * 1.5);
             }
@@ -65,7 +53,6 @@ namespace Sudoku.GeneticAlg
                 for (int j = 0; j < 9; j++)
                     sudoku[i,j] = gene[j];
             }
-
             return new SudokuGrid { Cells = sudoku};
         }
 
