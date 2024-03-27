@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using GeneticSharp;
-
-namespace Sudoku.Shared
+﻿namespace Sudoku.Shared
 {
     public class EmptySolver : ISudokuSolver
     {
@@ -10,5 +6,6 @@ namespace Sudoku.Shared
         {
             return s.CloneSudoku();
         }
+        
     }
 }

@@ -59,11 +59,34 @@ public class SudokuChromosome : ChromosomeBase
         SudokuGrid solution = SudokuGrid.ReadSudoku(stringBuilder.ToString());
         return solution;
     }
+        public int[][] GetGrid(int gridIndex, SudokuGrid sudoku)
+        {
+            var Cells = sudoku.Cells;
+            int[][] grid = new int[3][];
+            for (int i = 0; i < 3; i++)
+            {
+                grid[i] = new int[3];
+            }
+            
+            int startRow = (gridIndex / 3) * 3;
+            int startCol = (gridIndex % 3) * 3;
+            
+            for (int row = 0; row < 3; row++)
+            {
+                for (int col = 0; col < 3; col++)
+                {
+                    grid[row][col] = Cells[startRow + row, startCol + col];
+                }
+            }
+
+            return grid;
+        }
+
 
     public Gene GenerateGene2(int geneIndex) // Put back the override to run this fct
     {
         var availableValues = Enumerable.Range(1, 9).ToList();
-        var grid = _target.GetGrid(geneIndex);
+        var grid = GetGrid(geneIndex, _target);
 
         for (int i = 0; i < grid.Length; i++)
         {
