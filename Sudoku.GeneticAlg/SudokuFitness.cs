@@ -1,7 +1,7 @@
 using System;
 using GeneticSharp;
 
-namespace Sudoku.Shared;
+namespace Sudoku.GeneticAlg;
 
 public class SudokuFitness : IFitness
 {
@@ -14,7 +14,7 @@ public class SudokuFitness : IFitness
             throw new InvalidOperationException("Chromosome cannot be cast to SudokuChromosome");
         }
         var target = sudokuChromosome.getTarget();
-        var solution = EmptySolver.ConvertChromosomeToSudokuGrid(chromosome);
+        var solution = GeneticSolver.ConvertChromosomeToSudokuGrid(chromosome);
         //var solution = sudokuChromosome.getSolution();
 
         var errors = solution.NbErrors(target);

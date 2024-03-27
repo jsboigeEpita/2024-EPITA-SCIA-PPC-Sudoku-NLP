@@ -2,7 +2,7 @@ using GeneticSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using Sudoku.Shared;
 
 
 /*
@@ -40,7 +40,7 @@ using System.Linq;
 
 */ 
 
-namespace Sudoku.Shared
+namespace Sudoku.GeneticAlg
 {
     
     public class SudokuCleaning

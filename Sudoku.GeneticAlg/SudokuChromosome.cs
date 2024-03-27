@@ -2,9 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GeneticSharp;
+using Sudoku.Shared;
 
 
-namespace Sudoku.Shared;
+namespace Sudoku.GeneticAlg;
 
 public class SudokuChromosome : ChromosomeBase
 {
