@@ -6,6 +6,6 @@
         {
             return s.CloneSudoku();
         }
-        
+
     }
 }
