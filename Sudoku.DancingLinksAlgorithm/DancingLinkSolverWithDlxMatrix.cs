@@ -83,8 +83,8 @@ public class DancingLinkSolverWithDlxMatrix : ISudokuSolver
             {
                 if (matrix[row, j] == 1)
                 {
-                    x = j % 9;
-                    y = j / 9;
+                    x = j / 9;
+                    y = j % 9;
                     break;
                 }
             }
@@ -98,8 +98,8 @@ public class DancingLinkSolverWithDlxMatrix : ISudokuSolver
                 }
             }
 
-            if (solution.Cells[y, x] == 0)
-                solution.Cells[y, x] = nb;
+            if (solution.Cells[x, y] == 0)
+                solution.Cells[x, y] = nb;
         }
 
         return solution;
