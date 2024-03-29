@@ -18,7 +18,6 @@ public class DancingLinkSolver : ISudokuSolver
     public SudokuGrid Solve(SudokuGrid s)
     {
         //launch the solver
-        var dlx = new Dlx();
         var internalRows = BuildInternalRowsForGrid(s);
         var dlxRows = BuildDlxRows(internalRows);
         var solutions = new Dlx()
@@ -30,6 +29,7 @@ public class DancingLinkSolver : ISudokuSolver
 
         return SolutionToGrid(internalRows, solutions.First());
     }
+    
     private static void DrawSolution(
         IReadOnlyList<Tuple<int, int, int, bool>> internalRows,
         Solution solution)
@@ -41,44 +41,13 @@ public class DancingLinkSolver : ISudokuSolver
         IReadOnlyList<Tuple<int, int, int, bool>> internalRows,
         Solution solution)
     {
-        var rows = new List<int[]>();
-        var rowCells = new List<int>(9);
-        var rowStrings = solution.RowIndexes
-            .Select(rowIndex => internalRows[rowIndex])
-            .OrderBy(t => t.Item1)
-            .ThenBy(t => t.Item2)
-            .GroupBy(t => t.Item1, t => t.Item3)
-            .Select(value => string.Concat(value))
-            .ToImmutableList();
-        foreach (var line in rowStrings.Where(l => l.Length > 0))
+        var grid = new int[9, 9];
+
+        foreach (var (row, col, value, _) in solution.RowIndexes.Select(rowIndex => internalRows[rowIndex]))
         {
-            foreach (char c in line)
-            {
-                //we ignore lines not starting with cell chars
-                if (char.IsDigit(c))
-                {
-                    // if char is a digit, we add it to a cell
-                    rowCells.Add((int)Char.GetNumericValue(c));
-                }
-                else
-                {
-                    // if char represents an empty cell, we add 0
-                    rowCells.Add(0);
-                }
-
-                // when 9 cells are entered, we create a row and start collecting cells again.
-                if (rowCells.Count == 9)
-                {
-                    rows.Add(rowCells.ToArray());
-
-                    // we empty the current row collector to start building a new row
-                    rowCells.Clear();
-
-                }
-            }
+            grid[row, col] = value;
         }
-
-        return new SudokuGrid() { Cells = rows.ToArray().To2D() };
+        return new SudokuGrid { Cells = grid };
     }
 
     private static int RowColToBox(int row, int col)
@@ -97,53 +66,33 @@ public class DancingLinkSolver : ISudokuSolver
         IReadOnlyList<Tuple<int, int, int, bool>> internalRows,
         Solution solution)
     {
-        var solutionInternalRows = solution.RowIndexes
-            .Select(rowIndex => internalRows[rowIndex])
-            .ToImmutableList();
+        var solutionValues = solution.RowIndexes.Select(rowIndex => internalRows[rowIndex]).ToList();
+        
+        for (int i = 0; i < 9; i++)
+        {
+            var rowSet = new HashSet<int>();
+            var colSet = new HashSet<int>();
+            var boxSet = new HashSet<int>();
 
-        var locationsGroupedByRow = Locations.GroupBy(t => t.Item1);
-        var locationsGroupedByCol = Locations.GroupBy(t => t.Item2);
-        var locationsGroupedByBox = Locations.GroupBy(t => RowColToBox(t.Item1, t.Item2));
+            for (int j = 0; j < 9; j++)
+            {
+                if (!rowSet.Add(solutionValues[i * 9 + j].Item3))
+                    return false;
 
-        return
-            CheckGroupsOfLocations(solutionInternalRows, locationsGroupedByRow, "row") &&
-            CheckGroupsOfLocations(solutionInternalRows, locationsGroupedByCol, "col") &&
-            CheckGroupsOfLocations(solutionInternalRows, locationsGroupedByBox, "box");
-    }
-    private static bool CheckGroupsOfLocations(
-        IEnumerable<Tuple<int, int, int, bool>> solutionInternalRows,
-        IEnumerable<IGrouping<int, Tuple<int, int>>> groupedLocations,
-        string tag)
-    {
-        return groupedLocations.All(grouping =>
-            CheckLocations(solutionInternalRows, grouping, grouping.Key, tag));
-    }
+                // Check column
+                if (!colSet.Add(solutionValues[j * 9 + i].Item3))
+                    return false;
 
-    private static bool CheckLocations(
-        IEnumerable<Tuple<int, int, int, bool>> solutionInternalRows,
-        IEnumerable<Tuple<int, int>> locations,
-        int key,
-        string tag)
-    {
-        var digits = locations.SelectMany(location =>
-            solutionInternalRows
-                .Where(solutionInternalRow =>
-                    solutionInternalRow.Item1 == location.Item1 &&
-                    solutionInternalRow.Item2 == location.Item2)
-                .Select(t => t.Item3));
-        return CheckDigits(digits, key, tag);
+                // Check box
+                int row = (i / 3) * 3 + (j / 3);
+                int col = (i % 3) * 3 + (j % 3);
+                if (!boxSet.Add(solutionValues[row * 9 + col].Item3))
+                    return false;
+            }
+        }
+        return true;
     }
-    private static bool CheckDigits(
-        IEnumerable<int> digits,
-        int key,
-        string tag)
-    {
-        var actual = digits.OrderBy(v => v);
-        if (actual.SequenceEqual(Digits)) return true;
-        var values = string.Concat(actual.Select(n => Convert.ToString(n)));
-        Console.WriteLine($"{tag} {key}: {values} !!!");
-        return false;
-    }
+    
     private static IImmutableList<int> BuildDlxRow(Tuple<int, int, int, bool> internalRow)
     {
         var row = internalRow.Item1;
