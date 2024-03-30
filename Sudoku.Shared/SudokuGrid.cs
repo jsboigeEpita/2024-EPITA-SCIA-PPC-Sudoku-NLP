@@ -298,8 +298,7 @@ namespace Sudoku.Shared
             if (_CachedSolvers == null)
             {
                 var solvers = new Dictionary<string, Lazy<ISudokuSolver>>();
-
-
+                
                 foreach (var file in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory))
                 {
                     if (file.EndsWith("dll") && !(Path.GetFileName(file).StartsWith("libz3")))
@@ -327,7 +326,14 @@ namespace Sudoku.Shared
                                     try
                                     {
                                         var solver = new Lazy<ISudokuSolver>(()=>(ISudokuSolver)Activator.CreateInstance(type));
-                                        solvers.Add(type.Name, solver);
+                                        // Console.WriteLine("--------------------------------------");
+                                        // Console.WriteLine(type.Name);
+                                        // Console.WriteLine("_________________________");
+                                        if (type.Name.StartsWith("OrTools"))
+                                        {
+                                            Console.WriteLine("OrTools solver found");
+                                            solvers.Add(type.Name, solver);
+                                        }
                                     }
                                     catch (Exception e)
                                     {
@@ -345,10 +351,14 @@ namespace Sudoku.Shared
                     }
 
                 }
-
                 _CachedSolvers = solvers;
             }
 
+            // Print the solvers found
+            foreach (var solver in _CachedSolvers)
+            {
+                Console.WriteLine(solver.Key);
+            }
             return _CachedSolvers;
         }
 

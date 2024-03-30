@@ -126,7 +126,6 @@ namespace Sudoku.Benchmark
 
         static BenchmarkSolversBase()
         {
-			
             _Solvers = new[] { new EmptySolver() }.Concat(Shared.SudokuGrid.GetSolvers().Select(s =>
             {
 	            try
@@ -140,6 +139,17 @@ namespace Sudoku.Benchmark
 	            }
 	            
             }).Where(s => s.GetType() != typeof(EmptySolver))).Select(s => new SolverPresenter() { Solver = s }).ToList();
+            
+            // Remove EmptySolver from the list of solvers
+            _Solvers = _Solvers.Where(s => s.Solver.GetType() != typeof(EmptySolver)).ToList();
+            
+            // Print the list of solvers
+            Console.WriteLine("Available solvers:");
+            foreach (var s in _Solvers)
+            {
+                Console.WriteLine(s.Solver.GetType().Name);
+            }
+            
             //_Solvers = SudokuGrid.GetSolvers().Where(s => s.GetType().Name.ToLowerInvariant().StartsWith("dl")).Select(s => new SolverPresenter() { Solver = s });
         }
 
