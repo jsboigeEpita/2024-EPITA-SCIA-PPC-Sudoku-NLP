@@ -1,104 +1,95 @@
 using Google.OrTools.ConstraintSolver;
 using Sudoku.Shared;
+using System;
 
-namespace Sudoku.ORTools;
-
-public class OrToolsCpSolver : ISudokuSolver
+namespace Sudoku.ORTools
 {
-    private const int Dimension = 9;
-    private const int SubGrid = 3;
-
-    private readonly Solver _solver = new Solver("CpSimple");
-
-    public SudokuGrid Solve(SudokuGrid s)
+    public class OrToolsCpSolver : ISudokuSolver
     {
-        IntVar[][] grid = CreateModel(s);
-        DecisionBuilder db = _solver.MakePhase(grid.Flatten(), Solver.INT_VAR_SIMPLE, Solver.INT_VALUE_SIMPLE);
-        _solver.NewSearch(db);
-        
-        if (_solver.NextSolution())
-        {
-            return MakeSolution(grid);
-        }
+        private const int Dimension = 9;
+        private const int SubGrid = 3;
+        private readonly Solver _solver = new Solver("CpSimple");
 
-        throw new Exception();
-    }
-    
-    private IntVar[][] CreateModel(SudokuGrid sudokuGrid)
-    {
-        IntVar[][] grid = new IntVar[Dimension][];
-        
-        // Create variables
-        for (int i = 0; i < Dimension; i++)
+        public SudokuGrid Solve(SudokuGrid inputGrid)
         {
-            grid[i] = new IntVar[Dimension];
-            for (int j = 0; j < Dimension; j++)
+            IntVar[][] grid = CreateModel(inputGrid);
+            DecisionBuilder db = _solver.MakePhase(grid.Flatten(), Solver.INT_VAR_SIMPLE, Solver.INT_VALUE_SIMPLE);
+            _solver.NewSearch(db);
+
+            if (_solver.NextSolution())
             {
-                grid[i][j] = _solver.MakeIntVar(1, Dimension, $"Cell({i},{j})");
+                return MakeSolution(grid);
             }
+
+            throw new InvalidOperationException("Sudoku grid has no solution.");
         }
 
-        // Each cells must have distinct values.
-        for (int i = 0; i < Dimension; i++)
+        private IntVar[][] CreateModel(SudokuGrid sudokuGrid)
         {
-            _solver.Add(_solver.MakeAllDifferent(grid[i]));
-        }
+            IntVar[][] grid = new IntVar[Dimension][];
 
-        // Each row must have distinct values.
-        for (int j = 0; j < Dimension; j++)
-        {
-            IntVar[] column = new IntVar[Dimension];
             for (int i = 0; i < Dimension; i++)
             {
-                column[i] = grid[i][j];
+                grid[i] = new IntVar[Dimension];
+                for (int j = 0; j < Dimension; j++)
+                {
+                    int value = sudokuGrid.Cells[i, j];
+                    grid[i][j] = _solver.MakeIntVar(value == 0 ? 1 : value, value == 0 ? Dimension : value, $"Cell({i},{j})");
+                }
             }
-            _solver.Add(_solver.MakeAllDifferent(column));
+
+            AddConstraints(grid);
+
+            return grid;
         }
 
-        // Each cells in subgrid must have distinct values.
-        for (int i = 0; i < Dimension; i += SubGrid)
+        private void AddConstraints(IntVar[][] grid)
         {
-            for (int j = 0; j < Dimension; j += SubGrid)
+            for (int i = 0; i < Dimension; i++)
             {
-                IntVar[] square = new IntVar[Dimension];
-                int index = 0;
-                for (int x = 0; x < SubGrid; x++)
+                _solver.Add(_solver.MakeAllDifferent(grid[i]));
+            }
+
+            for (int j = 0; j < Dimension; j++)
+            {
+                IntVar[] column = new IntVar[Dimension];
+                for (int i = 0; i < Dimension; i++)
                 {
-                    for (int y = 0; y < SubGrid; y++)
+                    column[i] = grid[i][j];
+                }
+                _solver.Add(_solver.MakeAllDifferent(column));
+            }
+
+            for (int i = 0; i < Dimension; i += SubGrid)
+            {
+                for (int j = 0; j < Dimension; j += SubGrid)
+                {
+                    IntVar[] square = new IntVar[Dimension];
+                    int index = 0;
+                    for (int x = 0; x < SubGrid; x++)
                     {
-                        square[index++] = grid[i + x][j + y];
+                        for (int y = 0; y < SubGrid; y++)
+                        {
+                            square[index++] = grid[i + x][j + y];
+                        }
                     }
+                    _solver.Add(_solver.MakeAllDifferent(square));
                 }
-                _solver.Add(_solver.MakeAllDifferent(square));
             }
         }
 
-        // Add constraints from the input grid : cells with values must be equal to the input grid
-        for (int i = 0; i < Dimension; i++)
+        private SudokuGrid MakeSolution(IntVar[][] grid)
         {
-            for (int j = 0; j < Dimension; j++)
+            SudokuGrid result = new SudokuGrid();
+            for (int i = 0; i < Dimension; i++)
             {
-                if (sudokuGrid.Cells[i, j] != 0)
+                for (int j = 0; j < Dimension; j++)
                 {
-                    _solver.Add(grid[i][j] == sudokuGrid.Cells[i, j]);
+                    result.Cells[i, j] = (int)grid[i][j].Value();
                 }
             }
-        }
 
-        return grid;
-    }
-    
-    private SudokuGrid MakeSolution(IntVar[][] grid)
-    {
-        SudokuGrid result = new SudokuGrid();
-        for (int i = 0; i < Dimension; i++)
-        {
-            for (int j = 0; j < Dimension; j++)
-            {
-                result.Cells[i, j] = (int)grid[i][j].Value();
-            }
+            return result;
         }
-        
-        return result;
     }
 }
