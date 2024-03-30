@@ -184,7 +184,7 @@ def graph_to_sudoku(graph, pre_coloring, grid):
                     value_dict[color] = maximum
                     value_dict[color] = maximum
             grid[i][j] = value_dict[color]
-    return len(value_dict) != 9
+    return len(value_dict) == 9
 
 
 def solve_sudoku(grid):
@@ -214,6 +214,7 @@ if solve_sudoku(instance):
     # print("Sudoku résolu par backtracking avec succès.")
     result = instance  # `result` sera utilisé pour récupérer la grille résolue depuis C#
 else:
+    print(instance)
     print("Aucune solution trouvée.")
 execution = default_timer() - start
 print("Le temps de résolution est de : ", execution * 1000, " ms")
