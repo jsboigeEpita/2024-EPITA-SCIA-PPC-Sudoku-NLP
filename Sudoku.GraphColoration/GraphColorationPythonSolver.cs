@@ -45,6 +45,7 @@ namespace Sudoku.GraphColoration
         {
             //declare your pip packages here
             InstallPipModule("numpy");
+            InstallPipModule("networkx");
             base.InitializePythonComponents();
         }
     }
