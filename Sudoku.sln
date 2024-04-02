@@ -19,6 +19,17 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sudoku.PSO", "Sudoku.PSO\Sudoku.PSO.csproj", "{ACFD48BC-E434-4F98-B539-47437308B18C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku.Norvig", "Sudoku.Norvig\Sudoku.Norvig.csproj", "{E7518E5A-F1FB-4C83-BAC2-BDAC016D73B1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku.ORTools", "Sudoku.ORTools\Sudoku.ORTools.csproj", "{B7F4440B-CA36-496F-81E3-24852EC85ED1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku.GraphColoration", "Sudoku.GraphColoration\Sudoku.GraphColoration.csproj", "{ECD5379C-F836-4F74-8D9A-5ABA09EF6B62}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku.Human", "Sudoku.Human\Sudoku.Human.csproj", "{10CA84F8-9EDC-442F-A1B4-716CA12DD6C1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku.DancingLinks", "Sudoku.DancingLinks\Sudoku.DancingLinks.csproj", "{7DF96DD7-E812-4DF7-8149-89C3055808C3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku.DancingLinksAlgorithm", "Sudoku.DancingLinksAlgorithm\Sudoku.DancingLinksAlgorithm.csproj", "{DE02E4A8-ABF5-4249-9A5A-6C372DF9C56A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku.GeneticAlg", "Sudoku.GeneticAlg\Sudoku.GeneticAlg.csproj", "{ECE36C85-7FFF-4B1F-BF73-ADB280875E97}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,6 +57,30 @@ Global
 		{E7518E5A-F1FB-4C83-BAC2-BDAC016D73B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7518E5A-F1FB-4C83-BAC2-BDAC016D73B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7518E5A-F1FB-4C83-BAC2-BDAC016D73B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7F4440B-CA36-496F-81E3-24852EC85ED1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7F4440B-CA36-496F-81E3-24852EC85ED1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7F4440B-CA36-496F-81E3-24852EC85ED1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7F4440B-CA36-496F-81E3-24852EC85ED1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECD5379C-F836-4F74-8D9A-5ABA09EF6B62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECD5379C-F836-4F74-8D9A-5ABA09EF6B62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECD5379C-F836-4F74-8D9A-5ABA09EF6B62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECD5379C-F836-4F74-8D9A-5ABA09EF6B62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10CA84F8-9EDC-442F-A1B4-716CA12DD6C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10CA84F8-9EDC-442F-A1B4-716CA12DD6C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10CA84F8-9EDC-442F-A1B4-716CA12DD6C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10CA84F8-9EDC-442F-A1B4-716CA12DD6C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DF96DD7-E812-4DF7-8149-89C3055808C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DF96DD7-E812-4DF7-8149-89C3055808C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DF96DD7-E812-4DF7-8149-89C3055808C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DF96DD7-E812-4DF7-8149-89C3055808C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE02E4A8-ABF5-4249-9A5A-6C372DF9C56A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE02E4A8-ABF5-4249-9A5A-6C372DF9C56A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE02E4A8-ABF5-4249-9A5A-6C372DF9C56A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE02E4A8-ABF5-4249-9A5A-6C372DF9C56A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECE36C85-7FFF-4B1F-BF73-ADB280875E97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECE36C85-7FFF-4B1F-BF73-ADB280875E97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECE36C85-7FFF-4B1F-BF73-ADB280875E97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECE36C85-7FFF-4B1F-BF73-ADB280875E97}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

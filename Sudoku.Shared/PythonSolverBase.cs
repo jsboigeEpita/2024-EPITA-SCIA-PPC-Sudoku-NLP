@@ -38,17 +38,17 @@ namespace Sudoku.Shared
 		protected static async Task InstallPythonComponentsAsync()
 		{
 
-    //        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-    //        {
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
 
-				//await InstallMac();
-    //        }
-    //        else
-    //        {
-				//await InstallEmbedded();
-    //        }
+                await InstallMac();
+            }
+            else
+            {
             await InstallEmbedded();
 		}
+		}
+
 		public static void InstallPipModule(string moduleName, string version = "", bool force = false)
 		{
 			Task task = Task.Run( () => InstallPipModuleAsync(moduleName, version, force));
@@ -59,18 +59,16 @@ namespace Sudoku.Shared
 
 		private static async Task InstallPipModuleAsync(string moduleName, string version = "", bool force = false)
         {
-			//if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-			//{
-			//   await MacInstaller.PipInstallModule(moduleName, version, force);
-			//}
-			//else
-			//{
-			//   await Installer.PipInstallModule(moduleName, version, force);
-			//}
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                await MacInstaller.PipInstallModule(moduleName, version, force);
+            }
+            else
+            {
 			await Installer.PipInstallModule(moduleName, version, force);
         }
+        }
 
-        [Obsolete("Newer Python included/deployment should support Mac with embedded distribution")]
         private static async Task InstallMac()
         {
 
