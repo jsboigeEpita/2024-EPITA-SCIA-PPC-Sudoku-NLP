@@ -1,110 +1,121 @@
 using Sudoku.Shared;
 using Google.OrTools.Sat;
+using System;
 
-namespace Sudoku.ORTools;
-
-public class OrToolsSatSolver : ISudokuSolver
+namespace Sudoku.ORTools
 {
-    private const int Dimension = 9;
-    private const int Subgrid = 3;
-    
-    private readonly CpSolver _solver = new();
-    public SudokuGrid Solve(SudokuGrid s)
+    public class OrToolsSatSolver : ISudokuSolver
     {
-        (CpModel model, IntVar[,]? grid) = CreateModel(s);
-        CpSolverStatus status = _solver.Solve(model);
+        private const int Dimension = 9;
+        private const int SubGrid = 3;
+        private readonly CpSolver _solver = new();
 
-        if (status is CpSolverStatus.Feasible or CpSolverStatus.Optimal)
+        public SudokuGrid Solve(SudokuGrid inputGrid)
         {
-            return MakeSolution(_solver, grid);
-        }
+            (CpModel model, IntVar[,] grid) = CreateModel(inputGrid);
+            // _solver.StringParameters = "max_time_in_seconds:0.01";
+            CpSolverStatus status = _solver.Solve(model);
 
-        throw new Exception();
-    }
-
-    private SudokuGrid MakeSolution(CpSolver solver, IntVar[,]? grid)
-    {
-        SudokuGrid result = new SudokuGrid();
-
-        for (int i = 0; i < Dimension; i++)
-        {
-            for (int j = 0; j < Dimension; j++)
+            if (status is CpSolverStatus.Feasible or CpSolverStatus.Optimal)
             {
-                result.Cells[i, j] = (int)solver.Value(grid[i, j]);
+                return MakeSolution(_solver, grid);
+            }
+            else
+            {
+                throw new InvalidOperationException("Sudoku grid has no solution.");
             }
         }
-        
-        return result;
-    }
 
-    private static (CpModel model, IntVar[,]? grid) CreateModel(SudokuGrid sudokuGrid)
-    {
-        CpModel model = new();
-        IntVar[,] grid = new IntVar[Dimension, Dimension];
-
-        CreateVariables(model, grid, sudokuGrid);
-        AddConstraints(model, grid);
-
-        return (model, grid);
-    }
-
-    private static void AddConstraints(CpModel model, IntVar[,] grid)
-    {
-        for (int i = 0; i < Dimension; i++)
+        private SudokuGrid MakeSolution(CpSolver solver, IntVar[,] grid)
         {
-            AddRowConstraint(model, grid, i);
-            AddColumnConstraint(model, grid, i);
-        }
+            SudokuGrid result = new SudokuGrid();
 
-        for (int i = 0; i < Dimension; i += Subgrid)
-        {
-            for (int j = 0; j < Dimension; j += Subgrid)
+            for (int i = 0; i < Dimension; i++)
             {
-                AddCellConstraint(model, grid, i, j);
-            }
-        }
-    }
-
-    private static void AddCellConstraint(CpModel model, IntVar[,] grid, int i, int j)
-    {
-        IntVar[] cellVariables = Enumerable
-            .Range(0, Subgrid)
-            .SelectMany(x => Enumerable.Range(0, Subgrid).Select(y => grid[i + x, j + y]))
-            .ToArray();
-
-        model.AddAllDifferent(cellVariables);
-    }
-
-    private static void AddColumnConstraint(CpModel model, IntVar[,] grid, int i)
-    {
-        IntVar[] colVariables = Enumerable
-            .Range(0, Dimension)
-            .Select(row => grid[row, i])
-            .ToArray();
-
-        model.AddAllDifferent(colVariables);
-    }
-
-    private static void AddRowConstraint(CpModel model, IntVar[,] grid, int i)
-    {
-        IntVar[] rowVariables = Enumerable
-            .Range(0, Dimension)
-            .Select(col => grid[i, col])
-            .ToArray();
-
-        model.AddAllDifferent(rowVariables);
-    }
-
-    private static void CreateVariables(CpModel model, IntVar[,] grid, SudokuGrid sudokuGrid)
-    {
-        for (int i = 0; i < Dimension; i++)
-        {
-            for (int j = 0; j < Dimension; j++)
-            {
-                grid[i, j] = model.NewIntVar(1, Dimension, $"grid[{i},{j}]");
-                if (sudokuGrid.Cells[i, j] != 0)
+                for (int j = 0; j < Dimension; j++)
                 {
-                    model.Add(grid[i, j] == sudokuGrid.Cells[i, j]);
+                    result.Cells[i, j] = (int)solver.Value(grid[i, j]);
+                }
+            }
+
+            return result;
+        }
+
+        private (CpModel model, IntVar[,]) CreateModel(SudokuGrid sudokuGrid)
+        {
+            CpModel model = new();
+            IntVar[,] grid = new IntVar[Dimension, Dimension];
+
+            CreateVariables(model, grid, sudokuGrid);
+            AddConstraints(model, grid);
+
+            return (model, grid);
+        }
+
+        private void AddConstraints(CpModel model, IntVar[,] grid)
+        {
+            for (int i = 0; i < Dimension; i++)
+            {
+                AddRowConstraint(model, grid, i);
+                AddColumnConstraint(model, grid, i);
+            }
+
+            for (int i = 0; i < Dimension; i += SubGrid)
+            {
+                for (int j = 0; j < Dimension; j += SubGrid)
+                {
+                    AddCellConstraint(model, grid, i, j);
+                }
+            }
+        }
+
+        private void AddCellConstraint(CpModel model, IntVar[,] grid, int row, int col)
+        {
+            IntVar[] cellVariables = new IntVar[SubGrid * SubGrid];
+
+            for (int i = 0; i < SubGrid; i++)
+            {
+                for (int j = 0; j < SubGrid; j++)
+                {
+                    cellVariables[i * SubGrid + j] = grid[row + i, col + j];
+                }
+            }
+
+            model.AddAllDifferent(cellVariables);
+        }
+
+        private void AddColumnConstraint(CpModel model, IntVar[,] grid, int col)
+        {
+            IntVar[] colVariables = new IntVar[Dimension];
+
+            for (int row = 0; row < Dimension; row++)
+            {
+                colVariables[row] = grid[row, col];
+            }
+
+            model.AddAllDifferent(colVariables);
+        }
+
+        private void AddRowConstraint(CpModel model, IntVar[,] grid, int row)
+        {
+            IntVar[] rowVariables = new IntVar[Dimension];
+
+            for (int col = 0; col < Dimension; col++)
+            {
+                rowVariables[col] = grid[row, col];
+            }
+
+            model.AddAllDifferent(rowVariables);
+        }
+
+        private void CreateVariables(CpModel model, IntVar[,] grid, SudokuGrid sudokuGrid)
+        {
+            for (int i = 0; i < Dimension; i++)
+            {
+                for (int j = 0; j < Dimension; j++)
+                {
+                    int value = sudokuGrid.Cells[i, j];
+                    grid[i, j] = model.NewIntVar(value == 0 ? 1 : value, value == 0 ? Dimension : value, $"Cell({i},{j})");
                 }
             }
         }
