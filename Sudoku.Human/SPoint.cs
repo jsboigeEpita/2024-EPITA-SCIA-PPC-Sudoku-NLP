@@ -15,6 +15,13 @@ public readonly struct SPoint
         BlockIndex = (col / 3) + (3 * (row / 3));
     }
 
+    internal SPoint(SPoint sPoint)
+    {
+        Column = sPoint.Column;
+        Row = sPoint.Row;
+        BlockIndex = sPoint.BlockIndex;
+    }
+
     public bool Equals(int col, int row)
     {
         return Column == col && Row == row;

@@ -85,7 +85,7 @@ public sealed partial class Solver
 					BackTrackingState currentlyExploredCellValues; 
 					if (exploredCellValues.Count == 0 || !exploredCellValues.Peek().Cell.Equals(targetCell)) 
 					{
-						currentlyExploredCellValues = new BackTrackingState() { Board = Puzzle, Cell = targetCell, ExploredValues = new List<int>() }; 
+						currentlyExploredCellValues = new BackTrackingState() { Board = Puzzle.CreateFromPuzzle(Puzzle), Cell = targetCell, ExploredValues = new List<int>() }; 
 						exploredCellValues.Push(currentlyExploredCellValues);
 					}
 					else 
@@ -330,7 +330,7 @@ public sealed partial class Solver
 					BackTrackingState currentlyExploredCellValues; 
 					if (exploredCellValues.Count == 0 || !exploredCellValues.Peek().Cell.Equals(targetCell)) 
 					{
-						currentlyExploredCellValues = new BackTrackingState() { Board = Puzzle, Cell = targetCell, ExploredValues = new List<int>() }; 
+						currentlyExploredCellValues = new BackTrackingState() { Board = Puzzle.CreateFromPuzzle(Puzzle), Cell = targetCell, ExploredValues = new List<int>() }; 
 						exploredCellValues.Push(currentlyExploredCellValues);
 					}
 					else 
