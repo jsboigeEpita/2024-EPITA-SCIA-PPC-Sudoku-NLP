@@ -1,21 +1,72 @@
-import numpy as np
 import copy
-import keras
-
-import os
-import sys
-
-current_directory = os.getcwd()
-print("The current working directory is:", current_directory)
-sys.path.append(current_directory)
-
-from ../../../../Sudoku.NeuralNetworkPVSM/Resources.model import get_model
-from ../../../../Sudoku.NeuralNetworkPVSM/Resources.scripts.data_preprocess import get_data
-
 import tensorflow as tf
+import keras
+from keras.layers import Conv2D, BatchNormalization, MaxPooling2D, Flatten, Dense, Reshape, Activation
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+
+def get_data(file):
+
+    data = pd.read_csv(file)
+
+    feat_raw = data['quizzes']
+    label_raw = data['solutions']
+
+    feat = []
+    label = []
+
+    for i in feat_raw:
+
+        x = np.array([int(j) for j in i]).reshape((9,9,1))
+        feat.append(x)
+
+    feat = np.array(feat)
+    feat = feat/9
+    feat -= .5
+
+    for i in label_raw:
+
+        x = np.array([int(j) for j in i]).reshape((81,1)) - 1
+        label.append(x)
+
+    label = np.array(label)
+
+    del(feat_raw)
+    del(label_raw)
+
+    x_train, x_test, y_train, y_test = train_test_split(feat, label, test_size=0.2, random_state=42)
+
+    return x_train, x_test, y_train, y_test
+def get_model():
+    model = keras.models.Sequential()
+
+    model.add(Conv2D(64, kernel_size=(3,3), activation='relu', padding='same', input_shape=(9,9,1)))
+    model.add(BatchNormalization())
+    model.add(Conv2D(64, kernel_size=(3,3), activation='relu', padding='same'))
+    model.add(BatchNormalization())
+    model.add(MaxPooling2D(pool_size=(2,2)))
+
+    model.add(Conv2D(128, kernel_size=(3,3), activation='relu', padding='same'))
+    model.add(BatchNormalization())
+    model.add(Conv2D(128, kernel_size=(3,3), activation='relu', padding='same'))
+    model.add(BatchNormalization())
+    model.add(MaxPooling2D(pool_size=(2,2)))
+
+    model.add(Conv2D(256, kernel_size=(3,3), activation='relu', padding='same'))
+    model.add(BatchNormalization())
+
+    model.add(Flatten())
+    model.add(Dense(512, activation='relu'))
+    model.add(Dense(81*9))
+    model.add(Reshape((-1, 9)))
+    model.add(Activation('softmax'))
+
+    return model
 
 print(tf.__version__)
 print(tf.config.list_physical_devices())
+
 # instance is a variable holding a two dimensional integer array representing the Sudoku grid
 # use numpy to convert the instance to a numpy array
 
@@ -92,7 +143,7 @@ def test_accuracy(feats, labels):
         if (abs(true - pred).sum() == 0):
             correct += 1
 
-    print(correct / feats.shape[0])
+    return(correct / feats.shape[0])
 
 
 def solve_sudoku(game):
@@ -103,22 +154,21 @@ def solve_sudoku(game):
     game = inference_sudoku(game)
     return game
 
-
-x_train, x_test, y_train, y_test = get_data('dataset/sudoku.csv')
 model = get_model()
-train = False
-
+train = True
 
 if train:
+    x_train, x_test, y_train, y_test = get_data(r'..\..\..\..\Sudoku.NeuralNetworkPVSM\Resources\sudoku.csv') # https://www.kaggle.com/datasets/bryanpark/sudoku
     adam = keras.optimizers.Adam(learning_rate=.001)
     model.compile(loss='sparse_categorical_crossentropy', optimizer=adam)
 
-    model.fit(x_train, y_train, batch_size=32, epochs=2)
-    model.save('model.keras')
-    test_accuracy(x_test[:100], y_test[:100])
+    model.fit(x_train, y_train, batch_size=32, epochs=10)
+    model.save(r'..\..\..\..\Sudoku.NeuralNetworkPVSM\Resources\model.keras')
+    accuracy = test_accuracy(x_test[:100], y_test[:100])
+    print("Accuracy:", accuracy)
 else:
     try:
-        model = keras.models.load_model('model.keras')
+        model = keras.models.load_model(r'..\..\..\..\Sudoku.NeuralNetworkPVSM\Resources\model.keras')
     except Exception as e:
         print("Model not found!")
         print("Please set train=True to train the model before inference.")
