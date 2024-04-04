@@ -1,7 +1,8 @@
 import copy
 import tensorflow as tf
 import keras
-from keras.layers import Conv2D, BatchNormalization, MaxPooling2D, Flatten, Dense, Reshape, Activation
+from keras.layers import Conv2D, BatchNormalization, MaxPooling2D, Flatten, Dense, Reshape, Activation, Dropout
+from keras.callbacks import ReduceLROnPlateau, EarlyStopping
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -38,26 +39,24 @@ def get_data(file):
     x_train, x_test, y_train, y_test = train_test_split(feat, label, test_size=0.2, random_state=42)
 
     return x_train, x_test, y_train, y_test
+
 def get_model():
     model = keras.models.Sequential()
 
-    model.add(Conv2D(64, kernel_size=(3,3), activation='relu', padding='same', input_shape=(9,9,1)))
+    model.add(Conv2D(32, kernel_size=(3,3), activation='relu', padding='same', input_shape=(9,9,1)))
+    model.add(BatchNormalization())
+    model.add(Conv2D(32, kernel_size=(3,3), activation='relu', padding='same'))
+    model.add(BatchNormalization())
+    model.add(MaxPooling2D(pool_size=(2,2)))
+
+    model.add(Conv2D(64, kernel_size=(3,3), activation='relu', padding='same'))
     model.add(BatchNormalization())
     model.add(Conv2D(64, kernel_size=(3,3), activation='relu', padding='same'))
     model.add(BatchNormalization())
     model.add(MaxPooling2D(pool_size=(2,2)))
 
-    model.add(Conv2D(128, kernel_size=(3,3), activation='relu', padding='same'))
-    model.add(BatchNormalization())
-    model.add(Conv2D(128, kernel_size=(3,3), activation='relu', padding='same'))
-    model.add(BatchNormalization())
-    model.add(MaxPooling2D(pool_size=(2,2)))
-
-    model.add(Conv2D(256, kernel_size=(3,3), activation='relu', padding='same'))
-    model.add(BatchNormalization())
-
     model.add(Flatten())
-    model.add(Dense(512, activation='relu'))
+    model.add(Dense(128, activation='relu'))
     model.add(Dense(81*9))
     model.add(Reshape((-1, 9)))
     model.add(Activation('softmax'))
@@ -158,11 +157,13 @@ model = get_model()
 train = True
 
 if train:
-    x_train, x_test, y_train, y_test = get_data(r'..\..\..\..\Sudoku.NeuralNetworkPVSM\Resources\sudoku.csv') # https://www.kaggle.com/datasets/bryanpark/sudoku
-    adam = keras.optimizers.Adam(learning_rate=.001)
-    model.compile(loss='sparse_categorical_crossentropy', optimizer=adam)
+    x_train, x_test, y_train, y_test = get_data(r'..\..\..\..\Sudoku.NeuralNetworkPVSM\Resources\sudoku.csv')
+    rmsprop = keras.optimizers.RMSprop(learning_rate=0.01)
+    model.compile(loss='sparse_categorical_crossentropy', optimizer=rmsprop)
 
-    model.fit(x_train, y_train, batch_size=32, epochs=10)
+    reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.1, patience=5, min_lr=0.00001)
+    early_stop = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
+    model.fit(x_train, y_train, batch_size=128, epochs=20, callbacks=[reduce_lr, early_stop])
     model.save(r'..\..\..\..\Sudoku.NeuralNetworkPVSM\Resources\model.keras')
     accuracy = test_accuracy(x_test[:100], y_test[:100])
     print("Accuracy:", accuracy)
