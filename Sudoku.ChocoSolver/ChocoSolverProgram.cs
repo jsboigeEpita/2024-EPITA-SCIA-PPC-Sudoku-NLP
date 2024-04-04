@@ -5,26 +5,29 @@ using Sudoku.Shared;
 
 namespace Sudoku.ChocoSolverEngine
 {
-    public class ChocoSolverMethod : ISudokuSolver
+    public class ChocoSolverMethod : PythonSolverBase
     {
-        public SudokuGrid Solve(SudokuGrid s)
+        public override Shared.SudokuGrid Solve(Shared.SudokuGrid s)
         {
-            Runtime.PythonDLL = "/root/.pyenv/versions/3.12.0/lib/libpython3.12.so";
-            PythonEngine.Initialize();
-
-            using (Py.GIL())
+            using (PyModule scope = Py.CreateScope())
             {
-                dynamic sys = Py.Import("sys");
-                string codeBasePath = AppDomain.CurrentDomain.BaseDirectory;
-                string resourcesPath = Path.Combine(codeBasePath, "Resources");
-                sys.path.append(resourcesPath);
+                // convert the Cells array object to a PyObject
+                PyObject pyCells = s.Cells.ToJaggedArray().ToPython();
 
-                dynamic solver = Py.Import("test");
+                // create a Python variable "instance"
+                scope.Set("instance", pyCells);
 
-                PyObject pyInitialGrid = ConvertToPythonList(s);
-                PyObject pySolvedGrid = solver.solve_sudoku(pyInitialGrid);
+                // run the Python script
+                string code = Resources.ChocoSolver_py;
+                scope.Exec(code);
 
-                return ConvertFromPythonList(pySolvedGrid);
+                //Retrieve solved Sudoku variable
+                var result = scope.Get("r");
+
+                //Convert back to C# object
+                var managedResult = result.As<int[][]>();
+                //var convertesdResult = managedResult.Select(objList => objList.Select(o => (int)o).ToArray()).ToArray();
+                return new Shared.SudokuGrid() { Cells = managedResult.To2D() };
             }
         }
 
