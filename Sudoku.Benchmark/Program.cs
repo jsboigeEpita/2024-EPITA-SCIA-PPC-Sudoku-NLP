@@ -1,10 +1,12 @@
 using System;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Running;
+using Microsoft.Extensions.Configuration;
 //using Humanizer;
 using Sudoku.Shared;
 
@@ -19,33 +21,49 @@ namespace Sudoku.Benchmark
         private static bool IsDebug = false;
 #endif
 
-
+	    static IConfiguration Configuration;
 
         static void Main(string[] args)
         {
 
             Console.WriteLine("Benchmarking GrilleSudoku Solvers");
 
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+
+            // Configuration Builder
+            var builder = new ConfigurationBuilder()
+	            .SetBasePath(Directory.GetCurrentDirectory())
+	            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+
+            Configuration = builder.Build();
+
+            PythonConfiguration pythonConfig = null;
+
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                Console.WriteLine("Customizing MacOs Python Install");
-
-                // Installation Python standard, version différente
-                //MacInstaller.PythonDirectoryName = "3.10";
-                //MacInstaller.LibFileName = "libpython3.10.dylib";
-
-
-                // Environnement dédié Anaconda
-                //MacInstaller.InstallPath = "/Users/francois.soulier/miniconda/envs";
-                //MacInstaller.PythonDirectoryName = "/Users/francois.soulier/miniconda/envs/SCIA/bin";
-                //MacInstaller.LibFileName = "/Users/francois.soulier/miniconda/envs/SCIA/lib/libpython3.10.dylib";
-
-                //MacInstaller.InstallPath = "/Users/jesse/opt/anaconda3/envs";
-                //MacInstaller.PythonDirectoryName = "Sudoku";
-                //MacInstaller.LibFileName = "libpython3.7m.dylib";
+				pythonConfig = Configuration.GetSection("PythonConfig:OSX").Get<PythonConfiguration>();
 
             }
+			else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD))
+			{
+				pythonConfig = Configuration.GetSection("PythonConfig:Linux").Get<PythonConfiguration>();
+			}
 
+			if (pythonConfig != null)
+			{
+				Console.WriteLine("Customizing MacOs/Linux Python Install from appsettings.json file");
+				if (!string.IsNullOrEmpty(pythonConfig.InstallPath))
+				{
+					MacInstaller.InstallPath = pythonConfig.InstallPath;
+				}
+				if (!string.IsNullOrEmpty(pythonConfig.PythonDirectoryName))
+				{
+					MacInstaller.PythonDirectoryName = pythonConfig.PythonDirectoryName;
+				}
+				if (!string.IsNullOrEmpty(pythonConfig.LibFileName))
+				{
+					MacInstaller.LibFileName = pythonConfig.LibFileName;
+				}
+            }
 
             while (true)
             {

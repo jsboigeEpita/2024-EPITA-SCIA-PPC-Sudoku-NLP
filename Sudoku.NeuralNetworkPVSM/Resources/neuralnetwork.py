@@ -1,8 +1,16 @@
 import numpy as np
 import copy
 import keras
-from model import get_model
-from scripts.data_preprocess import get_data
+
+import os
+import sys
+
+current_directory = os.getcwd()
+print("The current working directory is:", current_directory)
+sys.path.append(current_directory)
+
+from ../../../../Sudoku.NeuralNetworkPVSM/Resources.model import get_model
+from ../../../../Sudoku.NeuralNetworkPVSM/Resources.scripts.data_preprocess import get_data
 
 import tensorflow as tf
 

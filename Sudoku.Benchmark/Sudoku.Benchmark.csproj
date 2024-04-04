@@ -10,12 +10,28 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.13.12" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Sudoku.NeuralNetworkPVSM\Sudoku.NeuralNetworkPVSM.csproj" />
+    <ProjectReference Include="..\Sudoku.Norvig\Sudoku.Norvig.csproj" />
+    <ProjectReference Include="..\Sudoku.DancingLinks\Sudoku.DancingLinks.csproj" />
+    <ProjectReference Include="..\Sudoku.ORTools\Sudoku.ORTools.csproj" />
+    <ProjectReference Include="..\Sudoku.DancingLinksAlgorithm\Sudoku.DancingLinksAlgorithm.csproj" />
     <ProjectReference Include="..\Sudoku.PSO\Sudoku.PSO.csproj" />
     <ProjectReference Include="..\Sudoku.Shared\Sudoku.Shared.csproj" />
     <ProjectReference Include="..\Sudoku.Backtracking\Sudoku.Backtracking.csproj" />
+    <ProjectReference Include="..\Sudoku.GraphColoration\Sudoku.GraphColoration.csproj" />
     <ProjectReference Include="..\Sudoku.Shared\Sudoku.Shared.csproj" />
+    <ProjectReference Include="..\Sudoku.Human\Sudoku.Human.csproj" />
+    <ProjectReference Include="..\Sudoku.GeneticAlg\Sudoku.GeneticAlg.csproj" />
+    <ProjectReference Include="..\Sudoku.Proba\Sudoku.Proba.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

@@ -1,12 +1,12 @@
 ﻿using Python.Runtime;
 using Sudoku.Shared;
 
-namespace Sudoku.NeuralNetworkPVSM
+namespace Sudoku.GraphColoration
 {
-    
-    public class NeuralNetworkPythonSolver : PythonSolverBase
+    public class GraphColorationSolver : PythonSolverBase
+
     {
-        public override SudokuGrid Solve(SudokuGrid s)
+        public override Shared.SudokuGrid Solve(Shared.SudokuGrid s)
         {
             //System.Diagnostics.Debugger.Break();
 
@@ -14,7 +14,6 @@ namespace Sudoku.NeuralNetworkPVSM
             //using (Py.GIL())
             //{
             // create a Python scope
-            
             using (PyModule scope = Py.CreateScope())
             {
 
@@ -23,17 +22,14 @@ namespace Sudoku.NeuralNetworkPVSM
 
                 // Convertissez le tableau .NET en tableau NumPy
                 var pyCells = AsNumpyArray(s.Cells, scope);
-                
-                // PyObject pyCells = s.Cells.ToJaggedArray().ToPython();
 
                 // create a Python variable "instance"
                 scope.Set("instance", pyCells);
 
                 // run the Python script
-             
-                string code = Resources.neuralnetwork_py;
+                string code = Resources.GraphColoration_py;
                 scope.Exec(code);
-
+				
                 PyObject result = scope.Get("result");
 
                 // Convertissez le résultat NumPy en tableau .NET
@@ -44,12 +40,11 @@ namespace Sudoku.NeuralNetworkPVSM
             //}
 
         }
-
+        
         protected override void InitializePythonComponents()
         {
             //declare your pip packages here
             InstallPipModule("numpy");
-            InstallPipModule("tensorflow");
             base.InitializePythonComponents();
         }
     }
