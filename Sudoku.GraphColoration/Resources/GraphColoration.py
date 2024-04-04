@@ -87,15 +87,17 @@ def sudoku_to_graph(grid):
     return graph, pre_coloring
 
 
-def get_saturated_degree(graph, node):
-    res = 0
+def get_already_seen_colors(graph, node):
     already_seen_colors = []
     for neighbor in graph[node]:
         neighbor_color = graph.nodes[neighbor]["color"]
         if neighbor_color != 0 and neighbor_color not in already_seen_colors:
             already_seen_colors.append(neighbor_color)
-            res += 1
-    return res
+    return already_seen_colors
+
+
+def get_saturated_degree(graph, node):
+    return len(get_already_seen_colors(graph, node))
 
 
 def get_most_used_remaining(graph, already_seen_colors):
@@ -123,41 +125,52 @@ def get_most_used_remaining(graph, already_seen_colors):
     return max_color
 
 
-def assign_color(graph, node, color_number):
-    already_seen_colors = []
-    for neighbor in graph[node]:
-        neighbor_color = graph.nodes[neighbor]["color"]
-        if neighbor_color != 0 and neighbor_color not in already_seen_colors:
-            already_seen_colors.append(neighbor_color)
+def choose_color(graph, color_number, already_seen_colors):
     if len(already_seen_colors) == color_number:
         color_number += 1
-        color = color_number
+        return color_number
     else:
-        color = get_most_used_remaining(graph, already_seen_colors)
-    #print("Assigning color", color, "to node", node)
-    graph.nodes[node]["color"] = color
-    return color_number
+        return get_most_used_remaining(graph, already_seen_colors)
+
+
+def color_graph_rec(graph, color_number, colored_node_number, node_number):
+    if node_number == colored_node_number:
+        return True
+    max_saturated_degree = -1
+    max_index = -1
+    for node in graph.nodes:
+        if graph.nodes[node]['color'] != 0:
+            continue
+        saturated_degree = get_saturated_degree(graph, node)
+        if saturated_degree > max_saturated_degree:
+            max_saturated_degree = saturated_degree
+            max_index = node
+        elif saturated_degree == max_saturated_degree:
+            if len(graph[node]) > len(graph[max_index]):
+                max_index = node
+    already_seen_colors = get_already_seen_colors(graph, max_index)
+    sudoku_solved = False
+    #print(color_number, " colors were used before node ", max_index,
+    #      ", and its neighbours have the colors ", already_seen_colors)
+    while not sudoku_solved and len(already_seen_colors) <= color_number:
+        color_choice = choose_color(graph, color_number, already_seen_colors)
+        if color_choice > 9:
+            #print("No color available for node ", max_index)
+            return False
+        new_color_number = color_number
+        if color_choice > color_number:
+            new_color_number += 1
+        #print("Assigning color", color_choice, "to node", max_index)
+        graph.nodes[max_index]["color"] = color_choice
+        sudoku_solved = color_graph_rec(graph, new_color_number, colored_node_number + 1, node_number)
+        if not sudoku_solved:
+            graph.nodes[max_index]["color"] = 0
+            already_seen_colors.append(color_choice)
+    return sudoku_solved
 
 
 def color_graph(graph):
-    color_number = 1
-    node_number = len(graph.nodes)
-    colored_node_number = 0
-    while colored_node_number < node_number:
-        max_saturated_degree = -1
-        max_index = -1
-        for node in graph.nodes:
-            if graph.nodes[node]['color'] != 0:
-                continue
-            saturated_degree = get_saturated_degree(graph, node)
-            if saturated_degree > max_saturated_degree:
-                max_saturated_degree = saturated_degree
-                max_index = node
-            elif saturated_degree == max_saturated_degree:
-                if len(graph[node]) > len(graph[max_index]):
-                    max_index = node
-        color_number = assign_color(graph, max_index, color_number)
-        colored_node_number += 1
+    color_graph_rec(graph, 1, 0, len(graph.nodes))
 
 
 def graph_to_sudoku(graph, pre_coloring, grid):
@@ -193,7 +206,6 @@ def solve_sudoku(grid):
     return graph_to_sudoku(graph, pre_coloring, grid)
 
 
-
 # Définir `instance` uniquement si non déjà défini par PythonNET
 if 'instance' not in locals():
     instance = np.array([
@@ -211,10 +223,9 @@ if 'instance' not in locals():
 start = default_timer()
 # Exécuter la résolution de Sudoku
 if solve_sudoku(instance):
-    # print("Sudoku résolu par backtracking avec succès.")
+    print("Sudoku résolu par graph coloring avec succès.")
     result = instance  # `result` sera utilisé pour récupérer la grille résolue depuis C#
 else:
-    print(instance)
     print("Aucune solution trouvée.")
 execution = default_timer() - start
 print("Le temps de résolution est de : ", execution * 1000, " ms")
