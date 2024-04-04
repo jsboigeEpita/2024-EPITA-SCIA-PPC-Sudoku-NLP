@@ -16,7 +16,6 @@ namespace SudokuZ3
 {
     public class Z3 : ISudokuSolver
     {
-
         public SudokuGrid Solve(SudokuGrid ss)
         {
             Context ctx = new Context(new Dictionary<string, string>() { { "model", "true" } });
@@ -107,7 +106,7 @@ namespace SudokuZ3
             Solver s = ctx.MkSolver();
             s.Assert(sudoku_c);
             s.Assert(instance_c);
-var res = new SudokuGrid();
+            var res = new SudokuGrid();
             if (s.Check() == Status.SATISFIABLE)
             {
                 Model m = s.Model;
@@ -134,8 +133,6 @@ var res = new SudokuGrid();
             }
             
             return res;
-        
-
         }
 
     }
