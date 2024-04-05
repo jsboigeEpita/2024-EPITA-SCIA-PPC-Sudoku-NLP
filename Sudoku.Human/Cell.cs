@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 #if DEBUG
 using System.Diagnostics;
+using System.Drawing;
 #endif
 
 namespace Sudoku.Human;
@@ -40,6 +41,24 @@ public sealed class Cell
         Point = point;
 
         CandI = new Candidates(true);
+        VisibleI = new Cell[NUM_VISIBLE_CELLS]; // Will be init in InitVisibleCells
+        VisibleCells = new ReadOnlyCollection<Cell>(VisibleI);
+
+        // Will be set in InitRegions
+        Block = null!;
+        Column = null!;
+        Row = null!;
+    }
+
+    internal Cell(Puzzle puzzle, Cell cell)
+    {
+        Puzzle = puzzle;
+
+        OriginalValue = cell.OriginalValue;
+        Value = cell.Value;
+        Point = new SPoint(cell.Point);
+
+        CandI = new Candidates(cell.Candidates);
         VisibleI = new Cell[NUM_VISIBLE_CELLS]; // Will be init in InitVisibleCells
         VisibleCells = new ReadOnlyCollection<Cell>(VisibleI);
 
