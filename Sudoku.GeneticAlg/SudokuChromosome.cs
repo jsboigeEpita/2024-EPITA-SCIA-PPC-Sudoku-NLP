@@ -10,7 +10,7 @@ namespace Sudoku.GeneticAlg;
 public class SudokuChromosome : ChromosomeBase
 {
     private readonly SudokuGrid intialSudoku;
-    private readonly Dictionary<int, List<int>> mask;
+    public Dictionary<int, List<int>> mask;
     private static readonly Random Random = new Random();
 
     int newCellValue = -1;
