@@ -85,6 +85,7 @@ public class SudokuChromosome : ChromosomeBase
             } while (NewGene.Contains(newCellValue));
 
 
+            NewGene[cellPositionOfNewGene] = newCellValue;
             removeValue(tmp_dict, newCellValue, cellPositionOfNewGene);
 
             // We edited the mask -> we might have some obvious values that poped up after the edit
