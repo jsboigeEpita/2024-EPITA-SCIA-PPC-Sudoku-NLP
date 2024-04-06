@@ -21,7 +21,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku.Z3", "Sudoku.Z3\Sudoku.Z3.csproj", "{737F838C-D505-4363-A005-E017A25D5DC1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku.Norvig", "Sudoku.Norvig\Sudoku.Norvig.csproj", "{E7518E5A-F1FB-4C83-BAC2-BDAC016D73B1}"
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku.ORTools", "Sudoku.ORTools\Sudoku.ORTools.csproj", "{B7F4440B-CA36-496F-81E3-24852EC85ED1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku.GraphColoration", "Sudoku.GraphColoration\Sudoku.GraphColoration.csproj", "{ECD5379C-F836-4F74-8D9A-5ABA09EF6B62}"
 EndProject
@@ -34,6 +33,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku.GeneticAlg", "Sudoku.GeneticAlg\Sudoku.GeneticAlg.csproj", "{ECE36C85-7FFF-4B1F-BF73-ADB280875E97}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku.Proba", "Sudoku.Proba\Sudoku.Proba.csproj", "{1A8C7D67-ABB9-4054-A94C-661C193FF7E7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku.DeepLearning", "Sudoku.DeepLearning\Sudoku.DeepLearning.csproj", "{D88FB10F-103B-4AD1-B3C3-727C41CC6868}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -93,6 +94,10 @@ Global
 		{1A8C7D67-ABB9-4054-A94C-661C193FF7E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A8C7D67-ABB9-4054-A94C-661C193FF7E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A8C7D67-ABB9-4054-A94C-661C193FF7E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D88FB10F-103B-4AD1-B3C3-727C41CC6868}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D88FB10F-103B-4AD1-B3C3-727C41CC6868}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D88FB10F-103B-4AD1-B3C3-727C41CC6868}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D88FB10F-103B-4AD1-B3C3-727C41CC6868}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
