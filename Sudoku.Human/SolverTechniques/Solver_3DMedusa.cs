@@ -120,9 +120,7 @@ partial class Solver
                 Cell cell_colored = filtered_unit[0];
                 Cell cell_uncolored = filtered_unit[1];
                 if (!cell_colored.colors.ContainsKey(candi))
-                {
                     (cell_uncolored, cell_colored) = (cell_colored, cell_uncolored);
-                }
                 if (cell_uncolored.colors.ContainsKey(candi) || !cell_colored.colors.ContainsKey(candi))
                     continue;
                 cell_uncolored.colors[candi] = ~cell_colored.colors[candi];
@@ -210,9 +208,9 @@ partial class Solver
     def medusa_check_unit_contradictions(sudoku, print_start, verbose):
         for unit_type, i, d in product(Sudoku.UNIT_TYPES, range(9), Cell.VALUES):
             unit = sudoku.unit(unit_type, i)
-            colors = [c.dcs[d] for c in unit if d in c.dcs]
+            colors = [c.dcs[d] for c in unit if d in c.dcs}
             dup_color = Color.NEITHER
-            if colors.count(Color.RED) > 1:
+            if colors.count(Color.RED) > 1://s
                 dup_color = Color.RED
             elif colors.count(Color.BLUE) > 1:
                 dup_color = Color.BLUE
@@ -229,10 +227,33 @@ partial class Solver
             return medusa_eliminate_color(sudoku, dup_color, verbose)
         return False
     */
-
-    private bool medusa_check_unit_contradictions()
+    private bool apply_check_unit_contrad(Region[] unit_type)
     {
+        for (int i = 0; i < 9; i++)
+        {
+            for (int d = 1; d < 10; d++) //cell values
+            {
+                Region unit = unit_type[i];
+                List<Color> lcolors = [];
+                foreach (Cell c in unit) if (c.colors.ContainsKey(d))
+                        lcolors.Add(c.colors[d]);
+                Color dup_color = Color.NEITHER;
+                if (lcolors.Count(x => x == Color.RED) > 1)
+                    dup_color = Color.RED;
+                if (lcolors.Count(x => x == Color.BLUE) > 1)
+                    dup_color = Color.BLUE;
+                else
+                    continue;
+                return medusa_eliminate_color(dup_color);
+            }
+        }
         return false;
+    }
+
+
+    private bool medusa_check_unit_contradictions(Puzzle puzzle)
+    {
+        return apply_check_unit_contrad(puzzle.BlocksI) || apply_check_unit_contrad(puzzle.ColumnsI) || apply_check_unit_contrad(puzzle.RowsI);
     }
 
     /*
