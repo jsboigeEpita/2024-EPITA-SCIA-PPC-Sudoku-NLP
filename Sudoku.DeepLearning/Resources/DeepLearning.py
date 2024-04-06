@@ -1,8 +1,13 @@
 import numpy as np
 import tensorflow as tf
 import copy
+import os
 
-model = tf.keras.models.load_model('/Users/romain/DeepLearningGridSolver/Sudoku.DeepLearning/Resources/tf1-1.h5')
+path = os.getcwd()
+path = path[:path.rfind('/')]
+path += '/Sudoku.DeepLearning/Resources/tf1-1.h5'
+
+model = tf.keras.models.load_model(path)
 
 def solve_sudoku_with_nn(model, puzzle):
     # Preprocess the input Sudoku puzzle
@@ -25,7 +30,7 @@ def solve_sudoku_with_nn(model, puzzle):
         val = pred[x][y]
         initial_board[x][y] = val
         initial_board = (initial_board / 9) - 0.5
-        print_sudoku_grid(initial_board)
+        # print_sudoku_grid(initial_board)
 
     # Convert the solved puzzle back to a jagged array
     solved_puzzle = initial_board.astype(int).tolist()

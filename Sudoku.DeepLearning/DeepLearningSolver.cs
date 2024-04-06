@@ -60,14 +60,8 @@ namespace Sudoku.DeepLearning
 		protected override void InitializePythonComponents()
 		{
 			//declare your pip packages here
-			//InstallPipModule("numpy");
-			// InstallPipModule("numpy");
-			// InstallPipModule("random");
-			// InstallPipModule("torch");
-			// InstallPipModule("torchvision");
-			// InstallPipModule("sklearn");
-			// InstallPipModule("matplotlib");
-			// InstallPipModule("seaborn");
+			InstallPipModule("numpy");
+			InstallPipModule("tensorflow");
 			base.InitializePythonComponents();
 		}
 
