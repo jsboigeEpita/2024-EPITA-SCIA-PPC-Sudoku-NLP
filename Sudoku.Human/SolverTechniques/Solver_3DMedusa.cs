@@ -244,6 +244,19 @@ partial class Solver
                     dup_color = Color.BLUE;
                 else
                     continue;
+                //debug
+                m3d_medusa_print_chain_start();
+                Console.WriteLine(" - Find a unit with multiple cells with the same candidate in the same color");
+                List<String> dup_cell_names = [];
+                foreach (Cell c in unit)
+                {
+                    Color test;
+                    c.colors.TryGetValue(d, out test);
+                    if (test == dup_color)
+                        dup_cell_names.Add(c.Point.ToString());
+                }
+                Console.WriteLine($" - unit type : {unit_type} index {i} has multiple cells ({dup_cell_names}) with candidate {d} colored {dup_color}\n");
+                //end debug
                 return medusa_eliminate_color(dup_color);
             }
         }
@@ -343,7 +356,7 @@ partial class Solver
                 continue
             d_colored = list(cell.dcs.keys())[0]
             d_color = cell.dcs[d_colored]
-            seen = sudoku.seen_from(cell.x, cell.y)
+            seen = sudoku.seen_from(cell.x, cell.y) //hashset cells
             for d in cell.ds - {d_colored}:
                 if not any(c for c in seen if c.dcs.get(d, Color.NEITHER) == ~d_color):
                     continue
@@ -362,6 +375,43 @@ partial class Solver
     private bool medusa_check_partial_cells()
     {
         bool changed = false;
+        Span<int> candi = stackalloc int[1];
+        foreach (Cell cell in Puzzle.GetBoard())
+        {
+            if (cell.colors.Count != 1)
+                continue;
+            List<int> keys_list = [];
+            foreach (KeyValuePair<int, Color> el in cell.colors)
+            {
+                keys_list.Add(el.Key);
+            }
+            int d_colored = keys_list[0];
+            Color d_color = cell.colors[d_colored];
+            candi = cell.Candidates.Except(d_colored, candi);
+            foreach (int d in candi)
+            {
+                Cell[] seen_if = [];
+                foreach (Cell c_seen in cell.VisibleCells)
+                {
+                    Color test;
+                    cell.colors.TryGetValue(d, out test);
+                    if (test == ~d_color)
+                        seen_if.Append(c_seen);
+                }
+                if (seen_if.Length == 0)
+                    continue;
+                bool cell_changed = cell.exclude(d);
+                //debug
+                if (!changed)
+                {
+                    m3d_medusa_print_chain_start();
+                    Console.WriteLine(" - Find cells with a candidate in one color that can see it in the other color");
+                }
+                Console.WriteLine($"    * Cell {cell.ToString()} can only be {cell.Value}, since its {d_colored} is {d_color} and it can see {d} in {~d_color}");
+                //end debug
+                changed |= cell_changed;
+            }
+        }
         return changed;
     }
 
