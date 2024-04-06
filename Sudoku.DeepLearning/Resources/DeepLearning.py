@@ -5,7 +5,7 @@ import os
 
 path = os.getcwd()
 path = path[:path.rfind('/')]
-path += '/Sudoku.DeepLearning/Resources/tf1-1.h5'
+path += '/Sudoku.DeepLearning/Resources/cnn1.h5'
 
 model = tf.keras.models.load_model(path)
 
