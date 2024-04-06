@@ -3,9 +3,6 @@ using System.Runtime.InteropServices;
 using Sudoku.Shared;
 using DlxLib;
 
-namespace Sudoku.GeneticAlgorithm;
-
-
 public class DancingLinkSolver : ISudokuSolver
 {
     /// <summary>
@@ -78,24 +75,18 @@ public class DancingLinkSolver : ISudokuSolver
         var col = internalRow.Item2;
         var value = internalRow.Item3;
         var box = RowColToBox(row, col);
-
-        // Check if row, col, and value are within valid ranges
-        if (row < 0 || row >= 9 || col < 0 || col >= 9 || value < 1 || value > 9)
-        {
-            throw new ArgumentOutOfRangeException("Invalid row, col, or value.");
-        }
+        
 
         var result = new int[4 * 9 * 9]; // Increase array size to accommodate all possible positions
 
         // Encode position, row, column, and box values
-        result[row * 9 + col] = 1; // Position value
+        result[row * 9 + col] = 1; 
         result[9 * 9 + row * 9 + value - 1] = 1; // Row value
         result[2 * 9 * 9 + col * 9 + value - 1] = 1; // Column value
         result[3 * 9 * 9 + box * 9 + value - 1] = 1; // Box value
 
         return result.ToImmutableList();
     }
-
 
     private static int RowColToBox(int row, int col)
     {
