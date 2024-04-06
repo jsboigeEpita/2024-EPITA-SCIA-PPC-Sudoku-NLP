@@ -1,13 +1,19 @@
 using System.Dynamic;
+using System.Globalization;
+using System.Security;
 
 namespace Sudoku.Human;
 
-partial class Solver {
+partial class Solver
+{
     private bool Medusas()
     {
-        for (int x = 0; x < 9; x++) {
-            for (int y = 0; y < 9; y++) {
-                if(solve_3d_medusas_from(x,y)) {
+        for (int x = 0; x < 9; x++)
+        {
+            for (int y = 0; y < 9; y++)
+            {
+                if (solve_3d_medusas_from(x, y))
+                {
                     return true;
                 }
             }
@@ -41,18 +47,23 @@ partial class Solver {
         return changed
     */
 
-    private bool solve_3d_medusas_from(int x, int y) {
+    private bool solve_3d_medusas_from(int x, int y)
+    {
         medusa_color_bi_value_cells();
         return false;
     }
 
-    private bool medusa_color_bi_value_cells() {
+    private bool medusa_color_bi_value_cells()
+    {
         bool colored = false;
-        Puzzle.GetBoard().ToList().ForEach(c => {
+        Puzzle.GetBoard().ToList().ForEach(c =>
+        {
             int d_colored = 0;
             int d_uncolored = 0;
-            if(c.colors.Count == 1 && c.Candidates.TryGetCount2(out d_colored, out d_uncolored)) {
-                if (c.colors.ContainsKey(d_uncolored)) {
+            if (c.colors.Count == 1 && c.Candidates.TryGetCount2(out d_colored, out d_uncolored))
+            {
+                if (c.colors.ContainsKey(d_uncolored))
+                {
                     (d_colored, d_uncolored) = (d_uncolored, d_colored);
                 }
                 c.colors.Add(d_uncolored, ~c.colors[d_colored]);
@@ -67,8 +78,8 @@ partial class Solver {
         colored = False
         for unit_type, i in product(Sudoku.UNIT_TYPES, range(9)):
             unit = sudoku.unit(unit_type, i)
-            unsolved_ds = union(c.ds for c in unit if not c.solved()) c.solved = c.candidates.count == 1
-            for d in unsolved_ds:
+            unsolved_ds = union(c.ds for c in unit if not c.solved()) //c.solved = c.candidates.count == 1
+            for d in unsolved_ds: //d : Candidats
                 filtered_unit = [c for c in unit if not c.solved() and d in c.ds]
                 if len(filtered_unit) != 2:
                     continue
@@ -82,10 +93,49 @@ partial class Solver {
         return colored
     */
 
-    private bool medusa_color_bi_location_units() {
-        bool colored = false;
+    private bool apply_bi_loc(Region[] unit_type)
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            Region unit = unit_type[i];
+            HashSet<int> unsolved_ds = new HashSet<int>();
+            foreach (Cell cell in unit) if (!(cell.Candidates.Count <= 1))
+                {
+                    for (int el = 1; el < 10; el++)
+                    {
+                        if (!unsolved_ds.Contains(el))
+                            unsolved_ds.Add(el);
+                    }
+                }
+            foreach (int candi in unsolved_ds)
+            {
+                List<Cell> filtered_unit = [];
+                foreach (Cell cell in unit) if (!(cell.Candidates.Count <= 1 && cell.CandI.IsCandidate(candi)))
+                    {
+                        if (!filtered_unit.Contains(cell))
+                            filtered_unit.Add(cell);
+                    }
+                if (filtered_unit.Count != 2)
+                    continue;
+                Cell cell_colored = filtered_unit[0];
+                Cell cell_uncolored = filtered_unit[1];
+                if (!cell_colored.colors.ContainsKey(candi))
+                {
+                    (cell_uncolored, cell_colored) = (cell_colored, cell_uncolored);
+                }
+                if (cell_uncolored.colors.ContainsKey(candi) || !cell_colored.colors.ContainsKey(candi))
+                    continue;
+                cell_uncolored.colors[candi] = ~cell_colored.colors[candi];
+                return true;
+            }
+        }
+        return false;
+    }
 
-        return colored;
+
+    private bool medusa_color_bi_location_units()
+    {
+        return apply_bi_loc(Puzzle.BlocksI) || apply_bi_loc(Puzzle.ColumnsI) || apply_bi_loc(Puzzle.RowsI);
     }
 
     /*
@@ -104,7 +154,8 @@ partial class Solver {
         return changed
     */
 
-    private bool medusa_eliminate_color(Color color) {
+    private bool medusa_eliminate_color(Color color)
+    {
         bool changed = false;
         return changed;
     }
@@ -130,19 +181,24 @@ partial class Solver {
         return False
     */
 
-    private bool medusa_check_cell_contradictions() {
+    private bool medusa_check_cell_contradictions()
+    {
         List<Cell> allcells = Puzzle.GetBoard().ToList();
-        
-        for(int i = 0; i < allcells.Count; i++) {
+
+        for (int i = 0; i < allcells.Count; i++)
+        {
             Cell c = allcells[i];
             Color dup_color = Color.NEITHER;
-            if(c.colors.Count(kvp => kvp.Value == Color.RED) > 1) {
+            if (c.colors.Count(kvp => kvp.Value == Color.RED) > 1)
+            {
                 dup_color = Color.RED;
             }
-            else if(c.colors.Count(kvp => kvp.Value == Color.BLUE) > 1) {
+            else if (c.colors.Count(kvp => kvp.Value == Color.BLUE) > 1)
+            {
                 dup_color = Color.BLUE;
             }
-            else {
+            else
+            {
                 continue;
             }
             return medusa_eliminate_color(dup_color);
@@ -174,7 +230,8 @@ partial class Solver {
         return False
     */
 
-    private bool medusa_check_unit_contradictions() {
+    private bool medusa_check_unit_contradictions()
+    {
         return false;
     }
 
@@ -201,7 +258,8 @@ partial class Solver {
         return False
     */
 
-    private bool medusa_check_seen_contradictions() {
+    private bool medusa_check_seen_contradictions()
+    {
         return false;
     }
 
@@ -222,7 +280,8 @@ partial class Solver {
         return changed
     */
 
-    private bool medusa_check_full_cells() {
+    private bool medusa_check_full_cells()
+    {
         bool changed = false;
         return changed;
     }
@@ -249,7 +308,8 @@ partial class Solver {
         return changed
     */
 
-    private bool medusa_check_emptied_cells() {
+    private bool medusa_check_emptied_cells()
+    {
         bool changed = false;
         return changed;
     }
@@ -278,7 +338,8 @@ partial class Solver {
         return changed
     */
 
-    private bool medusa_check_partial_cells() {
+    private bool medusa_check_partial_cells()
+    {
         bool changed = false;
         return changed;
     }
