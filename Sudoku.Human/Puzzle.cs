@@ -183,4 +183,8 @@ public sealed class Puzzle
             }
         }
     }
+
+    public Cell[] GetBoard() {
+        return _board;
+    }
 }
