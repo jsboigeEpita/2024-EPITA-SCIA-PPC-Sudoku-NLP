@@ -118,6 +118,7 @@ public sealed class Cell
         }
         return changed;
     }
+
     internal static bool ChangeCandidates(IEnumerable<Cell> cells, IEnumerable<int> digits, bool remove = true)
     {
         bool changed = false;
@@ -207,5 +208,11 @@ public sealed class Cell
             }
         }
         return cache.Slice(0, counter);
+    }
+
+    public bool Exclude(int candidate) {
+        Span<int> commonCandidates = stackalloc int[1];
+		commonCandidates = CandI.Except(candidate, commonCandidates);
+        return CandI.Set(commonCandidates, false);
     }
 }
