@@ -38,10 +38,14 @@ namespace Sudoku.Shared
 		protected static async Task InstallPythonComponentsAsync()
 		{
 
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-
                 await InstallMac();
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                string pythonDll = "/usr/lib/x86_64-linux-gnu/libpython3.10.so.1.0";
+                Runtime.PythonDLL = pythonDll;
             }
             else
             {
@@ -167,6 +171,7 @@ namespace Sudoku.Shared
 
 
             Runtime.PythonDLL = "python311.dll";
+
             Python.Deployment.Installer.Source = new Installer.DownloadInstallationSource()
             {
                 DownloadUrl = @"https://www.python.org/ftp/python/3.11.2/python-3.11.2-embed-amd64.zip",
@@ -189,7 +194,7 @@ namespace Sudoku.Shared
 
         protected virtual void InitializePythonComponents()
         {
-
+            Console.WriteLine(Runtime.PythonDLL);
 
             PythonEngine.Initialize();
             //dynamic sys = PythonEngine.ImportModule("sys");
