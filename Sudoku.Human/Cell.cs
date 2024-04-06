@@ -210,17 +210,11 @@ public sealed class Cell
         return cache.Slice(0, counter);
     }
 
-    public bool Exclude(int candidate) {
-        Span<int> commonCandidates = stackalloc int[1];
-		commonCandidates = CandI.Except(candidate, commonCandidates);
-        return CandI.Set(commonCandidates, false);
-    }
-
     public bool include_only(List<int> keys) {
         Candidates c =  new Candidates(keys);
 
-        Span<int> newCandidates = stackalloc int[1];
+        Span<int> newCandidates = stackalloc int[9];
         newCandidates = CandI.Intersect(c, newCandidates);
-        return CandI.Set(newCandidates, false);
+        return CandI.Set(newCandidates, true);
     }
 }
