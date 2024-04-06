@@ -5,28 +5,41 @@ namespace Sudoku.Z3
 {
     public class Z3Solver : ISudokuSolver
     {
-        private static readonly int Size = 9;
+     private static readonly int Size = 9;
         private static readonly int BlockSize = 3;
+        private static Context ctx;
+        private static Solver solver;
+        private static BitVecExpr[][] X;
 
-        private readonly Context ctx = new(new Dictionary<string, string> { { "model", "true" } });
+        static Z3Solver()
+        {
+            ctx = new Context(new Dictionary<string, string> { { "model", "true" } });
+            solver = ctx.MkSolver();
+            X = CreateEvalMatrix();
+        }
 
         public SudokuGrid Solve(SudokuGrid s)
         {
-            var X = CreateEvalMatrix();
-            var constraints = GenerateConstraints(X);
+            ResetSolver();
 
-            AddSudokuInstanceConstraints(s, X, ref constraints);
+            var constraints = GenerateConstraints();
 
-            using var solver = ctx.MkSolver();
+            AddSudokuInstanceConstraints(s, ref constraints);
+
             solver.Assert(constraints.ToArray());
 
             if (solver.Check() != Status.SATISFIABLE)
                 return s;
 
-            return ExtractSolution(solver, X);
+            return ExtractSolution();
         }
 
-        private BitVecExpr[][] CreateEvalMatrix()
+        private static void ResetSolver()
+        {
+            solver.Reset();
+        }
+
+        private static BitVecExpr[][] CreateEvalMatrix()
         {
             return Enumerable.Range(0, Size)
                              .Select(i => Enumerable.Range(0, Size)
@@ -35,20 +48,18 @@ namespace Sudoku.Z3
                              .ToArray();
         }
 
-        private List<BoolExpr> GenerateConstraints(BitVecExpr[][] X)
+        private static List<BoolExpr> GenerateConstraints()
         {
-            var constraints = new List<BoolExpr>
+            return new List<BoolExpr>
             {
-                GenerateCellConstraints(X),
-                GenerateRowConstraints(X),
-                GenerateColumnConstraints(X),
-                GenerateBlockConstraints(X)
+                GenerateCellConstraints(),
+                GenerateRowConstraints(),
+                GenerateColumnConstraints(),
+                GenerateBlockConstraints()
             };
-
-            return constraints;
         }
 
-        private BoolExpr GenerateCellConstraints(BitVecExpr[][] X)
+        private static BoolExpr GenerateCellConstraints()
         {
             var one = ctx.MkBV(1, 4);
             var nine = ctx.MkBV(9, 4);
@@ -58,19 +69,19 @@ namespace Sudoku.Z3
             ).ToArray());
         }
 
-        private BoolExpr GenerateRowConstraints(BitVecExpr[][] X)
+        private static BoolExpr GenerateRowConstraints()
         {
             return ctx.MkAnd(X.Select(row => ctx.MkDistinct(row)).ToArray());
         }
 
-        private BoolExpr GenerateColumnConstraints(BitVecExpr[][] X)
+        private static BoolExpr GenerateColumnConstraints()
         {
             return ctx.MkAnd(Enumerable.Range(0, Size).Select(j =>
                 ctx.MkDistinct(Enumerable.Range(0, Size).Select(i => X[i][j]).ToArray())
             ).ToArray());
         }
 
-        private BoolExpr GenerateBlockConstraints(BitVecExpr[][] X)
+        private static BoolExpr GenerateBlockConstraints()
         {
             return ctx.MkAnd(Enumerable.Range(0, BlockSize).SelectMany(i =>
                 Enumerable.Range(0, BlockSize).Select(j =>
@@ -81,7 +92,7 @@ namespace Sudoku.Z3
             ).ToArray());
         }
 
-        private void AddSudokuInstanceConstraints(SudokuGrid s, BitVecExpr[][] X, ref List<BoolExpr> constraints)
+        private static void AddSudokuInstanceConstraints(SudokuGrid s, ref List<BoolExpr> constraints)
         {
             for (int i = 0; i < Size; i++)
                 for (int j = 0; j < Size; j++)
@@ -89,7 +100,7 @@ namespace Sudoku.Z3
                         constraints.Add(ctx.MkEq(X[i][j], ctx.MkBV(s.Cells[i, j], 4)));
         }
 
-        private SudokuGrid ExtractSolution(Solver solver, BitVecExpr[][] X)
+        private static SudokuGrid ExtractSolution()
         {
             var sudokuGrid = new SudokuGrid();
 
