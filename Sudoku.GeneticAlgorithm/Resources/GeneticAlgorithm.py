@@ -52,7 +52,7 @@ def solveSudoku(instance):
                 problem += choices[r][c][instance[r][c]] == 1
     
     # Résoudre le problème
-    problem.solve(pulp.PULP_CBC_CMD(msg=False))
+    problem.solve(pulp.CHOCO_CMD(msg=False))
     
     # Construire la solution
     solution = [[0 for _ in range(N)] for _ in range(N)]
