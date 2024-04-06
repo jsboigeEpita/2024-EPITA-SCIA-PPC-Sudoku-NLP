@@ -103,9 +103,7 @@ partial class Solver {
                 Cell cell_colored = filtered_unit[0];
                 Cell cell_uncolored = filtered_unit[1];
                 if (!cell_colored.colors.ContainsKey(candi))
-                {
                     (cell_uncolored, cell_colored) = (cell_colored, cell_uncolored);
-                }
                 if (cell_uncolored.colors.ContainsKey(candi) || !cell_colored.colors.ContainsKey(candi))
                     continue;
                 cell_uncolored.colors[candi] = ~cell_colored.colors[candi];
@@ -180,9 +178,9 @@ partial class Solver {
     def medusa_check_unit_contradictions(sudoku, print_start, verbose):
         for unit_type, i, d in product(Sudoku.UNIT_TYPES, range(9), Cell.VALUES):
             unit = sudoku.unit(unit_type, i)
-            colors = [c.dcs[d] for c in unit if d in c.dcs]
+            colors = [c.dcs[d] for c in unit if d in c.dcs}
             dup_color = Color.NEITHER
-            if colors.count(Color.RED) > 1:
+            if colors.count(Color.RED) > 1://s
                 dup_color = Color.RED
             elif colors.count(Color.BLUE) > 1:
                 dup_color = Color.BLUE
@@ -199,10 +197,45 @@ partial class Solver {
             return medusa_eliminate_color(sudoku, dup_color, verbose)
         return False
     */
-
-    private bool medusa_check_unit_contradictions()
+    private bool apply_check_unit_contrad(Region[] unit_type)
     {
+        for (int i = 0; i < 9; i++)
+        {
+            for (int d = 1; d < 10; d++) //cell values
+            {
+                Region unit = unit_type[i];
+                List<Color> lcolors = [];
+                foreach (Cell c in unit) if (c.colors.ContainsKey(d))
+                        lcolors.Add(c.colors[d]);
+                Color dup_color = Color.NEITHER;
+                if (lcolors.Count(x => x == Color.RED) > 1)
+                    dup_color = Color.RED;
+                if (lcolors.Count(x => x == Color.BLUE) > 1)
+                    dup_color = Color.BLUE;
+                else
+                    continue;
+                //debug
+                m3d_medusa_print_chain_start();
+                Console.WriteLine(" - Find a unit with multiple cells with the same candidate in the same color");
+                List<String> dup_cell_names = [];
+                foreach (Cell c in unit)
+                {
+                    Color test;
+                    c.colors.TryGetValue(d, out test);
+                    if (test == dup_color)
+                        dup_cell_names.Add(c.Point.ToString());
+                }
+                Console.WriteLine($" - unit type : {unit_type} index {i} has multiple cells ({dup_cell_names}) with candidate {d} colored {dup_color}\n");
+                //end debug
+                return medusa_eliminate_color(dup_color);
+            }
+        }
         return false;
+    }
+
+    private bool medusa_check_unit_contradictions(Puzzle puzzle)
+    {
+        return apply_check_unit_contrad(puzzle.BlocksI) || apply_check_unit_contrad(puzzle.ColumnsI) || apply_check_unit_contrad(puzzle.RowsI);
     }
 
     private bool all_color(Color color, Cell c, Dictionary<int, HashSet<Color>> seen_colors) {
@@ -229,7 +262,7 @@ partial class Solver {
                 }
                 seen_colors.Add(can, tempSeen);
             }
-            Color seen_color = Color.NEITHER;
+            Color seen_color;
             if (all_color(Color.RED, c, seen_colors)) {
                 seen_color = Color.RED;
             }
@@ -305,33 +338,46 @@ partial class Solver {
         return changed;
     }
 
-    /*
-    def medusa_check_partial_cells(sudoku, print_start, verbose):
-        changed = False
-        for cell in sudoku.cells():
-            if len(cell.dcs) != 1:
-                continue
-            d_colored = list(cell.dcs.keys())[0]
-            d_color = cell.dcs[d_colored]
-            seen = sudoku.seen_from(cell.x, cell.y)
-            for d in cell.ds - {d_colored}:
-                if not any(c for c in seen if c.dcs.get(d, Color.NEITHER) == ~d_color):
-                    continue
-                cell_changed = cell.exclude({d})
-                if verbose and cell_changed:
-                    if not changed:
-                        print_start()
-                        print(' - Find cells with a candidate in one color that can see it in the other color')
-                    print('    * Cell %s can only be %s, since its %d is %s and it can see %d in %s' %
-                        (cell.cell_name(), cell.value_string(), d_colored,
-                            d_color, d, ~d_color))
-                changed |= cell_changed
-        return changed
-    */
-
     private bool medusa_check_partial_cells()
     {
         bool changed = false;
+        Span<int> candi = stackalloc int[1];
+        foreach (Cell cell in Puzzle.GetBoard())
+        {
+            if (cell.colors.Count != 1)
+                continue;
+            List<int> keys_list = [];
+            foreach (KeyValuePair<int, Color> el in cell.colors)
+            {
+                keys_list.Add(el.Key);
+            }
+            int d_colored = keys_list[0];
+            Color d_color = cell.colors[d_colored];
+            candi = cell.Candidates.Except(d_colored, candi);
+            foreach (int d in candi)
+            {
+                Cell[] seen_if = [];
+                foreach (Cell c_seen in cell.VisibleCells)
+                {
+                    Color test;
+                    cell.colors.TryGetValue(d, out test);
+                    if (test == ~d_color)
+                        seen_if.Append(c_seen);
+                }
+                if (seen_if.Length == 0)
+                    continue;
+                bool cell_changed = cell.Exclude(d);
+                //debug
+                if (!changed)
+                {
+                    m3d_medusa_print_chain_start();
+                    Console.WriteLine(" - Find cells with a candidate in one color that can see it in the other color");
+                }
+                Console.WriteLine($"    * Cell {cell.ToString()} can only be {cell.Value}, since its {d_colored} is {d_color} and it can see {d} in {~d_color}");
+                //end debug
+                changed |= cell_changed;
+            }
+        }
         return changed;
     }
 
