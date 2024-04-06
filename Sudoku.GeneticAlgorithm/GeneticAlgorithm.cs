@@ -23,11 +23,11 @@ namespace Sudoku.GeneticAlgorithm
 
 
                 // read the content of GeneticAlgorithm.py file
-                string pathToPyFile = @"..\..\..\..\Sudoku.GeneticAlgorithm\Resources\GeneticAlgorithm.py";
-                string code = File.ReadAllText(pathToPyFile);
+                //string pathToPyFile = @"..\..\..\..\Sudoku.GeneticAlgorithm\Resources\GeneticAlgorithm.py";
+                //string code = File.ReadAllText(pathToPyFile);
 
                 // Normalement on utilise Resources, à fix...
-                // string code = Resources.GeneticAlgorithm_py;
+                string code = Resources.GeneticAlgorithm_py;
 
                 // Console.WriteLine(code);
 
