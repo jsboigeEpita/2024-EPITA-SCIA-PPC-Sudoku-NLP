@@ -23,7 +23,7 @@ namespace Sudoku.GeneticAlgorithm
 
 
                 // read the content of GeneticAlgorithm.py file
-                string pathToPyFile = @"C:\Users\Samy\Desktop\prog-by-contrainte\project\2024-EPITA-SCIA-PPC-Sudoku-NLP\Sudoku.GeneticAlgorithm\Resources\GeneticAlgorithm.py";
+                string pathToPyFile = @"..\..\..\..\Sudoku.GeneticAlgorithm\Resources\GeneticAlgorithm.py";
                 string code = File.ReadAllText(pathToPyFile);
 
                 // Normalement on utilise Resources, à fix...
@@ -48,7 +48,7 @@ namespace Sudoku.GeneticAlgorithm
         {
             // declare your pip packages here
             InstallPipModule("numpy");
-            InstallPipModule("choco");
+            InstallPipModule("pulp");
             base.InitializePythonComponents();
         }
     }

@@ -1,11 +1,8 @@
-from timeit import default_timer
+# from timeit import default_timer
 import numpy as np
-from itertools import permutations
-# from choco import Solution, ChocoSolver, IntVarMatrix
-
+import pulp
 
 N = 9
-
 
 if "ourSudoku" not in locals():
     ourSudoku = (
@@ -19,39 +16,55 @@ if "ourSudoku" not in locals():
         (0, 0, 4, 3, 2, 0, 0, 0, 0),
         (0, 6, 2, 9, 0, 4, 0, 0, 0),
     )
+    print("---------------Avant resolution----------------")
+    print(np.array(ourSudoku))
+    
 
+def solveSudoku(instance):
+    # Créer le problème de programmation linéaire
+    problem = pulp.LpProblem("SudokuSolver", pulp.LpMinimize)
+    
+    # Créer les variables
+    choices = pulp.LpVariable.dicts("Choice", (range(N), range(N), range(1, N + 1)), cat="Binary")
+    
+    # Ajouter la contrainte arbitraire (objectif non nécessaire)
+    problem += 0, "Arbitrary Objective"
+    
+    # Contrainte: une valeur par cellule
+    for r in range(N):
+        for c in range(N):
+            problem += pulp.lpSum([choices[r][c][v] for v in range(1, N + 1)]) == 1
+    
+    # Contraintes pour lignes, colonnes et blocs 3x3
+    for v in range(1, N + 1):
+        for r in range(N):
+            problem += pulp.lpSum([choices[r][c][v] for c in range(N)]) == 1
+            problem += pulp.lpSum([choices[c][r][v] for c in range(N)]) == 1
+            
+        for r in range(0, N, 3):
+            for c in range(0, N, 3):
+                problem += pulp.lpSum([choices[r+i][c+j][v] for i in range(3) for j in range(3)]) == 1
+    
+    # Remplir les valeurs initiales
+    for r in range(N):
+        for c in range(N):
+            if instance[r][c] != 0:
+                problem += choices[r][c][instance[r][c]] == 1
+    
+    # Résoudre le problème
+    problem.solve(pulp.PULP_CBC_CMD(msg=False))
+    
+    # Construire la solution
+    solution = [[0 for _ in range(N)] for _ in range(N)]
+    for r in range(N):
+        for c in range(N):
+            for v in range(1, N + 1):
+                if pulp.value(choices[r][c][v]) == 1:
+                    solution[r][c] = v
+    return solution
 
-# def solveSudoku(instance):
-#     solver = ChocoSolver()
+result = np.array(solveSudoku(ourSudoku))
 
-#     grid = IntVarMatrix(N, N, 1, N)
-#     for i in range(N):
-#         for j in range(N):
-#             if instance[i][j] != 0:
-#                 solver.post(solver.eq(grid[i][j], instance[i][j]))
-
-#     for i in range(N):
-#         solver.post(solver.all_different([grid[i][j] for j in range(N)]))
-#         solver.post(solver.all_different([grid[j][i] for j in range(N)]))
-
-#     for i in range(0, N, 3):
-#         for j in range(0, N, 3):
-#             solver.post(
-#                 solver.all_different(
-#                     [grid[i + di][j + dj] for di in range(3) for dj in range(3)]
-#                 )
-#             )
-
-#     return solver, grid
-
-
-start = default_timer()
-# solver, grid = solveSudoku(instance)
-# solver.solve()
-# result = np.array([[solver.get_value(grid[i][j]) for j in range(N)] for i in range(N)])
-result = ourSudoku
-execution = default_timer() - start
-
-print("Solution du Sudoku :")
+print()
+print("--------------Après resolution----------------------")
 print(result)
-print("Le temps de résolution est de : ", execution, " secondes")
