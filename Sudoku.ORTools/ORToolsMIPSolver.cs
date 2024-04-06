@@ -1,16 +1,16 @@
-﻿using Google.OrTools.LinearSolver;
+using Google.OrTools.LinearSolver;
 using Sudoku.Shared;
 
 namespace Sudoku.ORTools
 {
-    public class OrToolsLinearSolver : ISudokuSolver
+    public class OrToolsMipSolver : ISudokuSolver
     {
         private const int Dimension = 9;
         private const int SubGrid = 3;
 
         public SudokuGrid Solve(SudokuGrid s)
         {
-            Solver solver = Solver.CreateSolver("GLOP");
+            Solver solver = Solver.CreateSolver("SCIP");
             if (solver == null)
             {
                 throw new InvalidOperationException("Solver initialization failed.");
