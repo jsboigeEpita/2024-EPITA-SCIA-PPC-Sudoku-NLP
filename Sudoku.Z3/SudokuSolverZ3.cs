@@ -5,7 +5,7 @@ namespace Sudoku.Z3
 {
     public class Z3Solver : ISudokuSolver
     {
-     private static readonly int Size = 9;
+        private static readonly int Size = 9;
         private static readonly int BlockSize = 3;
         private static Context ctx;
         private static Solver solver;
@@ -27,6 +27,9 @@ namespace Sudoku.Z3
             AddSudokuInstanceConstraints(s, ref constraints);
 
             solver.Assert(constraints.ToArray());
+
+            // Apply tactics to improve solving efficiency
+            ApplyTactics();
 
             if (solver.Check() != Status.SATISFIABLE)
                 return s;
@@ -98,6 +101,17 @@ namespace Sudoku.Z3
                 for (int j = 0; j < Size; j++)
                     if (s.Cells[i, j] != 0)
                         constraints.Add(ctx.MkEq(X[i][j], ctx.MkBV(s.Cells[i, j], 4)));
+        }
+
+        private static void ApplyTactics()
+        {
+            // Define tactics and apply them to the solver
+            var tactic = ctx.MkTactic("simplify");
+            var goal = ctx.MkGoal();
+            goal.Assert(solver.Assertions);
+            var result = tactic.Apply(goal);
+
+            solver.Assert(result.Subgoals[0].Formulas);
         }
 
         private static SudokuGrid ExtractSolution()
