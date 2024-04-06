@@ -215,4 +215,12 @@ public sealed class Cell
 		commonCandidates = CandI.Except(candidate, commonCandidates);
         return CandI.Set(commonCandidates, false);
     }
+
+    public bool include_only(List<int> keys) {
+        Candidates c =  new Candidates(keys);
+
+        Span<int> newCandidates = stackalloc int[1];
+        newCandidates = CandI.Intersect(c, newCandidates);
+        return CandI.Set(newCandidates, false);
+    }
 }

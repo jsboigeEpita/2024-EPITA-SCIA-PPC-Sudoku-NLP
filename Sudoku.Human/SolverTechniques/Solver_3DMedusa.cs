@@ -7,11 +7,15 @@ namespace Sudoku.Human;
 partial class Solver {
 
     private Cell start;
+
     private bool Medusas()
     {
-        for (int x = 0; x < 9; x++) {
-            for (int y = 0; y < 9; y++) {
-                if(solve_3d_medusas_from(x,y)) {
+        for (int x = 0; x < 9; x++)
+        {
+            for (int y = 0; y < 9; y++)
+            {
+                if (solve_3d_medusas_from(x, y))
+                {
                     return true;
                 }
             }
@@ -46,15 +50,14 @@ partial class Solver {
 
     //debug
     private void m3d_medusa_print_chain_start() {
-        int c1 = 0;
-        int c2 = 0;
+        int c1;
+        int c2;
        
-        if( start.CandI.TryGetCount2(out c2, out c2)) {
-            Console.WriteLine($" - Start chains from cell {start.Point.ToString}, coloring {c1} {start.colors[c1]} and {c2} {start.colors[c2]}");
+        if(start.CandI.TryGetCount2(out c1, out c2)) {
+            Console.WriteLine($" - Start chains from cell {start.Point.ToString()}, coloring {c1} {start.colors[c1]} and {c2} {start.colors[c2]}");
         }
         
     }
-
 
     private bool medusa_color_bi_value_cells() {
         bool colored = false;
@@ -63,6 +66,7 @@ partial class Solver {
             int d_uncolored;
             if(c.colors.Count == 1 && c.Candidates.TryGetCount2(out d_colored, out d_uncolored)) {
                 if (c.colors.ContainsKey(d_uncolored)) {
+
                     (d_colored, d_uncolored) = (d_uncolored, d_colored);
                 }
                 c.colors.Add(d_uncolored, ~c.colors[d_colored]);
@@ -72,57 +76,92 @@ partial class Solver {
         return colored;
     }
 
-    /*
-    def medusa_color_bi_location_units(sudoku, verbose):
-        colored = False
-        for unit_type, i in product(Sudoku.UNIT_TYPES, range(9)):
-            unit = sudoku.unit(unit_type, i)
-            unsolved_ds = union(c.ds for c in unit if not c.solved()) c.solved = c.candidates.count == 1
-            for d in unsolved_ds:
-                filtered_unit = [c for c in unit if not c.solved() and d in c.ds]
-                if len(filtered_unit) != 2:
-                    continue
-                cell_colored, cell_uncolored = filtered_unit
-                if d not in cell_colored.dcs:
-                    cell_colored, cell_uncolored = cell_uncolored, cell_colored
-                if d in cell_uncolored.dcs or d not in cell_colored.dcs:
-                    continue
-                cell_uncolored.dcs[d] = ~cell_colored.dcs[d]
-                colored = True
-        return colored
-    */
-    private bool medusa_color_bi_location_units() {
-        bool colored = false;
-
-        return colored;
+    private bool apply_bi_loc(Region[] unit_type)
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            Region unit = unit_type[i];
+            HashSet<int> unsolved_ds = new HashSet<int>();
+            foreach (Cell cell in unit) if (!(cell.Candidates.Count <= 1))
+                {
+                    for (int el = 1; el < 10; el++)
+                    {
+                        if (!unsolved_ds.Contains(el))
+                            unsolved_ds.Add(el);
+                    }
+                }
+            foreach (int candi in unsolved_ds)
+            {
+                List<Cell> filtered_unit = [];
+                foreach (Cell cell in unit) if (!(cell.Candidates.Count <= 1 && cell.CandI.IsCandidate(candi)))
+                    {
+                        if (!filtered_unit.Contains(cell))
+                            filtered_unit.Add(cell);
+                    }
+                if (filtered_unit.Count != 2)
+                    continue;
+                Cell cell_colored = filtered_unit[0];
+                Cell cell_uncolored = filtered_unit[1];
+                if (!cell_colored.colors.ContainsKey(candi))
+                {
+                    (cell_uncolored, cell_colored) = (cell_colored, cell_uncolored);
+                }
+                if (cell_uncolored.colors.ContainsKey(candi) || !cell_colored.colors.ContainsKey(candi))
+                    continue;
+                cell_uncolored.colors[candi] = ~cell_colored.colors[candi];
+                return true;
+            }
+        }
+        return false;
     }
 
-    private bool medusa_eliminate_color(Color color) {
+
+    private bool medusa_color_bi_location_units()
+    {
+        return apply_bi_loc(Puzzle.BlocksI) || apply_bi_loc(Puzzle.ColumnsI) || apply_bi_loc(Puzzle.RowsI);
+    }
+
+    private bool medusa_eliminate_color(Color color)
+    {
         bool changed = false;
+        //debug
+        Span<int> commonCandidates = stackalloc int[1];
+        Console.WriteLine($" - Eliminate all candidates colored {color}");
         foreach(Cell c in Puzzle.GetBoard()) {
             foreach (KeyValuePair<int,Color> kvp in c.colors) {
                 if (kvp.Value != color) {
                     continue;
                 }
                 changed |= c.Exclude(kvp.Key);
+
+                //debug
+                Console.Write($"    > Cell {c.Point.ToString()} can only be {c.CandI.Print()}");
             }
         }
         return changed;
     }
 
-    private bool medusa_check_cell_contradictions() {
-        foreach(Cell c in Puzzle.GetBoard()) {
+    private bool medusa_check_cell_contradictions()
+    {
+        List<Cell> allcells = Puzzle.GetBoard().ToList();
+
+        for (int i = 0; i < allcells.Count; i++)
+        {
+            Cell c = allcells[i];
             Color dup_color = Color.NEITHER;
-            if(c.colors.Count(kvp => kvp.Value == Color.RED) > 1) {
+            if (c.colors.Count(kvp => kvp.Value == Color.RED) > 1)
+            {
                 dup_color = Color.RED;
             }
-            else if(c.colors.Count(kvp => kvp.Value == Color.BLUE) > 1) {
+            else if (c.colors.Count(kvp => kvp.Value == Color.BLUE) > 1)
+            {
                 dup_color = Color.BLUE;
             }
-            else {
+            else
+            {
                 continue;
             }
-            //print pour test
+            //debug
             m3d_medusa_print_chain_start();
             Console.WriteLine(" - Find a cell with multiple candidates in the same color");
             List<int> dup_candidates = new List<int>();
@@ -131,7 +170,7 @@ partial class Solver {
                     dup_candidates.Add(kvp.Key);
                 }
             }
-            Console.WriteLine($"- Cell {c.Point.ToString} has multiple candidates {dup_candidates.ToString} colored {dup_color}");
+            Console.WriteLine($"- Cell {c.Point.ToString()} has multiple candidates {dup_candidates.ToString()} colored {dup_color}");
             return medusa_eliminate_color(dup_color);
         }
         return false;
@@ -161,83 +200,108 @@ partial class Solver {
         return False
     */
 
-    private bool medusa_check_unit_contradictions() {
+    private bool medusa_check_unit_contradictions()
+    {
         return false;
     }
 
-    /*
-    def medusa_check_seen_contradictions(sudoku, print_start, verbose):
-        for cell in sudoku.cells():
-            if cell.dcs:
-                continue
-            seen = sudoku.seen_from(cell.x, cell.y)
-            seen_colors = {d: {c.dcs[d] for c in seen if d in c.dcs} for d in cell.ds}
-            seen_color = None
-            if all(Color.RED in seen_colors[d] for d in cell.ds):
-                seen_color = Color.RED
-            elif all(Color.BLUE in seen_colors[d] for d in cell.ds):
-                seen_color = Color.BLUE
-            else:
-                continue
-            if verbose:
-                print_start()
-                print(' - Find cells that can see all their candidates in the same color')
-                print(' * Cell %s can see all its candidates %s in %s' %
-                    (cell.cell_name(), cell.value_string(), seen_color))
-            return medusa_eliminate_color(sudoku, seen_color, verbose)
-        return False
-    */
+    private bool all_color(Color color, Cell c, Dictionary<int, HashSet<Color>> seen_colors) {
+        foreach(int candidate in c.Candidates) {
+            foreach(Color col in seen_colors[candidate]) {
+                if(col != color) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
-    private bool medusa_check_seen_contradictions() {
+    private bool medusa_check_seen_contradictions()
+    {
+        foreach (Cell c in Puzzle.GetBoard()) {
+            Dictionary<int, HashSet<Color>> seen_colors = new Dictionary<int, HashSet<Color>>();
+            foreach(int can in c.Candidates) {
+                HashSet<Color> tempSeen = new HashSet<Color>();
+                foreach( Cell cell in c.VisibleCells) {
+                    if (cell.colors.ContainsKey(can)) {
+                        tempSeen.Add(cell.colors[can]);
+                    }
+                }
+                seen_colors.Add(can, tempSeen);
+            }
+            Color seen_color = Color.NEITHER;
+            if (all_color(Color.RED, c, seen_colors)) {
+                seen_color = Color.RED;
+            }
+            else if(all_color(Color.BLUE, c, seen_colors)) {
+                seen_color = Color.BLUE;
+            }
+            else {
+                continue;
+            }
+
+            //debug
+            m3d_medusa_print_chain_start();
+            Console.WriteLine(" - Find cells that can see all their candidates in the same color");
+            Console.WriteLine($" * Cell {c.Point.ToString()} can see all its candidates {c.Candidates.Print()} in {seen_color}");
+            return medusa_eliminate_color(seen_color);
+            
+        }
         return false;
     }
 
-    /*
-    def medusa_check_full_cells(sudoku, print_start, verbose):
-        changed = False
-        for cell in sudoku.cells():
-            if len(set(cell.dcs.values())) != 2:
-                continue
-            cell_changed = cell.include_only(cell.dcs.keys())
-            if verbose and cell_changed:
-                if not changed:
-                    print_start()
-                    print(' - Find cells with candidates in both colors and others uncolored')
-                print('    * Cell %s can only be %s' % (cell.cell_name(),
-                    cell.value_string()))
-            changed |= cell_changed
-        return changed
-    */
-
-    private bool medusa_check_full_cells() {
+    private bool medusa_check_full_cells()
+    {
         bool changed = false;
+        foreach(Cell c in Puzzle.GetBoard()) {
+            if (c.colors.Values.ToHashSet().Count != 2) {
+                continue;
+            }
+            bool cell_changed = c.include_only(c.colors.Keys.ToList());
+            //debug
+            if(!changed) {
+                m3d_medusa_print_chain_start();
+                Console.WriteLine(" - Find cells with candidates in both colors and others uncolored");
+            }
+            Console.WriteLine($"    * Cell {c.Point.ToString()} can only be {c.CandI.Print()}");
+
+            changed |= cell_changed;
+        }
         return changed;
     }
 
-    /*
-    def medusa_check_emptied_cells(sudoku, print_start, verbose):
-        changed = False
-        for cell in sudoku.cells():
-            if cell.solved():
-                continue
-            seen = sudoku.seen_from(cell.x, cell.y)
-            for d in cell.ds - set(cell.dcs):
-                d_colors = {c.dcs[d] for c in seen if d in c.dcs}
-                if len(d_colors) != 2:
-                    continue
-                cell_changed = cell.exclude({d})
-                if verbose and cell_changed:
-                    if not changed:
-                        print_start()
-                        print(' - Find cells with an uncolored candidate that can be seen in both colors')
-                    print('    * Cell %s can only be %s, since it can see %d in both colors' %
-                        (cell.cell_name(), cell.value_string(), d))
-                changed |= cell_changed
-        return changed
-    */
-
-    private bool medusa_check_emptied_cells() {
+    private bool medusa_check_emptied_cells()
+    {
         bool changed = false;
+        Span<int> toSee = stackalloc int[1];
+        foreach (Cell c in Puzzle.GetBoard()) {
+            if (c.Candidates.Count == 1) {
+                continue;
+            }
+            Candidates toExclude = new Candidates(c.colors.Keys.ToList());
+            toSee = c.Candidates.Except(toExclude, toSee);
+            foreach(int candi in toSee) {
+                HashSet<Color> d_colors = new HashSet<Color>();
+                foreach(Cell cell in c.VisibleCells) {
+                    if(cell.colors.ContainsKey(candi)) {
+                        d_colors.Add(cell.colors[candi]);
+                    }
+                }
+                if (d_colors.Count !=2 ) {
+                    continue;
+                }
+                bool cell_changed = c.Exclude(candi);
+                //debug
+                if (!changed) {
+                    m3d_medusa_print_chain_start();
+                    Console.WriteLine(" - Find cells with an uncolored candidate that can be seen in both colors");
+                }
+                Console.WriteLine($"    * Cell {c.Point.ToString()} can only be {c.Candidates.Print()}, since it can see {candi} in both colors");
+                changed |= cell_changed;
+            }
+            
+
+        }
         return changed;
     }
 
@@ -265,7 +329,8 @@ partial class Solver {
         return changed
     */
 
-    private bool medusa_check_partial_cells() {
+    private bool medusa_check_partial_cells()
+    {
         bool changed = false;
         return changed;
     }
