@@ -38,6 +38,14 @@ namespace Sudoku.CspAima
             s.Cells[0,2] = 9;
             return s;
         }
+        
+        protected override void InitializePythonComponents()
+        {
+	        //declare your pip packages here
+	        InstallPipModule("numpy");
+	        InstallPipModule("pycsp3");
+	        base.InitializePythonComponents();
+        }
     }
 }
 

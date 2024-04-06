@@ -20,6 +20,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sudoku.PSO", "Sudoku.PSO\Su
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku.Norvig", "Sudoku.Norvig\Sudoku.Norvig.csproj", "{E7518E5A-F1FB-4C83-BAC2-BDAC016D73B1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku.ORTools", "Sudoku.ORTools\Sudoku.ORTools.csproj", "{B7F4440B-CA36-496F-81E3-24852EC85ED1}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku.GraphColoration", "Sudoku.GraphColoration\Sudoku.GraphColoration.csproj", "{ECD5379C-F836-4F74-8D9A-5ABA09EF6B62}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku.Human", "Sudoku.Human\Sudoku.Human.csproj", "{10CA84F8-9EDC-442F-A1B4-716CA12DD6C1}"

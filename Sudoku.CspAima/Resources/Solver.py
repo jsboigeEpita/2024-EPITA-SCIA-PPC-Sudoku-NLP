@@ -1,4 +1,5 @@
 import numpy as np
+from pycsp3 import *
 
 # Définir `instance` uniquement si non déjà défini par PythonNET
 if "instance" not in locals():
@@ -20,4 +21,12 @@ if "instance" not in locals():
 instance[8, 0] = 9
 instance[8, 1] = 9
 instance[8, 2] = 9
+
+x = VarArray(size=5, dom=range(5))
+
+satisfy(AllDifferent(x))  
+
+if solve() is SAT:
+   print(values(x))
+
 result = instance  # `result` sera utilisé pour récupérer la grille résolue depuis C#
