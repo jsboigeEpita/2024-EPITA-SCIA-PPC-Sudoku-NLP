@@ -26,8 +26,7 @@ def solve_sudoku(initial_grid):
     else:
         print("No solution found.")
         return None
-    
-"""
+
 initial_grid = [
     [5, 3, 0, 0, 7, 0, 0, 0, 0],
     [6, 0, 0, 1, 9, 5, 0, 0, 0],
@@ -39,4 +38,6 @@ initial_grid = [
     [0, 0, 0, 4, 1, 9, 0, 0, 5],
     [0, 0, 0, 0, 8, 0, 0, 7, 9]
 ]
-"""
+
+r = solve_sudoku(instance)
+

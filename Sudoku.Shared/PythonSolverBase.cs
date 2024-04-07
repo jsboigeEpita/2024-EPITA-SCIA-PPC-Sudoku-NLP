@@ -35,19 +35,21 @@ namespace Sudoku.Shared
 
 		}
 
-		protected static async Task InstallPythonComponentsAsync()
-		{
-
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+		        protected static async Task InstallPythonComponentsAsync()
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-
                 await InstallMac();
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                await InstallLinux();
             }
             else
             {
-            await InstallEmbedded();
-		}
-		}
+                await InstallEmbedded();
+            }
+        }
 
 		public static void InstallPipModule(string moduleName, string version = "", bool force = false)
 		{
@@ -63,10 +65,14 @@ namespace Sudoku.Shared
             {
                 await MacInstaller.PipInstallModule(moduleName, version, force);
             }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                await LinuxInstaller.PipInstallModule(moduleName, version, force);
+            }
             else
             {
-			await Installer.PipInstallModule(moduleName, version, force);
-        }
+                await Installer.PipInstallModule(moduleName, version, force);
+            }
         }
 
         private static async Task InstallMac()
@@ -118,7 +124,34 @@ namespace Sudoku.Shared
             await MacInstaller.TryInstallPip();
         }
 
+        private static async Task InstallLinux()
+        {
+            string pythonLibrary = LinuxInstaller.LibFileName;
 
+            Runtime.PythonDLL = pythonLibrary;
+
+            // Check if the Python library exists
+            if (!File.Exists(pythonLibrary))
+            {
+                throw new FileNotFoundException($"Python library '{pythonLibrary}' not found. Please ensure that Python is properly installed on your Linux system.");
+            }
+
+            // Set the necessary environment variables
+            string pythonHome = LinuxInstaller.InstallPath;
+            string pythonPath = $"{pythonHome}/{LinuxInstaller.PythonDirectoryName}";
+
+            Environment.SetEnvironmentVariable("PYTHONHOME", pythonHome, EnvironmentVariableTarget.Process);
+            Environment.SetEnvironmentVariable("PYTHONPATH", pythonPath, EnvironmentVariableTarget.Process);
+
+            // Initialize the Python engine
+            PythonEngine.Initialize();
+
+            // Install pip if necessary
+            await LinuxInstaller.TryInstallPip();
+
+            // Add any additional setup code for Linux
+            // ...
+        }
 
 
         private static async Task InstallEmbedded()
@@ -129,11 +162,11 @@ namespace Sudoku.Shared
             //
 
 
-            //Runtime.PythonDLL = "python37.dll";
-            //Python.Deployment.Installer.Source = new Installer.DownloadInstallationSource()
-            //{
-            //    DownloadUrl = @"https://www.python.org/ftp/python/3.7.3/python-3.7.3-embed-amd64.zip",
-            //};
+            Runtime.PythonDLL = "python37.dll";
+            Python.Deployment.Installer.Source = new Installer.DownloadInstallationSource()
+            {
+                DownloadUrl = @"https://www.python.org/ftp/python/3.7.3/python-3.7.3-embed-amd64.zip",
+            };
 
             //Runtime.PythonDLL = "python38.dll";
             //Python.Deployment.Installer.Source = new Installer.DownloadInstallationSource()
@@ -166,11 +199,11 @@ namespace Sudoku.Shared
             //};
 
 
-            Runtime.PythonDLL = "python311.dll";
-            Python.Deployment.Installer.Source = new Installer.DownloadInstallationSource()
-            {
-                DownloadUrl = @"https://www.python.org/ftp/python/3.11.2/python-3.11.2-embed-amd64.zip",
-            };
+            //Runtime.PythonDLL = "python311.dll";
+            //Python.Deployment.Installer.Source = new Installer.DownloadInstallationSource()
+            //{
+            //    DownloadUrl = @"https://www.python.org/ftp/python/3.11.2/python-3.11.2-embed-amd64.zip",
+            //};
 
 
             // see what the installer is doing
@@ -181,8 +214,8 @@ namespace Sudoku.Shared
 
 			await Installer.TryInstallPip();
 
-			//Python.Deployment.Installer.SetupPython().Wait();
-			//Installer.TryInstallPip();
+			Python.Deployment.Installer.SetupPython().Wait();
+			Installer.TryInstallPip();
 
         }
 
@@ -200,16 +233,12 @@ namespace Sudoku.Shared
         public abstract Shared.SudokuGrid Solve(Shared.SudokuGrid s);
 
 
-        /// <summary>
-        /// Injecte le script de conversion dans le scope Python
-        /// </summary>
         protected void AddNumpyConverterScript(PyModule scope)
         {
 			string numpyConverterCode = Resources.numpy_converter_py;
 			scope.Exec(numpyConverterCode);
-		}
+		}  
 			
-
         /// <summary>
         /// Convertit un tableau .NET en tableau NumPy
         /// </summary>
