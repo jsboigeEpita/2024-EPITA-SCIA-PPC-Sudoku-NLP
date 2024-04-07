@@ -4,6 +4,6 @@
     {
         BacktrackingStrategy,
         ImprovedBacktrackingStrategy,
-        MinConflictsStrategy,
+        MinConflictsStrategy
     }
 }

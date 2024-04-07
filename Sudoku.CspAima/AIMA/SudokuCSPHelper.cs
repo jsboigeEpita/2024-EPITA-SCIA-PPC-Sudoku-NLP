@@ -104,6 +104,8 @@ namespace Sudoku.CSPwithAIMA
                         //Domaine
 
                         var cellPossibleValues = Enumerable.Range(1, 9);
+                        //constructor Domain(java.util.List<?> values)
+                        //var cellDomain = new Domain(Enumerable.Range(1, 9).ToList());
                         var cellDomain = new Domain(cellPossibleValues.Cast<object>().ToArray());
 
 
@@ -225,8 +227,5 @@ namespace Sudoku.CSPwithAIMA
 
             return toReturn;
         }
-
-
-
     }
 }

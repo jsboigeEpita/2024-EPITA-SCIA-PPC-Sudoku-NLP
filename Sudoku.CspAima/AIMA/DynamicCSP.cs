@@ -14,6 +14,10 @@ namespace Sudoku.CSPwithAIMA
         }
 
 
+        /* copyDomains(): methods Returns a copy which contains a copy of
+         * the domains list and is in all other aspects a flat copy of this.
+         * */
+        
         public object Clone()
         {
             var toReturn = new DynamicCSP();

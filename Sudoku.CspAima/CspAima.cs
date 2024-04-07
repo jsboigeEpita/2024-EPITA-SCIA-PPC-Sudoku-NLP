@@ -28,6 +28,9 @@ namespace Sudoku.CSPwithAIMA
             //Utilisation de CSPHelper pour traduire l'assignation en SudokuGrid
             SudokuCSPHelper.SetValuesFromAssignment(assignment, s);
 
+            var t = new TestSudoku("Sudoku_Easy51.txt");
+            t.testMain();
+            
             return s;
         }
 
@@ -46,8 +49,8 @@ namespace Sudoku.CSPwithAIMA
             var objStrategyInfo = new CSPStrategyInfo
             {
                 EnableLCV = false,
-                Inference = CSPInference.ForwardChecking,
-                Selection = CSPSelection.MRVDeg,
+                Inference = CSPInference.None,
+                Selection = CSPSelection.DefaultOrder,
                 StrategyType = CSPStrategy.ImprovedBacktrackingStrategy,
                 MaxSteps = 5000
             };
