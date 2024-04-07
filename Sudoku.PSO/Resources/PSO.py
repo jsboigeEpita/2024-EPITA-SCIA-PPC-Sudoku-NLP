@@ -1,54 +1,27 @@
 import numpy as np
 import random as rd
 
-'''
-sudoku_solution = [
-    4, 8, 3, 9, 2, 1, 6, 5, 7,
-    9, 6, 7, 3, 4, 5, 8, 2, 1,
-    2, 5, 1, 8, 7, 6, 4, 9, 3,
-    5, 4, 8, 1, 3, 2, 9, 7, 6,
-    7, 2, 9, 5, 6, 4, 1, 3, 8,
-    1, 3, 6, 7, 9, 8, 2, 4, 5,
-    3, 7, 2, 6, 8, 9, 5, 1, 4,
-    8, 1, 4, 2, 5, 3, 7, 6, 9,
-    6, 9, 5, 4, 1, 7, 3, 8, 2
-]
-'''
-
-sudoku_og = [
-    0, 0, 3, 0, 2, 0, 6, 0, 0,
-    9, 0, 0, 3, 0, 5, 0, 0, 1,
-    0, 0, 1, 8, 0, 6, 4, 0, 0,
-    0, 0, 8, 1, 0, 2, 9, 0, 0,
-    7, 0, 0, 0, 0, 0, 0, 0, 8,
-    0, 0, 6, 7, 0, 8, 2, 0, 0,
-    0, 0, 2, 6, 0, 9, 5, 0, 0,
-    8, 0, 0, 2, 0, 3, 0, 0, 9,
-    0, 0, 5, 0, 1, 0, 3, 0, 0
-]
-
 class Particle:
-    def __init__(self, grid: np.ndarray, velocity: np.ndarray, bestScore: int):
+    def __init__(self, grid, velocity, bestScore):
         self.grid = grid
         self.best = grid
         self.bestScore = bestScore
         self.velocity = velocity
 
 class Swarm:
-    def __init__(self, particles: list[Particle], best: np.ndarray, bestScore: int):
+    def __init__(self, particles, best, bestScore):
         self.particles = particles
         self.best = best
         self.bestScore = bestScore
 
 class Solver:
-    def __init__(self, toSolve: np.ndarray, inertiaWeight: float, rhoP: float, rhoG: float, limit: int, nbParticles: int):
+    def __init__(self, toSolve, inertiaWeight, rhoP, rhoG, limit, nbParticles):
         self.toSolve = toSolve
         self.inertiaWeight = inertiaWeight
         self.rhoP = rhoP
         self.rhoG = rhoG
         self.limit = limit
         self.nbParticles = nbParticles
-        #self.preFilledIndexes = np.where(toSolve != 0)[0]
         self.swarm = None
     
     # Init the swarm attribute of the solver
@@ -64,10 +37,6 @@ class Solver:
             indices = np.where(self.toSolve == 0)
             grid = self.toSolve.copy()
             grid[indices] = np.random.randint(1, 10, size=len(indices[0]))
-
-            # velocity = np.random.randint(17, size=81) - 8
-            # for preFilledIndex in self.preFilledIndexes:
-            #     velocity[preFilledIndex] = 0
 
             # Create velocity and set velocity to 0 for pre filled indexes
             velocity = np.zeros(81)
@@ -87,7 +56,7 @@ class Solver:
     #
     # Solve the sudoku with a main loop which stops when "limit" is reached or when a solution is found
     # It loops over each particles to update their velocity, position, and update the best sudoku in case the new one gets a better score from fitness function
-    def solve(self) -> np.ndarray:
+    def solve(self):
         count = 0
         while count < self.limit:
             for particle in self.swarm.particles:
@@ -116,7 +85,7 @@ class Solver:
 
     # evaluate grid
     # our aim is to maximize the fitness
-    def fitness(self, grid: np.ndarray) -> int:
+    def fitness(self, grid):
         vfunc = np.vectorize(lambda x: int(round(x)))
         copyGrid = vfunc(grid)
 
@@ -134,7 +103,7 @@ class Solver:
 
         return (rowSolution and colSolution, fitness)
 
-    def checkLine(self, grid: np.ndarray, index = -1):
+    def checkLine(self, grid, index = -1):
         '''
             grid (np.ndarray) : Array of the sudoku
             index (int) : if between 0-81 -> specific row containing index is checked 
@@ -166,7 +135,7 @@ class Solver:
                     l.append(row)
             return (boolean, count, l)
 
-    def checkColumn(self, grid: np.ndarray, index = -1):
+    def checkColumn(self, grid, index = -1):
         '''
             grid (np.ndarray) : Array of the sudoku
             index (int) : if between 0-81 -> specific column containing index is checked 
@@ -211,15 +180,9 @@ class Solver:
                     columns.append(x)
         return (count, rows, columns)
 
-if __name__ == '__main__':
-    rd.seed()
+rd.seed()
 
-    solver = Solver(np.array(sudoku_og), inertiaWeight=.75, rhoP=.6, rhoG=.8, nbParticles=100, limit=200)
-    solver.initSwarm()
-    result = solver.solve()
-
-    print(f"Score: {solver.fitness(result)}")
-
-    vfunc = np.vectorize(lambda x: int(round(x)))
-    result = vfunc(result)
-    np.savetxt("result", result.reshape((9, 9)), fmt='%d', delimiter='\t')
+solver = Solver(np.array(instance).flatten(), inertiaWeight=.75, rhoP=.6, rhoG=.8, nbParticles=100, limit=200)
+solver.initSwarm()
+result = solver.solve()
+r = result.astype("int").reshape((9, 9)).tolist()
