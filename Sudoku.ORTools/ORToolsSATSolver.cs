@@ -8,12 +8,14 @@ namespace Sudoku.ORTools
     {
         private const int Dimension = 9;
         private const int SubGrid = 3;
-        private readonly CpSolver _solver = new();
-
+        private readonly CpSolver _solver = new CpSolver();
+        
         public SudokuGrid Solve(SudokuGrid inputGrid)
         {
             (CpModel model, IntVar[,] grid) = CreateModel(inputGrid);
             // _solver.StringParameters = "max_time_in_seconds:0.01";
+            // VarArraySolutionPrinter cb = new VarArraySolutionPrinter(FlattenGrid(model));
+            // _solver.StringParameters = "enumerate_all_solutions:true";
             CpSolverStatus status = _solver.Solve(model);
 
             if (status is CpSolverStatus.Feasible or CpSolverStatus.Optimal)
@@ -24,6 +26,19 @@ namespace Sudoku.ORTools
             {
                 throw new InvalidOperationException("Sudoku grid has no solution.");
             }
+        }
+
+        private IntVar[] FlattenGrid(CpModel model)
+        {
+            IntVar[] g = new IntVar[Dimension * Dimension];
+            for (int i = 0; i < Dimension; i++)
+            {
+                for (int j = 0; j < Dimension; j++)
+                {
+                    g[i * Dimension + j] = model.NewIntVar(1, Dimension, $"Cell({i},{j})");
+                }
+            }
+            return g;
         }
 
         private SudokuGrid MakeSolution(CpSolver solver, IntVar[,] grid)
@@ -43,7 +58,7 @@ namespace Sudoku.ORTools
 
         private (CpModel model, IntVar[,]) CreateModel(SudokuGrid sudokuGrid)
         {
-            CpModel model = new();
+            CpModel model = new CpModel();
             IntVar[,] grid = new IntVar[Dimension, Dimension];
 
             CreateVariables(model, grid, sudokuGrid);

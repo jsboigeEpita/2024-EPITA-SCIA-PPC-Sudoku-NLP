@@ -389,6 +389,5 @@ namespace Sudoku.Shared
         }
 
         public int NbEmptyCells() => Cells.Cast<int>().Count(c => c == 0);
-
     }
 }
