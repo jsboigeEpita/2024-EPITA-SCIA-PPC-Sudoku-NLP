@@ -18,6 +18,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sudoku.Backtracking", "Sudo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku.ChocoSolver", "Sudoku.ChocoSolver\Sudoku.ChocoSolver.csproj", "{c841cd71-f39b-4761-be73-bb85124e5195}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku.DancingLinks", "Sudoku.DancingLinks\Sudoku.DancingLinks.csproj", "{c841cd71-f39b-4761-be73-bb85124e5195}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

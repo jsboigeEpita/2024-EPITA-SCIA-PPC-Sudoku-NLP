@@ -28,22 +28,6 @@ namespace Sudoku.Benchmark
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                Console.WriteLine("Customizing MacOs Python Install");
-
-                // Installation Python standard, version différente
-                //MacInstaller.PythonDirectoryName = "3.10";
-                //MacInstaller.LibFileName = "libpython3.10.dylib";
-
-
-                // Environnement dédié Anaconda
-                MacInstaller.InstallPath = "/Users/romain/miniforge3/envs";
-                MacInstaller.PythonDirectoryName = "/Users/romain/miniforge3/envs/research/bin";
-                MacInstaller.LibFileName = "/Users/romain/miniforge3/envs/research/lib/libpython3.10.dylib";
-
-                //MacInstaller.InstallPath = "/Users/jesse/opt/anaconda3/envs";
-                //MacInstaller.PythonDirectoryName = "Sudoku";
-                //MacInstaller.LibFileName = "libpython3.7m.dylib";
-
             }
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
