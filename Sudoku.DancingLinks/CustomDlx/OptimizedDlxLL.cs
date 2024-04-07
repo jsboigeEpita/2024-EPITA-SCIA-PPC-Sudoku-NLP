@@ -29,20 +29,19 @@ namespace CustomDlxLib
             foreach (Node node in _solution)
             {
                 int value = node.RowIndex % 9;
-                int i = (node.RowIndex / 9) % 9;
-                int j = node.RowIndex / 81;
+                int j = (node.RowIndex / 9) % 9;
+                int i = node.RowIndex / 81;
                 s.Cells[i, j] = value + 1;
             }
             // var convertTime = (DateTime.Now - start).TotalMilliseconds;
 
-            // using var file = new StreamWriter("T_time.csv", true);
+            // using var file = new StreamWriter("TLL_time.csv", true);
             // file.WriteLine($"{initTime},{searchTime},{convertTime}");
         }
 
         /// <summary>
         /// Init the four-way-linked representation of the exact cover problem into a matrix of nodes.
         /// </summary>
-        /// <param name="s">The sudoku from which the linked list is made</param>
         private void Init()
         {
             Node c = _root;
@@ -75,18 +74,18 @@ namespace CustomDlxLib
             {
                 for (int j = 0; j < 9; j++)
                 {
-                    int blockIndex = i / 3 + j / 3 * 3;
-                    int singleColumnIndex = 9 * j + i;
+                    int blockIndex = j / 3 + i / 3 * 3;
+                    int singleColumnIndex = 9 * i + j;
 
                     int value = s.Cells[i, j] - 1;
-                    int rowNumberConstraintIndex = 81 + 9 * j;
-                    int columnNumberConstraintIndex = 162 + 9 * i;
+                    int rowNumberConstraintIndex = 81 + 9 * i;
+                    int columnNumberConstraintIndex = 162 + 9 * j;
                     int boxNumberConstraintIndex = 243 + blockIndex * 9;
 
                     // if a cell in the sudoku is filled, only one row of nodes is created
                     if (value >= 0)
                     {
-                        int rowIndex = 81 * j + 9 * i + value;
+                        int rowIndex = 81 * i + 9 * j + value;
 
                         alreadyIn[9 * i + value] = true;
                         alreadyIn[81 + 9 * j + value] = true;
@@ -153,7 +152,7 @@ namespace CustomDlxLib
                                 continue;
                             }
 
-                            int rowIndex = 81 * j + 9 * i + d;
+                            int rowIndex = 81 * i + 9 * j + d;
 
                             var rcColumnNode = columnsNodes[singleColumnIndex];
                             var rnColumnNode = columnsNodes[rowNumberConstraintIndex + d];
@@ -213,6 +212,7 @@ namespace CustomDlxLib
         /// <summary>
         /// Covers the column, it removes all the nodes of the column of the linked list
         /// </summary>
+        /// /// <param name="c">The node to cover</param>
         private void Cover(Node c)
         {
             c.Right.Left = c.Left;
@@ -231,6 +231,7 @@ namespace CustomDlxLib
         /// <summary>
         /// Uncovers the column, it adds back all the nodes of the column to the linked list
         /// </summary>
+        /// <param name="c">The node to uncover</param>
         private void Uncover(Node c)
         {
             for (var i = c.Up; i != c; i = i.Up)
