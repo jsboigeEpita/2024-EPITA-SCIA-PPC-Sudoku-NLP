@@ -46,15 +46,15 @@
 
 Ce projet vise à exploiter les réseaux neuronaux convolutifs (CNN) pour résoudre les puzzles Sudoku. Nous utilisons un ensemble de données provenant de Kaggle, qui fournit 1 et 9 millions d'exemples de puzzles Sudoku à des fins d'entraînement et d'évaluation.
 
-La méthode de résolution présentée dans [Sudoku-Solver](https://github.com/shivaverma/Sudoku-Solver/blob/master/model.py) nous sert de base, et le code Python correspondant est disponible en utilisant Keras. Pour rendre le code compatible avec notre benchmark, nous avons fourni une implémentation alternative en C# utilisant des bibliothèques d'apprentissage profond telles que ...
+La méthode de résolution présentée dans [Sudoku-Solver](https://github.com/shivaverma/Sudoku-Solver/blob/master/model.py) nous sert de base, et le code Python correspondant est disponible en utilisant TensorFlow. Pour rendre le code compatible avec le benchmark et l'environnement .NET, nous avons lié et référencé notre code python au préalable.
 
 ### Opportunités d'amélioration du projet
 
-- **Amélioration des couches d'entrée** : En tenant compte des règles du Sudoku, nous avons proposé d'implémenter des couches d'entrée dérivées pour les lignes, les colonnes et les boîtes. Cela implique d'expérimenter les formes de noyau (3*3, 9*1, et 1*9), le stride.
+- **Amélioration des couches d'entrée** : En tenant compte des règles du Sudoku, nous avons proposé d'implémenter des couches d'entrée dérivées pour les lignes, les colonnes et les boîtes. Cela implique d'expérimenter les formes de noyau (3*3, 9*1, et 1*9), le stride, et les différentes caractéristiques extraites.
 
 - **Exploration de l'architecture du réseau** : Il existe de nombreuses possibilités entre la couche initiale et la couche finale, ce qui offre de nombreuses possibilités d'expérimentation. Les options comprennent l'ajout de couches résiduelles, l'adoption d'architectures U-Net, le nombre et le choix des couches convolutives et des couches denses parmi les couches intermédiaires.
 
-- **Optimisation des hyperparamètres** : Pour rationaliser le processus d'investigation, nous suggérons d'explorer les techniques de Grid Search pour l'optimisation des hyperparamètres. Le réglage des hyperparamètres peut vous aider à éviter l'overfitting et l'underfitting. Cela permet d'équilibrer le compromis entre la complexité et la simplicité de votre modèle.
+- **Optimisation des hyperparamètres** : Pour rationaliser le processus d'investigation, nous suggérons d'explorer les techniques de Grid/Random Search pour l'optimisation des hyperparamètres. Le réglage des hyperparamètres peut vous aider à éviter l'overfitting et l'underfitting. Cela permet d'équilibrer le compromis entre la complexité et la simplicité de votre modèle.
 
   
 ### Built With
@@ -99,4 +99,9 @@ or
   ```sh
    conda install --file requirements.txt
   ```
-4. 
+4. Download pre-trained model from Google Drive
+  ```
+  lien google drive
+  ```
+5. Run `Program.cs`script in `Sudoku.Benchmark` folder
+6. Interact with terminal and choose our `DeepLearningSolver` (7th position) among all sudoku solvers.
