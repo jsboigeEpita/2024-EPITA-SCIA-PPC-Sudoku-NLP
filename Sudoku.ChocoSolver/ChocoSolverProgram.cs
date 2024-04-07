@@ -31,6 +31,7 @@ public class ChocoSolver : PythonSolverBase
             //Convert back to C# object
             var managedResult = result.As<int[][]>();
 
+            //var convertesdResult = managedResult.Select(objList => objList.Select(o => (int)o).ToArray()).ToArray();
             return new Shared.SudokuGrid() { Cells = managedResult.To2D() };
         }
     }

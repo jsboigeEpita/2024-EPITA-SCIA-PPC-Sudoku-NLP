@@ -20,8 +20,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sudoku.Backtracking", "Sudo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sudoku.PSO", "Sudoku.PSO\Sudoku.PSO.csproj", "{ACFD48BC-E434-4F98-B539-47437308B18C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sudoku.Z3", "Sudoku.Z3\Sudoku.Z3.csproj", "{737F838C-D505-4363-A005-E017A25D5DC1}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sudoku.Norvig", "Sudoku.Norvig\Sudoku.Norvig.csproj", "{E7518E5A-F1FB-4C83-BAC2-BDAC016D73B1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sudoku.GraphColoration", "Sudoku.GraphColoration\Sudoku.GraphColoration.csproj", "{ECD5379C-F836-4F74-8D9A-5ABA09EF6B62}"
@@ -35,8 +33,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sudoku.GeneticAlg", "Sudoku.GeneticAlg\Sudoku.GeneticAlg.csproj", "{ECE36C85-7FFF-4B1F-BF73-ADB280875E97}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sudoku.Proba", "Sudoku.Proba\Sudoku.Proba.csproj", "{1A8C7D67-ABB9-4054-A94C-661C193FF7E7}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sudoku.DeepLearning", "Sudoku.DeepLearning\Sudoku.DeepLearning.csproj", "{D88FB10F-103B-4AD1-B3C3-727C41CC6868}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sudoku.ORTools", "Sudoku.ORTools\Sudoku.ORTools.csproj", "{090E1975-E58A-48B0-B299-481EFE1ECF05}"
 EndProject
