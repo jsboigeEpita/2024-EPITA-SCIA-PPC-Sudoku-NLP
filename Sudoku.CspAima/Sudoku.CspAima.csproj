@@ -11,6 +11,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
+  </ItemGroup>
+
+
+  <ItemGroup>
       <PackageReference Include="python" Version="3.13.0-a5" />
       <PackageReference Include="pythonnet" Version="3.1.0-preview2024-03-03" />
     </ItemGroup>
@@ -28,6 +33,18 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="aima-core">
+      <HintPath>external\AIMA\aima-core.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Core">
+      <HintPath>external\IKVM\IKVM.OpenJDK.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.Runtime">
+      <HintPath>external\IKVM\IKVM.Runtime.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
