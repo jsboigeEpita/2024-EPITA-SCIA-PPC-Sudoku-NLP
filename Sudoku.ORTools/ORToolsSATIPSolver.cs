@@ -4,7 +4,7 @@ using System;
 
 namespace Sudoku.ORTools
 {
-    public class OrToolsSatSolver : ISudokuSolver
+    public class OrToolsSatipSolver : ISudokuSolver
     {
         private const int Dimension = 9;
         private const int SubGrid = 3;
@@ -13,9 +13,6 @@ namespace Sudoku.ORTools
         public SudokuGrid Solve(SudokuGrid inputGrid)
         {
             (CpModel model, IntVar[,] grid) = CreateModel(inputGrid);
-            // _solver.StringParameters = "max_time_in_seconds:0.01";
-            // VarArraySolutionPrinter cb = new VarArraySolutionPrinter(FlattenGrid(model));
-            // _solver.StringParameters = "enumerate_all_solutions:true";
             CpSolverStatus status = _solver.Solve(model);
 
             if (status is CpSolverStatus.Feasible or CpSolverStatus.Optimal)
