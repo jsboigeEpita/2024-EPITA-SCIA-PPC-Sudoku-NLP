@@ -9,7 +9,10 @@
     <None Remove="Sudoku.Solver\**" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.13.5" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.13.12" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Sudoku.Norvig\Sudoku.Norvig.csproj" />
@@ -27,5 +30,10 @@
     <ProjectReference Include="..\Sudoku.Proba\Sudoku.Proba.csproj" />
     <ProjectReference Include="..\Sudoku.DeepLearning\Sudoku.DeepLearning.csproj" />
     <ProjectReference Include="..\Sudoku.ChocoSolver\Sudoku.ChocoSolver.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

@@ -1,10 +1,12 @@
 using System;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Running;
+using Microsoft.Extensions.Configuration;
 //using Humanizer;
 using Sudoku.Shared;
 
@@ -19,28 +21,52 @@ namespace Sudoku.Benchmark
         private static bool IsDebug = false;
 #endif
 
-
+	    static IConfiguration Configuration;
 
         static void Main(string[] args)
-        {   
+        {
 
             Console.WriteLine("Benchmarking GrilleSudoku Solvers");
 
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+
+            // Configuration Builder
+            var builder = new ConfigurationBuilder()
+	            .SetBasePath(Directory.GetCurrentDirectory())
+	            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+
+            Configuration = builder.Build();
+
+            PythonConfiguration pythonConfig = null;
+
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
+				pythonConfig = Configuration.GetSection("PythonConfig:OSX").Get<PythonConfiguration>();
+
             }
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            {
-                Console.WriteLine("Customizing Linux Python Install");
-
-                // Set the appropriate values for your Linux environment
+			else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD))
+			{
+				//pythonConfig = Configuration.GetSection("PythonConfig:Linux").Get<PythonConfiguration>();
                 LinuxInstaller.InstallPath = "/root/.pyenv/versions/3.10.5";
                 LinuxInstaller.PythonDirectoryName = "/root/.pyenv/versions/3.10.5/bin";
                 LinuxInstaller.LibFileName = "/root/.pyenv/versions/3.10.5/lib/libpython3.10.so";
+			}
 
+			if (pythonConfig != null)
+			{
+				Console.WriteLine("Customizing MacOs/Linux Python Install from appsettings.json file");
+				if (!string.IsNullOrEmpty(pythonConfig.InstallPath))
+				{
+					MacInstaller.InstallPath = pythonConfig.InstallPath;
+				}
+				if (!string.IsNullOrEmpty(pythonConfig.PythonDirectoryName))
+				{
+					MacInstaller.PythonDirectoryName = pythonConfig.PythonDirectoryName;
+				}
+				if (!string.IsNullOrEmpty(pythonConfig.LibFileName))
+				{
+					MacInstaller.LibFileName = pythonConfig.LibFileName;
+				}
             }
-
 
             while (true)
             {
@@ -48,7 +74,7 @@ namespace Sudoku.Benchmark
                 {
                     if (RunMenu())
                     {
-                        break;
+                       break;
                     }
 
                 }
