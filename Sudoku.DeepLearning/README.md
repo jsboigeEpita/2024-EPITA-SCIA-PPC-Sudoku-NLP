@@ -50,35 +50,37 @@ La méthode de résolution présentée dans [Sudoku-Solver](https://github.com/s
 
 ### Opportunités d'amélioration du projet
 
-- **Amélioration des couches d'entrée** : En tenant compte des règles du Sudoku, nous avons proposé d'implémenter des couches d'entrée dérivées pour les lignes, les colonnes et les boîtes. Cela implique d'expérimenter les formes de noyau (3*3, 9*1, et 1*9), le stride, et les différentes caractéristiques extraites.
+- **Amélioration des couches d'entrée** : En tenant compte des règles du Sudoku, nous avons proposé d'implémenter des couches d'entrée dérivées pour les lignes, les colonnes et les boîtes. Cela implique d'expérimenter les formes de noyau (3*3, 9*1, et 1\*9), le stride, et les différentes caractéristiques extraites.
 
 - **Exploration de l'architecture du réseau** : Il existe de nombreuses possibilités entre la couche initiale et la couche finale, ce qui offre de nombreuses possibilités d'expérimentation. Les options comprennent l'ajout de couches résiduelles, l'adoption d'architectures U-Net, le nombre et le choix des couches convolutives et des couches denses parmi les couches intermédiaires.
 
 - **Optimisation des hyperparamètres** : Pour rationaliser le processus d'investigation, nous suggérons d'explorer les techniques de Grid/Random Search pour l'optimisation des hyperparamètres. Le réglage des hyperparamètres peut vous aider à éviter l'overfitting et l'underfitting. Cela permet d'équilibrer le compromis entre la complexité et la simplicité de votre modèle.
 
-  
 ### Built With
 
 #### Languages & Libraries
-* [![Python](https://img.shields.io/badge/python-c2a90f?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-* [![.NET](https://img.shields.io/badge/.NET-512BD4?style=for-the-badge&logo=.net&logoColor=white)](https://dotnet.microsoft.com/)
-* [![Pandas](https://img.shields.io/badge/pandas-150458?style=for-the-badge&logo=pandas&logoColor=white)](https://pandas.pydata.org/)
-* [![TensorFlow](https://img.shields.io/badge/TensorFlow-FF6F00?style=for-the-badge&logo=TensorFlow&logoColor=white)](https://www.tensorflow.org/)
+
+- [![Python](https://img.shields.io/badge/python-c2a90f?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+- [![.NET](https://img.shields.io/badge/.NET-512BD4?style=for-the-badge&logo=.net&logoColor=white)](https://dotnet.microsoft.com/)
+- [![Pandas](https://img.shields.io/badge/pandas-150458?style=for-the-badge&logo=pandas&logoColor=white)](https://pandas.pydata.org/)
+- [![TensorFlow](https://img.shields.io/badge/TensorFlow-FF6F00?style=for-the-badge&logo=TensorFlow&logoColor=white)](https://www.tensorflow.org/)
 
 #### Datasets
 
-* [9 Millions Sudokus Dataset](https://www.kaggle.com/datasets/rohanrao/sudoku)
-* [1 Million Sudokus Dataset](https://www.kaggle.com/datasets/bryanpark/sudoku)
+- [9 Millions Sudokus Dataset](https://www.kaggle.com/datasets/rohanrao/sudoku)
+- [1 Million Sudokus Dataset](https://www.kaggle.com/datasets/bryanpark/sudoku)
 
 #### References
-* [Sudoku Solver using PyTorch](https://github.com/chingisooinar/sudoku-solver.pytorch)
-* [Residual Neural Network Wikipedia Article](https://en.wikipedia.org/wiki/Residual_neural_network)
-* [Original ResNet Paper](https://arxiv.org/abs/1512.03385)
-* [Solving Sudoku with Convolution Neural Network | Keras](https://towardsdatascience.com/solving-sudoku-with-convolution-neural-network-keras-655ba4be3b11)
-* [Solve Sudoku with CNN acc 97%](https://www.kaggle.com/code/lyly123/solve-sudoku-with-cnn-acc-97)
-* [Solving Sudokus with Neural Networks](https://cs230.stanford.edu/files_winter_2018/projects/6939771.pdf)
+
+- [Sudoku Solver using PyTorch](https://github.com/chingisooinar/sudoku-solver.pytorch)
+- [Residual Neural Network Wikipedia Article](https://en.wikipedia.org/wiki/Residual_neural_network)
+- [Original ResNet Paper](https://arxiv.org/abs/1512.03385)
+- [Solving Sudoku with Convolution Neural Network | Keras](https://towardsdatascience.com/solving-sudoku-with-convolution-neural-network-keras-655ba4be3b11)
+- [Solve Sudoku with CNN acc 97%](https://www.kaggle.com/code/lyly123/solve-sudoku-with-cnn-acc-97)
+- [Solving Sudokus with Neural Networks](https://cs230.stanford.edu/files_winter_2018/projects/6939771.pdf)
 
 <!-- GETTING STARTED -->
+
 ## Getting Started
 
 This is a guide on how you may set up your project locally.
@@ -92,16 +94,23 @@ To get a local copy up and running follow these simple example steps.
    ```
 2. Setup your own home path in the `.env` file
 3. Install all the required python packages using either:
-  ```sh
-   pip install -r requirements.txt
-  ```
+
+```sh
+ pip install -r requirements.txt
+```
+
 or
-  ```sh
-   conda install --file requirements.txt
-  ```
-4. Download pre-trained model from Google Drive
-  ```
-  lien google drive
-  ```
-5. Run `Program.cs`script in `Sudoku.Benchmark` folder
-6. Interact with terminal and choose our `DeepLearningSolver` (7th position) among all sudoku solvers.
+
+```sh
+ conda install --file requirements.txt
+```
+
+4. Download pre-trained model from Google Drive and move it within `Resources` folder
+
+```
+lien google drive
+```
+
+5. Indicate the pre-trained model path in `DeepLearning.py` and in notebook if necessary
+6. Run `Program.cs`script in `Sudoku.Benchmark` folder
+7. Interact with terminal and choose our `DeepLearningSolver` (7th position) among all sudoku solvers.
