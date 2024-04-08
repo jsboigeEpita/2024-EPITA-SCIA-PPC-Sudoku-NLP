@@ -5,7 +5,7 @@ import os
 # Get the path to the trained model
 path = os.getcwd()
 path = path[:path.rfind('/')]
-path += '/Sudoku.DeepLearning/Resources/cnn1.h5'
+path += '/Sudoku.DeepLearning/Resources/cnn_2024_04_08.keras'
 
 # Load the trained model
 model = tf.keras.models.load_model(path)
