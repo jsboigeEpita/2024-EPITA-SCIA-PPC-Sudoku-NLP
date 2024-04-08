@@ -88,21 +88,20 @@ class Solver:
 
     def solve(self) -> np.ndarray:
         reheats = 0
-        i = 0
         
-        while i < 1000000:
+        while True:
             if self.compute_error(self.grid) == 0:
-                return self.grid, True
+                return self.grid
             previousScore = self.grid_score
             for _ in range(self.limit):
                 neighbor = self.neighbor_sudoku()
                 neighbor_score = self.compute_error(neighbor)
                 p = np.exp((self.grid_score - neighbor_score) / self.temperature)
-                if np.random.uniform(1,0,1) < p:
+                if np.random.uniform(1, 0, 1) < p:
                     self.grid = neighbor
                     self.grid_score += (neighbor_score - self.grid_score)
                 if self.grid_score <= 0:
-                    return self.grid, True
+                    return self.grid
             
             if self.grid_score >= previousScore:
                 reheats += 1
@@ -113,10 +112,8 @@ class Solver:
             if reheats > 80:
                 self.temperature += 2
                 reheats = 0
-            i += 1
 
-        return self.grid, False
-
-solver = Solver(np.array(instance).flatten(), 0.99)
-result, solved = solver.solve()
+np.random.seed()
+solver = Solver(np.array(instance).flatten().reshape((9, 9)), 0.99)
+result = solver.solve()
 r = result.astype("int").reshape((9, 9)).tolist()
