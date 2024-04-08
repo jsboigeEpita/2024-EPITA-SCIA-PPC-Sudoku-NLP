@@ -7,13 +7,12 @@ public class HumanSolver : ISudokuSolver
     public SudokuGrid Solve(SudokuGrid s)
     {
         Solver solver = new Solver(s);
-		bool returnResult = solver.TrySolve();
-        
-        if (!returnResult)
-        {
-            // If Unsuccessful, do Backtracking
-            solver.TryBacktrack();
-        }
+
+        //sans backtracking
+        //solver.TrySolveWithoutBacktracking();
+
+        //avec backtracking
+		solver.TrySolve();
         
         return solver.Puzzle.toGrid(s);
     }
