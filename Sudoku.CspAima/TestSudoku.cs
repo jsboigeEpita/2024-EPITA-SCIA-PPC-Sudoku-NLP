@@ -32,32 +32,18 @@ namespace Sudoku.CSPwithAIMA
             Writer.WriteLine(string.Join(",", items));
         }
         
-        public void testMain()
+        public void RunCspOnSudokus()
         {
             var sudokuListEasy = SudokuGrid.ReadSudokuFile(filepath_ + "Sudoku_Easy51.txt");
             var sudokuListHard = SudokuGrid.ReadSudokuFile(filepath_ + "Sudoku_hardest.txt");
             var sudokuListTop = SudokuGrid.ReadSudokuFile(filepath_ + "Sudoku_top95.txt");
 
             foreach (var s in sudokuListEasy)
-            {
                 testImprovedBT(s, "easy");
-                // testBacktracking(s, "easy");     
-                
-                // NOT WORKING
-                // MinConflictsStrategy(s, "easy");
-            }
             foreach (var s in sudokuListHard)
-            {
                 testImprovedBT(s, "hard");
-                
-                // MinConflictsStrategy(s, "easy");
-            }
             foreach (var s in sudokuListTop)
-            {
                 testImprovedBT(s, "top");
-                
-                // MinConflictsStrategy(s, "top");
-            }
             
             Writer.Close();
         }
@@ -68,6 +54,7 @@ namespace Sudoku.CSPwithAIMA
             Solve(s.CloneSudoku(), backtracking, "BT", "NULL", "NULL",
                 "NULL", difficulty);
         }
+        
         public void MinConflictsStrategy(SudokuGrid s, string difficulty)
         {
             var minConflicts = new MinConflictsStrategy(5000);
@@ -85,8 +72,6 @@ namespace Sudoku.CSPwithAIMA
                 InferenceList.Remove(IBT.Inference.NONE);
             }
             
-            Console.WriteLine(SelectionList);
-            Console.WriteLine(InferenceList);
             int i = 0;
             foreach (var selection in SelectionList)
             {
@@ -110,7 +95,7 @@ namespace Sudoku.CSPwithAIMA
         public SudokuGrid Solve(SudokuGrid s, SolutionStrategy _Strategy, String name
             ,  string inference, string selection, string LCV, string difficulty)
         {
-            //Construction du CSP en utilisant CspHelper
+            //Construction of CSP using CspHelper
             var objCSp = SudokuCSPHelper.GetSudokuCSP(s);
 
             var infos = new StepCounter();
@@ -121,16 +106,15 @@ namespace Sudoku.CSPwithAIMA
             
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            // Console.WriteLine(s.toString());
-            // Utilisation de la stratégie pour résoudre le CSP
+
             var assignment = _Strategy.solve(objCSp);
             
             stopwatch.Stop();
             TimeSpan elapsedTime = stopwatch.Elapsed;
             
             if (assignment == null)
-                Console.WriteLine("NULLLLLLL");
-            //Utilisation de CSPHelper pour traduire l'assignation en SudokuGrid
+                Console.WriteLine("Not Working!");
+
             SudokuCSPHelper.SetValuesFromAssignment(assignment, s);
 
             var items2 = new List<string>
@@ -146,21 +130,5 @@ namespace Sudoku.CSPwithAIMA
 
             return s;
         }
-        
-        // public bool RunFunctionWithTimeout(Action function)
-        // {
-        //     var timeout = TimeSpan.FromSeconds(5);
-        //     using (var cancellationTokenSource = new CancellationTokenSource())
-        //     {
-        //         Task task = Task.Run(() => function(), cancellationTokenSource.Token);
-        //
-        //         if (!task.Wait(timeout))
-        //         {
-        //             cancellationTokenSource.Cancel();
-        //             return false;
-        //         }
-        //         return true;
-        //     }
-        // }
     }
 }

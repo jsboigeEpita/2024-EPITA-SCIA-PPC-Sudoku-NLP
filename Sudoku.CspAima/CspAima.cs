@@ -25,9 +25,12 @@ namespace Sudoku.CSPwithAIMA
 
             // Set result of solve to given sudoku grid
             SudokuCSPHelper.SetValuesFromAssignment(assignment, s);
-
-            // var t = new TestSudoku();
-            // t.testMain();
+            
+            // Runs all combination of improvedBacktracking CspSolver on all the SUdokus and writes outputs into CSV 
+            // Uncomment following lines
+            
+            // var solverCsv = new TestSudoku();
+            // solverCsv.RunCspOnSudokus();
 
             return s;
         }
@@ -68,11 +71,11 @@ namespace Sudoku.CSPwithAIMA
     {
         protected override SolutionStrategy GetStrategy()
         {
-            var objStrategyInfo = new CSPStrategyInfo
+            var objStrategy = new CSPStrategyInfo
             {
                 StrategyType = CSPStrategy.BacktrackingStrategy,
             };
-            return objStrategyInfo.GetStrategy();
+            return objStrategy.GetStrategy();
         }
     }
 
@@ -83,14 +86,14 @@ namespace Sudoku.CSPwithAIMA
     {
         protected override SolutionStrategy GetStrategy()
         {
-            var objStrategyInfo = new CSPStrategyInfo
+            var objStrategy = new CSPStrategyInfo
             {
                 EnableLCV = false,
                 Inference = IBT.Inference.AC3,
                 Selection = IBT.Selection.MRV_DEG,
                 StrategyType = CSPStrategy.ImprovedBacktrackingStrategy,
             };
-            return objStrategyInfo.GetStrategy();
+            return objStrategy.GetStrategy();
         }
     }
 
@@ -98,14 +101,14 @@ namespace Sudoku.CSPwithAIMA
     {
         protected override SolutionStrategy GetStrategy()
         {
-            var objStrategyInfo = new CSPStrategyInfo
+            var objStrategy = new CSPStrategyInfo
             {
                 EnableLCV = false,
                 Inference = IBT.Inference.NONE,
                 Selection = IBT.Selection.MRV_DEG,
                 StrategyType = CSPStrategy.ImprovedBacktrackingStrategy,
             };
-            return objStrategyInfo.GetStrategy();
+            return objStrategy.GetStrategy();
         }
     }
 
@@ -113,14 +116,14 @@ namespace Sudoku.CSPwithAIMA
     {
         protected override SolutionStrategy GetStrategy()
         {
-            var objStrategyInfo = new CSPStrategyInfo
+            var objStrategy = new CSPStrategyInfo
             {
                 EnableLCV = false,
                 Inference = IBT.Inference.FORWARD_CHECKING,
                 Selection = IBT.Selection.MRV_DEG,
                 StrategyType = CSPStrategy.ImprovedBacktrackingStrategy,
             };
-            return objStrategyInfo.GetStrategy();
+            return objStrategy.GetStrategy();
         }
     }
 
@@ -130,14 +133,14 @@ namespace Sudoku.CSPwithAIMA
     {
         protected override SolutionStrategy GetStrategy()
         {
-            var objStrategyInfo = new CSPStrategyInfo
+            var objStrategy = new CSPStrategyInfo
             {
                 EnableLCV = false,
                 Inference = IBT.Inference.NONE,
                 Selection = IBT.Selection.MRV,
                 StrategyType = CSPStrategy.ImprovedBacktrackingStrategy,
             };
-            return objStrategyInfo.GetStrategy();
+            return objStrategy.GetStrategy();
         }
     }
 
@@ -145,14 +148,14 @@ namespace Sudoku.CSPwithAIMA
     {
         protected override SolutionStrategy GetStrategy()
         {
-            var objStrategyInfo = new CSPStrategyInfo
+            var objStrategy = new CSPStrategyInfo
             {
                 EnableLCV = false,
                 Inference = IBT.Inference.AC3,
                 Selection = IBT.Selection.MRV,
                 StrategyType = CSPStrategy.ImprovedBacktrackingStrategy,
             };
-            return objStrategyInfo.GetStrategy();
+            return objStrategy.GetStrategy();
         }
     }
 
@@ -160,14 +163,14 @@ namespace Sudoku.CSPwithAIMA
     {
         protected override SolutionStrategy GetStrategy()
         {
-            var objStrategyInfo = new CSPStrategyInfo
+            var objStrategy = new CSPStrategyInfo
             {
                 EnableLCV = false,
                 Inference = IBT.Inference.FORWARD_CHECKING,
                 Selection = IBT.Selection.MRV,
                 StrategyType = CSPStrategy.ImprovedBacktrackingStrategy,
             };
-            return objStrategyInfo.GetStrategy();
+            return objStrategy.GetStrategy();
         }
     }
 
@@ -177,14 +180,14 @@ namespace Sudoku.CSPwithAIMA
     {
         protected override SolutionStrategy GetStrategy()
         {
-            var objStrategyInfo = new CSPStrategyInfo
+            var objStrategy = new CSPStrategyInfo
             {
                 EnableLCV = false,
                 Inference = IBT.Inference.NONE,
                 Selection = IBT.Selection.DEFAULT_ORDER,
                 StrategyType = CSPStrategy.ImprovedBacktrackingStrategy,
             };
-            return objStrategyInfo.GetStrategy();
+            return objStrategy.GetStrategy();
         }
     }
 
@@ -192,14 +195,14 @@ namespace Sudoku.CSPwithAIMA
     {
         protected override SolutionStrategy GetStrategy()
         {
-            var objStrategyInfo = new CSPStrategyInfo
+            var objStrategy = new CSPStrategyInfo
             {
                 EnableLCV = false,
                 Inference = IBT.Inference.AC3,
                 Selection = IBT.Selection.DEFAULT_ORDER,
                 StrategyType = CSPStrategy.ImprovedBacktrackingStrategy,
             };
-            return objStrategyInfo.GetStrategy();
+            return objStrategy.GetStrategy();
         }
     }
 
@@ -207,14 +210,14 @@ namespace Sudoku.CSPwithAIMA
     {
         protected override SolutionStrategy GetStrategy()
         {
-            var objStrategyInfo = new CSPStrategyInfo
+            var objStrategy = new CSPStrategyInfo
             {
                 EnableLCV = false,
                 Inference = IBT.Inference.FORWARD_CHECKING,
                 Selection = IBT.Selection.DEFAULT_ORDER,
                 StrategyType = CSPStrategy.ImprovedBacktrackingStrategy,
             };
-            return objStrategyInfo.GetStrategy();
+            return objStrategy.GetStrategy();
         }
     }
 }
