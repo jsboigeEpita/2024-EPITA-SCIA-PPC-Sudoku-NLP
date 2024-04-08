@@ -1,59 +1,57 @@
+import numpy as np
 from timeit import default_timer
 
-#instance = ((0,0,0,0,9,4,0,3,0),
-#           (0,0,0,5,1,0,0,0,7),
-#           (0,8,9,0,0,0,0,4,0),
-#           (0,0,0,0,0,0,2,0,8),
-#           (0,6,0,2,0,1,0,5,0),
-#           (1,0,2,0,0,0,0,0,0),
-#           (0,7,0,0,0,0,5,2,0),
-#           (9,0,0,0,6,5,0,0,0),
-#           (0,4,0,9,7,0,0,0,0))
-
-def findNextCellToFill(grid, i, j):
-        for x in range(i,9):
-                for y in range(j,9):
-                        if grid[x][y] == 0:
-                                return x,y
-        for x in range(0,9):
-                for y in range(0,9):
-                        if grid[x][y] == 0:
-                                return x,y
-        return -1,-1
-
-def isValid(grid, i, j, e):
-        rowOk = all([e != grid[i][x] for x in range(9)])
-        if rowOk:
-                columnOk = all([e != grid[x][j] for x in range(9)])
-                if columnOk:
-                        # finding the top left x,y co-ordinates of the section containing the i,j cell
-                        secTopX, secTopY = 3 *(i//3), 3 *(j//3) #floored quotient should be used here. 
-                        for x in range(secTopX, secTopX+3):
-                                for y in range(secTopY, secTopY+3):
-                                        if grid[x][y] == e:
-                                                return False
-                        return True
+def is_valid(grid, row, col, num):
+    # Vérifier si num est présent dans la ligne spécifiée
+    if num in grid[row]:
         return False
-
-def solveSudoku(grid, i=0, j=0):
-        i,j = findNextCellToFill(grid, i, j)
-        if i == -1:
-                return True
-        for e in range(1,10):
-                if isValid(grid,i,j,e):
-                        grid[i][j] = e
-                        if solveSudoku(grid, i, j):
-                                return True
-                        # Undo the current cell for backtracking
-                        grid[i][j] = 0
+    
+    # Vérifier si num est présent dans la colonne spécifiée
+    if num in grid[:, col]:
         return False
+    
+    # Vérifier si num est présent dans le bloc 3x3
+    start_row, start_col = 3 * (row // 3), 3 * (col // 3)
+    for r in range(start_row, start_row + 3):
+        for c in range(start_col, start_col + 3):
+            if grid[r, c] == num:
+                return False
+    return True
 
-#start = default_timer()
-if(solveSudoku(instance)):
-	#print_grid(instance)
-	r=instance
+def solve_sudoku(grid, row=0, col=0):
+    # Trouver la prochaine cellule vide
+    for i in range(row, 9):
+        for j in range(col if i == row else 0, 9):
+            if grid[i, j] == 0:
+                for num in range(1, 10):
+                    if is_valid(grid, i, j, num):
+                        grid[i, j] = num
+                        if solve_sudoku(grid, i, j + 1):
+                            return True
+                        grid[i, j] = 0
+                return False
+    return True
+
+# Définir `instance` uniquement si non déjà défini par PythonNET
+if 'instance' not in locals():
+    instance = np.array([
+        [0,0,0,0,9,4,0,3,0],
+        [0,0,0,5,1,0,0,0,7],
+        [0,8,9,0,0,0,0,4,0],
+        [0,0,0,0,0,0,2,0,8],
+        [0,6,0,2,0,1,0,5,0],
+        [1,0,2,0,0,0,0,0,0],
+        [0,7,0,0,0,0,5,2,0],
+        [9,0,0,0,6,5,0,0,0],
+        [0,4,0,9,7,0,0,0,0]
+    ], dtype=int)
+
+start = default_timer()
+# Exécuter la résolution de Sudoku
+if solve_sudoku(instance):
+    # print("Sudoku résolu par backtracking avec succès.")
+    result = instance  # `result` sera utilisé pour récupérer la grille résolue depuis C#
 else:
-	print ("Aucune solution trouv�e")
-
-#execution = default_timer() - start
-#print("Le temps de r�solution est de : ", execution, " seconds as a floating point value")
+    print("Aucune solution trouvée.")
+execution = default_timer() - start
+print("Le temps de résolution est de : ", execution * 1000, " ms")

@@ -17,7 +17,7 @@ public class PSOSolver : PythonSolverBase
         using (PyModule scope = Py.CreateScope())
         {
             // convert the Cells array object to a PyObject
-            PyObject pyCells = s.Cells.ToPython();
+            PyObject pyCells = s.Cells.ToJaggedArray().ToPython();
 
             // create a Python variable "instance"
             scope.Set("instance", pyCells);
@@ -32,7 +32,7 @@ public class PSOSolver : PythonSolverBase
             //Convert back to C# object
             var managedResult = result.As<int[][]>();
             //var convertesdResult = managedResult.Select(objList => objList.Select(o => (int)o).ToArray()).ToArray();
-            return new Shared.SudokuGrid() { Cells = managedResult };
+            return new Shared.SudokuGrid() { Cells = managedResult.To2D() };
         }
         //}
 

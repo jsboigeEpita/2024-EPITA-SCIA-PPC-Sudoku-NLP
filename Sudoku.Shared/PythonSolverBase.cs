@@ -38,16 +38,17 @@ namespace Sudoku.Shared
 		protected static async Task InstallPythonComponentsAsync()
 		{
 
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
 
-				await InstallMac();
+                await InstallMac();
             }
             else
             {
-				await InstallEmbedded();
-            }
-        }
+            await InstallEmbedded();
+		}
+		}
+
 		public static void InstallPipModule(string moduleName, string version = "", bool force = false)
 		{
 			Task task = Task.Run( () => InstallPipModuleAsync(moduleName, version, force));
@@ -60,12 +61,12 @@ namespace Sudoku.Shared
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-               await MacInstaller.PipInstallModule(moduleName, version, force);
+                await MacInstaller.PipInstallModule(moduleName, version, force);
             }
             else
             {
-               await Installer.PipInstallModule(moduleName, version, force);
-            }
+			await Installer.PipInstallModule(moduleName, version, force);
+        }
         }
 
         private static async Task InstallMac()
@@ -128,11 +129,11 @@ namespace Sudoku.Shared
             //
 
 
-            Runtime.PythonDLL = "python37.dll";
-            Python.Deployment.Installer.Source = new Installer.DownloadInstallationSource()
-            {
-                DownloadUrl = @"https://www.python.org/ftp/python/3.7.3/python-3.7.3-embed-amd64.zip",
-            };
+            //Runtime.PythonDLL = "python37.dll";
+            //Python.Deployment.Installer.Source = new Installer.DownloadInstallationSource()
+            //{
+            //    DownloadUrl = @"https://www.python.org/ftp/python/3.7.3/python-3.7.3-embed-amd64.zip",
+            //};
 
             //Runtime.PythonDLL = "python38.dll";
             //Python.Deployment.Installer.Source = new Installer.DownloadInstallationSource()
@@ -165,11 +166,11 @@ namespace Sudoku.Shared
             //};
 
 
-            //Runtime.PythonDLL = "python311.dll";
-            //Python.Deployment.Installer.Source = new Installer.DownloadInstallationSource()
-            //{
-            //    DownloadUrl = @"https://www.python.org/ftp/python/3.11.2/python-3.11.2-embed-amd64.zip",
-            //};
+            Runtime.PythonDLL = "python311.dll";
+            Python.Deployment.Installer.Source = new Installer.DownloadInstallationSource()
+            {
+                DownloadUrl = @"https://www.python.org/ftp/python/3.11.2/python-3.11.2-embed-amd64.zip",
+            };
 
 
             // see what the installer is doing
@@ -180,8 +181,8 @@ namespace Sudoku.Shared
 
 			await Installer.TryInstallPip();
 
-			Python.Deployment.Installer.SetupPython().Wait();
-			Installer.TryInstallPip();
+			//Python.Deployment.Installer.SetupPython().Wait();
+			//Installer.TryInstallPip();
 
         }
 
@@ -199,6 +200,9 @@ namespace Sudoku.Shared
         public abstract Shared.SudokuGrid Solve(Shared.SudokuGrid s);
 
 
+        /// <summary>
+        /// Injecte le script de conversion dans le scope Python
+        /// </summary>
         protected void AddNumpyConverterScript(PyModule scope)
         {
 			string numpyConverterCode = Resources.numpy_converter_py;
@@ -206,6 +210,29 @@ namespace Sudoku.Shared
 		}
 			
 
+        /// <summary>
+        /// Convertit un tableau .NET en tableau NumPy
+        /// </summary>
+		public static PyObject AsNumpyArray(int[,] sCells, PyModule scope)
+		{
+			var pyObject = sCells.ToPython();
+			PyObject asNumpyArray = scope.Get("asNumpyArray");
+			PyObject pyCells = asNumpyArray.Invoke(pyObject);
+			return pyCells;
+		}
+
+        /// <summary>
+        /// Convertit un tableau NumPy en tableau .NET
+        /// </summary>
+		public static int[,] AsManagedArray(PyModule scope, PyObject pyCells)
+		{
+			PyObject asNetArray = scope.Get("asNetArray");
+			PyObject netResult = asNetArray.Invoke(pyCells);
+
+			// Convertissez le PyObject résultant en tableau .NET
+			var managedResult = netResult.AsManagedObject(typeof(int[,])) as int[,];
+			return managedResult;
+		}
 
 
     }
