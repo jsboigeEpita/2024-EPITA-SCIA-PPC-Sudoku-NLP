@@ -41,7 +41,6 @@ public class NorvigSolverBitArray : ISudokuSolver
         // if no cell has multiple possibilities, the search has succeeded
         if (cell == -1)
             return true;
-        Console.WriteLine(Tools.Picture(_possibleValues));
 
         for (short i = 0; i < 9; i++)
         {

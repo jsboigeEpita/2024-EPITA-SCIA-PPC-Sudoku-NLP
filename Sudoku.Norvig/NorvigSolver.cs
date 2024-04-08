@@ -36,8 +36,6 @@ public class NorvigSolver : ISudokuSolver
         if (cell == -1)
             return true;
         
-        Console.WriteLine(Tools.Picture(_possibleValues));
-
         for (short i = 1; i < 0x1FF; i = (short)(i << 1))
         {
             // ignore all i which are not a possible value of the cell
