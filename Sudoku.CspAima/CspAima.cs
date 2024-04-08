@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using aima.core.search.csp;
+using aima.core.search.framework;
 using Sudoku.Shared;
 
 
@@ -28,8 +29,8 @@ namespace Sudoku.CSPwithAIMA
             //Utilisation de CSPHelper pour traduire l'assignation en SudokuGrid
             SudokuCSPHelper.SetValuesFromAssignment(assignment, s);
 
-            var t = new TestSudoku("Sudoku_Easy51.txt");
-            t.testMain();
+            // var t = new TestSudoku();
+            // t.testMain();
             
             return s;
         }
@@ -49,8 +50,8 @@ namespace Sudoku.CSPwithAIMA
             var objStrategyInfo = new CSPStrategyInfo
             {
                 EnableLCV = false,
-                Inference = CSPInference.None,
-                Selection = CSPSelection.DefaultOrder,
+                Inference = CSPInference.AC3,
+                Selection = CSPSelection.MRVDeg,
                 StrategyType = CSPStrategy.ImprovedBacktrackingStrategy,
                 MaxSteps = 5000
             };

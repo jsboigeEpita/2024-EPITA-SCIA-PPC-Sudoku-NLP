@@ -15,22 +15,14 @@ namespace Sudoku.CSPwithAIMA
     public class TestSudoku
     {
         public string filepath_;
-        public string StrSelection_;
-        public string StrInference_;
-
-        public string StrLCV_;
         
         public StreamWriter Writer;
-        public TestSudoku(string filepath)
+        public TestSudoku()
         {
-            filepath_ = "../../../../Puzzles/" + filepath;
-            string filePath = "../../../../data.csv";
+            filepath_ = "../../../../Puzzles/";
+            string filePath = "../../../../data2.csv";
             Writer = new StreamWriter(filePath);
-        }
-
-        
-        public void testMain()
-        {
+            
             var items = new List<string>
             {
                 "Strategy", "Inference", "LCV", "Selection", "Time"
@@ -38,46 +30,85 @@ namespace Sudoku.CSPwithAIMA
                 , "MaxStep", "Difficulty", "Sudoku"
             };
             Writer.WriteLine(string.Join(",", items));
-            
-            var sudokuList = SudokuGrid.ReadSudokuFile(filepath_);
-            foreach (var s in sudokuList)
-            {
-                testImprovedBT(s, "easy");
-            }
-            Writer.Close();
         }
         
-        public void testImprovedBT(SudokuGrid s, String difficulty)
+        public void testMain()
         {
-            foreach (var selection in IBT.Selection.values())
+            var sudokuListEasy = SudokuGrid.ReadSudokuFile(filepath_ + "Sudoku_Easy51.txt");
+            var sudokuListHard = SudokuGrid.ReadSudokuFile(filepath_ + "Sudoku_hardest.txt");
+            var sudokuListTop = SudokuGrid.ReadSudokuFile(filepath_ + "Sudoku_top95.txt");
+
+            foreach (var s in sudokuListEasy)
             {
-                Console.WriteLine(selection);
-                foreach (var  inference in IBT.Inference.values())
+                testImprovedBT(s, "easy");
+                // testBacktracking(s, "easy");     
+                
+                // NOT WORKING
+                // MinConflictsStrategy(s, "easy");
+            }
+            foreach (var s in sudokuListHard)
+            {
+                testImprovedBT(s, "hard");
+                
+                // MinConflictsStrategy(s, "easy");
+            }
+            foreach (var s in sudokuListTop)
+            {
+                testImprovedBT(s, "top");
+                
+                // MinConflictsStrategy(s, "top");
+            }
+            
+            Writer.Close();
+        }
+
+        public void testBacktracking(SudokuGrid s, string difficulty)
+        {
+            var backtracking = new BacktrackingStrategy();
+            Solve(s.CloneSudoku(), backtracking, "BT", "NULL", "NULL",
+                "NULL", difficulty);
+        }
+        public void MinConflictsStrategy(SudokuGrid s, string difficulty)
+        {
+            var minConflicts = new MinConflictsStrategy(5000);
+            Solve(s.CloneSudoku(), minConflicts, "MC", "NULL", "NULL",
+                "NULL", difficulty);
+        }
+
+        public void testImprovedBT(SudokuGrid s, string difficulty, bool removeOptions = true)
+        {
+            var SelectionList = new List<IBT.Selection>(IBT.Selection.values());
+            var InferenceList = new List<IBT.Inference>(IBT.Inference.values());
+            if (removeOptions)
+            {
+                SelectionList.Remove(IBT.Selection.DEFAULT_ORDER);
+                InferenceList.Remove(IBT.Inference.NONE);
+            }
+            
+            Console.WriteLine(SelectionList);
+            Console.WriteLine(InferenceList);
+            int i = 0;
+            foreach (var selection in SelectionList)
+            {
+                foreach (var inference in InferenceList)
                 {
-                    //foreach (var LCV in new bool[] { true, false })
-                    //{
-                        // var inference = IBT.Inference.AC3;
-                        var LCV = false;
-                        var improved =  new ImprovedBacktrackingStrategy();
+                    foreach (var LCV in new bool[] { true, false })
+                    {
+                        var improved = new ImprovedBacktrackingStrategy();
                         improved.enableLCV(LCV);
                         improved.setVariableSelection(selection);
                         improved.setInference(inference);
 
-                        // StrInference_ = inference.toString();
-                        // StrLCV_ = LCV.ToString();
-                        // StrSelection_ = selection.ToString();
-                        // RunFunctionWithTimeout(() => Solve(s, improved, "IBT", difficulty));
-                        Solve(s.CloneSudoku(), improved, "IBT", difficulty, inference.ToString(), selection.ToString(), LCV.ToString());
-                        // Solve(s, improved, "IBT", inference.toString(),
-                        //     selection.ToString(),
-                        //     LCV.ToString(), difficulty);
-                        // }
+                        Solve(s.CloneSudoku(), improved, "IBT", inference.ToString(), selection.ToString(),
+                            LCV.ToString(), difficulty);
+                        i++;
+                    }
                 }
             }
         }
-        
+
         public SudokuGrid Solve(SudokuGrid s, SolutionStrategy _Strategy, String name
-            ,  string difficulty, string inference, string selection, string LCV)
+            ,  string inference, string selection, string LCV, string difficulty)
         {
             //Construction du CSP en utilisant CspHelper
             var objCSp = SudokuCSPHelper.GetSudokuCSP(s);
@@ -90,13 +121,15 @@ namespace Sudoku.CSPwithAIMA
             
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            
+            // Console.WriteLine(s.toString());
             // Utilisation de la stratégie pour résoudre le CSP
             var assignment = _Strategy.solve(objCSp);
             
             stopwatch.Stop();
             TimeSpan elapsedTime = stopwatch.Elapsed;
             
+            if (assignment == null)
+                Console.WriteLine("NULLLLLLL");
             //Utilisation de CSPHelper pour traduire l'assignation en SudokuGrid
             SudokuCSPHelper.SetValuesFromAssignment(assignment, s);
 
@@ -107,20 +140,16 @@ namespace Sudoku.CSPwithAIMA
                 , infos.AssignmentCount.ToString(), s.IsValid(cpySudoku).ToString()
                 , "5000", difficulty, sudokuRaw
             };
-
-
-            // if (!(infos.DomainCount == 0 && infos.AssignmentCount == 81))
-            // {
-                Console.WriteLine(infos.getResults() + " " + elapsedTime);
-                Writer.WriteLine(string.Join(',', items2));
-            // }
+            
+            Console.WriteLine(infos.getResults() + "  " + elapsedTime);
+            Writer.WriteLine(string.Join(',', items2));
 
             return s;
         }
         
         // public bool RunFunctionWithTimeout(Action function)
         // {
-        //     var timeout = TimeSpan.FromSeconds(20);
+        //     var timeout = TimeSpan.FromSeconds(5);
         //     using (var cancellationTokenSource = new CancellationTokenSource())
         //     {
         //         Task task = Task.Run(() => function(), cancellationTokenSource.Token);
@@ -133,6 +162,5 @@ namespace Sudoku.CSPwithAIMA
         //         return true;
         //     }
         // }
-        
     }
 }
