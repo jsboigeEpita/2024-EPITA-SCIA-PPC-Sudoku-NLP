@@ -4,7 +4,7 @@ using java.lang;
 namespace Sudoku.CSPwithAIMA
 {
 
-    //Pour pouvoir faire de l'instrumentation au besoin
+    // Class that implements CSPStateListener that ables to keep track of state changes of a solver
     public class StepCounter : CSPStateListener
     {
 
@@ -18,32 +18,29 @@ namespace Sudoku.CSPwithAIMA
             this.DomainCount = 0;
         }
 
-        public virtual void stateChanged(Assignment assignment, aima.core.search.csp.CSP csp)
+        public void stateChanged(Assignment assignment, aima.core.search.csp.CSP csp)
         {
             ++this.AssignmentCount;
         }
 
-        public virtual void stateChanged(aima.core.search.csp.CSP csp)
+        public void stateChanged(aima.core.search.csp.CSP csp)
         {
             ++this.DomainCount;
         }
 
-        public virtual void reset()
+        public void reset()
         {
             this.AssignmentCount = 0;
             this.DomainCount = 0;
         }
 
-        public virtual string getResults()
+        public string getResults()
         {
             StringBuffer stringBuffer = new StringBuffer();
             stringBuffer.append(new StringBuilder().append("assignment changes: ").append(this.AssignmentCount).toString());
-            if (this.DomainCount != 0)
-                stringBuffer.append(new StringBuilder().append(", domain changes: ").append(this.DomainCount).toString());
+            stringBuffer.append(new StringBuilder().append(", domain changes: ").append(this.DomainCount).toString());
             return stringBuffer.toString();
         }
-
-
 
         public override string ToString()
         {
