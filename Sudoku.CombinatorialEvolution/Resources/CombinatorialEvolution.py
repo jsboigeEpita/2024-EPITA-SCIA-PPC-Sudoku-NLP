@@ -1,42 +1,5 @@
 import numpy as np
 import random
-import time
-
-sudoku_test = [    
-    0, 0, 0, 0, 0, 0, 0, 0, 0,
-    9, 6, 7, 3, 4, 5, 8, 2, 1,
-    2, 5, 1, 8, 7, 6, 4, 9, 3,
-    5, 4, 8, 1, 3, 2, 9, 7, 6,
-    7, 2, 9, 5, 6, 4, 1, 3, 8,
-    1, 3, 6, 7, 9, 8, 2, 4, 5,
-    3, 7, 2, 6, 8, 9, 5, 1, 4,
-    8, 1, 4, 2, 5, 3, 7, 6, 9,
-    6, 9, 5, 4, 1, 7, 3, 8, 2
-]
-
-sudoku_moyen = [
-    0, 0, 3, 0, 2, 0, 6, 0, 0,
-    9, 0, 0, 3, 0, 5, 0, 0, 1,
-    0, 0, 1, 8, 0, 6, 4, 0, 0,
-    0, 0, 8, 1, 0, 2, 9, 0, 0,
-    7, 0, 0, 0, 0, 0, 0, 0, 8,
-    0, 0, 6, 7, 0, 8, 2, 0, 0,
-    0, 0, 2, 6, 0, 9, 5, 0, 0,
-    8, 0, 0, 2, 0, 3, 0, 0, 9,
-    0, 0, 5, 0, 1, 0, 3, 0, 0
-]
-
-sudoku_diabolique = [
-    0, 0, 0, 6, 0, 0, 0, 0, 5,
-    0, 7, 0, 0, 0, 8, 2, 3, 0,
-    0, 0, 0, 0, 5, 0, 0, 9, 6,
-    6, 3, 0, 5, 0, 0, 0, 8, 0,
-    0, 9, 8, 0, 4, 0, 0, 0, 7,
-    0, 0, 2, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 7, 0, 0, 4, 0,
-    0, 6, 0, 0, 0, 0, 7, 0, 8,
-    4, 2, 0, 0, 0, 0, 0, 0, 9
-]
 
 def compute_error(sudoku: np.ndarray) -> int:
     '''
@@ -210,27 +173,12 @@ class Solver:
         return np.array([])
     
     def solve(self):
-        restart = 0
-        while restart < self.max_restarts:
+        while True:
             res = self.solve_evo()
             if len(res) != 0:
                 return res
-            restart += 1
-            print("Restarting...")
-            
-        return np.array([])
 
-if __name__ == '__main__':
-    random.seed()
-
-    solver = Solver(np.array(sudoku_diabolique), nb_organisms=200, max_epochs=3000, max_restarts=20, err_rate=0.009, worker_rate=0.90)
-
-    start = time.perf_counter()
-    result = solver.solve()
-    end = time.perf_counter()
-
-    if len(result) != 0:
-        print(f"Solution found in {end-start} seconds !")
-        np.savetxt("result", result.reshape((9, 9)), fmt='%d', delimiter='\t')
-    else:
-        print("No solution found...")
+np.random.seed()
+solver = Solver(np.array(instance).flatten(), nb_organisms=200, max_epochs=3000, max_restarts=20, err_rate=0.009, worker_rate=0.90)
+result = solver.solve()
+r = result.astype("int").reshape((9, 9)).tolist()

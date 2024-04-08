@@ -17,5 +17,6 @@
     <ProjectReference Include="..\Sudoku.Shared\Sudoku.Shared.csproj" />
     <ProjectReference Include="..\Sudoku.PSO\Sudoku.PSO.csproj" />
     <ProjectReference Include="..\Sudoku.Recuit\Sudoku.Recuit.csproj" />
+    <ProjectReference Include="..\Sudoku.CombinatorialEvolution\Sudoku.CombinatorialEvolution.csproj" />
   </ItemGroup>
 </Project>
