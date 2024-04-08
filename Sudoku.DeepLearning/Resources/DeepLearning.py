@@ -2,10 +2,10 @@ import numpy as np
 import tensorflow as tf
 import os
 
-# Get the path to the trained model
-path = os.getcwd()
-path = path[:path.rfind('/')]
-path += '/Sudoku.DeepLearning/Resources/cnn_2024_04_08.keras'
+# # Get the path to the trained model
+# path = os.getcwd()
+# path = path[:path.rfind('/')]
+# path += '/Sudoku.DeepLearning/Resources/cnn_2024_04_08.keras'
 
 # Load the trained model
 model = tf.keras.models.load_model(path)
