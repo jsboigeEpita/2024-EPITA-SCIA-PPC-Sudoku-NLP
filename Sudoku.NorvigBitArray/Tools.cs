@@ -1,3 +1,5 @@
+using System.Collections;
+
 namespace Sudoku.Norvig;
 
 public class Tools
@@ -43,7 +45,7 @@ public class Tools
         return unitsToFill;
     }
 
-    public static string Picture(short[] possibleValues)
+    public static string Picture(BitArray[] possibleValues)
     {
         int maxWidth = 0;
         for (int i = 0; i < SURFACE; i++)
@@ -74,9 +76,9 @@ public class Tools
         return buffer;
     }
 
-    private static string CellToString(short possibleValue)
+    private static string CellToString(BitArray possibleValue)
     {
-        if (possibleValue == 0x1FF)
+        if (possibleValue.HasAllSet())
             return ".";
 
         if (IsOnlyOneBitSet(possibleValue))
@@ -86,7 +88,7 @@ public class Tools
 
         for (int i = 1; i < SIZE + 1; i++)
         {
-            if ((possibleValue & (1 << (i-1))) == 0)
+            if (!possibleValue.Get(i - 1))
                 continue;
 
             representation += i.ToString();
@@ -107,9 +109,26 @@ public class Tools
 
         return new string(' ', leftPadding) + s + new string(' ', rightPadding);
     }
-    
+
+    public static int ConvertBitwiseToDecimal(BitArray value)
+    {
+        for (int i = 0; i < SIZE; i++)
+            if (value.Get(i))
+                return i + 1;
+        return -1;
+    }
+
     public static int ConvertBitwiseToDecimal(short value) => int.TrailingZeroCount(value) + 1;
-    public static bool IsOnlyOneBitSet(short value) => (value & (value - 1)) == 0;
+
+    public static bool IsOnlyOneBitSet(BitArray value)
+    {
+        byte count = 0;
+        for (int i = 0; i < SIZE; i++)
+            if (value.Get(i))
+                count++;
+
+        return count == 1;
+    }
 
     private static void AddRow(int cell, HashSet<int> set)
     {

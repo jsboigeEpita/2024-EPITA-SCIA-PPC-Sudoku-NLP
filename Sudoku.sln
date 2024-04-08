@@ -38,6 +38,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sudoku.DeepLearning", "Sudo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sudoku.ORTools", "Sudoku.ORTools\Sudoku.ORTools.csproj", "{090E1975-E58A-48B0-B299-481EFE1ECF05}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku.NorvigBitArray", "Sudoku.NorvigBitArray\Sudoku.NorvigBitArray.csproj", "{C7FC10CF-9628-47C9-866F-B526AB5F64B7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
