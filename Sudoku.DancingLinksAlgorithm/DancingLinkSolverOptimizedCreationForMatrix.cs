@@ -6,7 +6,7 @@ using DlxLib;
 namespace Sudoku.GeneticAlgorithm;
 
 
-public class DancingLinkSolverWithDlxMatrix : ISudokuSolver
+public class DancingLinkSolverOptimizedCreationForMatrix : ISudokuSolver
 {
     /// <summary>
     /// Solves the given Sudoku grid using a backtracking algorithm.
