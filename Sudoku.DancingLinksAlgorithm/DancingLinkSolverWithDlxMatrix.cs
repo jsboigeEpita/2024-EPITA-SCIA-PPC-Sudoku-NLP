@@ -68,35 +68,18 @@ public class DancingLinkSolverWithDlxMatrix : ISudokuSolver
                 }
             }
         }
-
         var solutions = new Dlx()
             .Solve(matrix);;
-        return SolutionToGrid(solutions.First(), matrix, s);
+        return SolutionToGrid(solutions.First(), s);
     }
-    private SudokuGrid SolutionToGrid(Solution dlxSolution, int[,] matrix, SudokuGrid s)
+    private SudokuGrid SolutionToGrid(Solution dlxSolution, SudokuGrid s)
     {
         var solution = s.CloneSudoku();
         foreach (int row in dlxSolution.RowIndexes)
         {
-            int x = 0, y = 0, nb = 0;
-            for (int j = 0; j < 81; j++)
-            {
-                if (matrix[row, j] == 1)
-                {
-                    x = j / 9;
-                    y = j % 9;
-                    break;
-                }
-            }
-
-            for (int j = 81; j < 162; j++)
-            {
-                if (matrix[row, j] == 1)
-                {
-                    nb = (j - 81) % 9 + 1;  
-                    break;
-                }
-            }
+            int x = row / 81;
+            int y = (row % 81) / 9;
+            int nb = (row % 9) + 1;
 
             if (solution.Cells[x, y] == 0)
                 solution.Cells[x, y] = nb;
