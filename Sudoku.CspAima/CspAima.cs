@@ -44,26 +44,22 @@ namespace Sudoku.CSPwithAIMA
 
     // A FEW PARAMETERS:
 
-    /** L'attribut LCV (Least Constraining Value):
+    /** Attribut LCV (Least Constraining Value):
      * It is a value-level ordering heuristic that assigns the next value that yields the highest number of consistent
      * values of neighboring variables. Intuitively, this procedure chooses first the values that are most likely to
      * work.
      *
-     * L'attribut Inference:
-     * est une méthode utilisée pour développer des algorithmes informatisés afin de résoudre un
-     * problème donné.Ici, la méthode "Forward Checking" est utilisée pour conserver et vérifier de nouvelles inférences
-     * qui découlent des affectations.
+     * 'Inference':
+     * Is a method used to develop computer algorithms to solve a given problem.
+     * Here, the "Forward Checking" method is used to maintain and verify new inferences resulting from assignments.
      *
-     * L'attribut Selection représente:
-     * la façon dont la variable à affecter est choisie.
-     * Dans ce cas, le "MRV-Deg" est utilisé, qui se compose du plus petit Reste à Affecter (MRV) couplé à la technique
-     * de sommation des incidentes (Deg).
-     *
-     * L'attribut StrategyType:
-     * détermine quelle stratégie de recherche backtrack sera utilisée.
-     * Dans ce cas, l'algorithme à recherche arrière améliorée est utilisé.
-     * Avec EnableLCV = false,
-    **/
+     * 'Selection':
+     * How the variable to be assigned is chosen.
+     * In this case, "MRV-Deg" is used, which consists of the Minimum Remaining Values (MRV) coupled with the Degree heuristic.
+     * 
+     * 'StrategyType':
+     * Determines which backtracking search strategy will be used.
+     **/
 
     //--------------------------------------------------BACKTRACKING--------------------------------------------------//
 
@@ -221,18 +217,3 @@ namespace Sudoku.CSPwithAIMA
         }
     }
 }
-
-
-/*L'attribut LCV (Least Constraining Value) permet de mettre l'accent sur les valeurs qui limitent le moins le nombre d'autres valeurs possibles pour les variables non assignées.
-
-L'attribut Inference est une méthode utilisée pour développer des algorithmes informatisés afin de résoudre un problème donné.
-Ici, la méthode "Forward Checking" est utilisée pour conserver et vérifier de nouvelles inférences qui découlent des affectations.
-
-L'attribut Selection représente la façon dont la variable à affecter est choisie.
-Dans ce cas, le "MRV-Deg" est utilisé, qui se compose du plus petit Reste à Affecter (MRV) couplé à la technique de sommation des incidentes (Deg).
-
-L'attribut StrategyType détermine quelle stratégie de recherche backtrack sera utilisée.
-Dans ce cas, l'algorithme à recherche arrière améliorée est utilisé.
-
-Enfin, l’attribut MaxSteps détermine le nombre maximal d'étapes que l'algorithme effectuera avant d'interrompre la recherche et de retourner un échec en option.*/
-    
