@@ -15,7 +15,7 @@ namespace Sudoku.DeepLearning
 	{
 		private static string _modelAbsolutePath;
 
-		private const string ModelRelativePath = "Sudoku.DeepLearning/Resources/cnn_2024_04_08.keras";
+		private const string ModelRelativePath = "cnn_2024_04_08.keras";
 
 		private const string ModelUrl =
 			@"https://drive.usercontent.google.com/download?id=19MVgdm-HiR4RonH-JTMNUXda68-0v6vX&export=download&authuser=0&confirm=t&uuid=5133564c-9c5d-4034-8c6f-1270073735c3&at=APZUnTV2ZGVvBN5IFKa3RktC4eQ7%3A1712614910524";
