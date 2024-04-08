@@ -1,22 +1,28 @@
-﻿using System.IO.Pipes;
+﻿using System.Collections;
+using System.IO.Pipes;
 using Sudoku.Shared;
 
 namespace Sudoku.Norvig;
 
-public class NorvigSolver : ISudokuSolver
+public class NorvigSolverBitArray : ISudokuSolver
 {
-    private short[] _possibleValues; // a 1D array that represent all possible value of a given cell of the sudoku
+    private BitArray[] _possibleValues; // a 1D array that represent all possible value of a given cell of the sudoku
 
 
-    public NorvigSolver()
+    public NorvigSolverBitArray()
     {
-        _possibleValues = new short[Tools.SURFACE];
+        _possibleValues = new BitArray[Tools.SURFACE];
     }
 
     public SudokuGrid Solve(SudokuGrid s)
     {
         // Reset of grid: every cell has every number as a possible value.
-        Parallel.For(0, Tools.SURFACE, (i, state) => _possibleValues[i] = 0x1FF);
+        Parallel.For(0, Tools.SURFACE, (i, state) =>
+        {
+            _possibleValues[i] = new BitArray(Tools.SIZE);
+            for (int j = 0; j < Tools.SIZE; j++)
+                _possibleValues[i].Set(j, true);
+        });
         Constrain(s);
 
         if (!NoMorePossibleValues())
@@ -32,19 +38,19 @@ public class NorvigSolver : ISudokuSolver
         // we search the cell that has the least possible value
         int cell = FindCellWithLeastPossibilities();
 
-        // if no cell has multiple possibilites, the search has succeeded
+        // if no cell has multiple possibilities, the search has succeeded
         if (cell == -1)
             return true;
-        
-        for (short i = 1; i < 0x1FF; i = (short)(i << 1))
+
+        for (short i = 0; i < 9; i++)
         {
             // ignore all i which are not a possible value of the cell
-            if ((_possibleValues[cell] & i) == 0)
+            if (!_possibleValues[cell].Get(i))
                 continue;
 
-            int digit = Tools.ConvertBitwiseToDecimal(i);
+            int digit = i + 1;
 
-            short[] save = (short[])_possibleValues.Clone();
+            BitArray[] save = DeepCopy(_possibleValues);
             
             Fill(cell, digit);
             bool hasSucceeded = Search();
@@ -58,15 +64,31 @@ public class NorvigSolver : ISudokuSolver
         return false;
     }
 
+    private BitArray[] DeepCopy(BitArray[] possibleValues)
+    {
+        BitArray[] copy = new BitArray[Tools.SURFACE];
+
+        for (int i = 0; i < Tools.SURFACE; i++)
+        {
+            copy[i] = new BitArray(Tools.SIZE);
+            for (int j = 0; j < Tools.SIZE; j++)
+                copy[i].Set(j, possibleValues[i].Get(j));
+        }
+
+        return copy;
+    }
+
     private int FindCellWithLeastPossibilities()
     {
-        uint lowestNbBitsSet = 9;
+        byte lowestNbBitsSet = 9;
         int highestCell = -1;
         for (int cell = 0; cell < Tools.SURFACE; cell++)
         {
             // find the number of bits equals to one = find the number of possible values of cell
-            uint setBits = System.Runtime.Intrinsics.X86.Popcnt.PopCount((uint)_possibleValues[cell]);
-
+            byte setBits = 0;
+            for (int j = 0; j < Tools.SIZE; j++)
+                if (_possibleValues[cell].Get(j))
+                    setBits++;
             if (setBits < lowestNbBitsSet && setBits != 1)
             {
                 highestCell = cell;
@@ -136,24 +158,20 @@ public class NorvigSolver : ISudokuSolver
     
     private bool Eliminate(int cell, int digit)
     {
-        // bitmask in order to select the (digit - 1) bit
-        short bitmask = (short)(0x1 << (digit - 1));
-
         // if we already eliminated the digit, we return true
         // as to say we successfully eliminated it already
-        if ((_possibleValues[cell] & bitmask) == 0)
+        if (!_possibleValues[cell].Get(digit - 1))
             return true;
 
-        short inverseBitmask = (short)(bitmask ^ 0x1FF);
-        
         // we eliminate the bit that represents `digit`
-        short newPossibleValues = (short)(_possibleValues[cell] & inverseBitmask);
+        BitArray newPossibleValues = _possibleValues[cell];
+        newPossibleValues.Set(digit - 1, false);
 
         _possibleValues[cell] = newPossibleValues;
         
         // if there is no possible value left
         // that is not a legal elimination
-        if (newPossibleValues == 0)
+        if (!newPossibleValues.HasAnySet())
             return false;
 
 
@@ -180,7 +198,12 @@ public class NorvigSolver : ISudokuSolver
         {
             HashSet<int> unit = Tools.units[cell, i];
             // construction of the list of units that has `digit` as a possibility
-            IEnumerable<int> possibleDigitPlaces = unit.Where(x => (bitmask & _possibleValues[x]) != 0);
+            IEnumerable<int> possibleDigitPlaces = unit.Where(x =>
+            {
+                var possibility = _possibleValues[x];
+                return possibility.Get(digit - 1);
+            });
+            // IEnumerable<int> possibleDigitPlaces = unit.Where(x => (bitmask & _possibleValues[x]) != 0);
             if (!possibleDigitPlaces.Any() ||
                 (possibleDigitPlaces.Count() == 1 && !Fill(possibleDigitPlaces.First(), digit)))
             {
