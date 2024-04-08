@@ -15,7 +15,6 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Sudoku.NorvigBitArray\Sudoku.NorvigBitArray.csproj" />
     <ProjectReference Include="..\Sudoku.Norvig\Sudoku.Norvig.csproj" />
     <ProjectReference Include="..\Sudoku.DancingLinks\Sudoku.DancingLinks.csproj" />
     <ProjectReference Include="..\Sudoku.ORTools\Sudoku.ORTools.csproj" />
