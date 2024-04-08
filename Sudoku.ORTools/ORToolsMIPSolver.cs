@@ -1,9 +1,9 @@
-﻿using Google.OrTools.LinearSolver;
+using Google.OrTools.LinearSolver;
 using Sudoku.Shared;
 
 namespace Sudoku.ORTools
 {
-    public class OrToolsLinearSolver : ISudokuSolver
+    public class OrToolsMipSolver : ISudokuSolver
     {
         private const int Dimension = 9;
         private const int SubGrid = 3;
