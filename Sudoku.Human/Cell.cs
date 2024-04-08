@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 #if DEBUG
 using System.Diagnostics;
 using System.Drawing;
+using System.Reflection.Metadata;
 #endif
 
 namespace Sudoku.Human;
@@ -28,6 +29,8 @@ public sealed class Cell
     public int Value { get; private set; }
     internal Candidates CandI;
 
+    public Dictionary<int, Color> colors;
+
     public Candidates Candidates => CandI;
     /// <summary>The <see cref="NUM_VISIBLE_CELLS"/> cells this cell is grouped with. Block, Row, Column</summary>
     public ReadOnlyCollection<Cell> VisibleCells { get; }
@@ -48,6 +51,7 @@ public sealed class Cell
         Block = null!;
         Column = null!;
         Row = null!;
+        colors = new Dictionary<int, Color>();
     }
 
     internal Cell(Puzzle puzzle, Cell cell)
@@ -66,6 +70,7 @@ public sealed class Cell
         Block = null!;
         Column = null!;
         Row = null!;
+        colors = cell.colors;
     }
     internal void InitRegions()
     {
@@ -113,6 +118,7 @@ public sealed class Cell
         }
         return changed;
     }
+
     internal static bool ChangeCandidates(IEnumerable<Cell> cells, IEnumerable<int> digits, bool remove = true)
     {
         bool changed = false;
@@ -202,5 +208,13 @@ public sealed class Cell
             }
         }
         return cache.Slice(0, counter);
+    }
+
+    public bool include_only(List<int> keys) {
+        Candidates c =  new Candidates(keys);
+
+        Span<int> newCandidates = stackalloc int[9];
+        newCandidates = CandI.Intersect(c, newCandidates);
+        return CandI.Set(newCandidates, true);
     }
 }

@@ -45,6 +45,7 @@ partial class Solver
 			new SolverTechnique(UniqueRectangle, "https://hodoku.sourceforge.net/en/tech_ur.php"),
 			new SolverTechnique(HiddenRectangle, "https://hodoku.sourceforge.net/en/tech_ur.php#hr"),
 			new SolverTechnique(AvoidableRectangle, "https://hodoku.sourceforge.net/en/tech_ur.php#ar"),
+			new SolverTechnique(Medusas, "https://www.sudokuwiki.org/3D_Medusa")
 		];
 	}
 }

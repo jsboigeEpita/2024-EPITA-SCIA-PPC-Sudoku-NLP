@@ -2,6 +2,9 @@ using Sudoku.Shared;
 
 namespace CustomDlxLib
 {
+    /// <summary>
+    /// Dlx solver from scratch
+    /// </summary>
     public class CustomDlx
     {
         private SudokuGrid s;
@@ -12,11 +15,12 @@ namespace CustomDlxLib
         {
             this.s = s;
         }
-
+        
         public void Solve()
         {
             init();
             search();
+            //convert solution into a SudokuGrid 
             foreach (Node node in solution)
             {
                 int value = node.RowIndex % 9;
@@ -26,9 +30,12 @@ namespace CustomDlxLib
             }
         }
 
+        /// <summary>
+        /// Init the four-way-linked representation of the exact cover problem into a matrix of nodes.
+        /// </summary>
         public void init()
         {
-            root = new ColumnNode(0);
+            root = new ColumnNode();
             root.Left = root;
             root.Right = root;
 
@@ -36,10 +43,10 @@ namespace CustomDlxLib
             ColumnNode[] columnsNodes = new ColumnNode[324];
             int columnsAppenderIdx = 0;
 
-            // create row column constraints
+            // create all constraints into column node
             for (int i = 0; i < 324; i++)
             {
-                ColumnNode newColumn = new ColumnNode(0);
+                ColumnNode newColumn = new ColumnNode();
                 columnsNodes[columnsAppenderIdx++] = newColumn;
                 newColumn.Up = newColumn;
                 newColumn.Down = newColumn;
@@ -52,6 +59,7 @@ namespace CustomDlxLib
                 c = newColumn;
             }
 
+            // create all nodes and link them to their neighbors
             for (int i = 0; i < 9; i++)
             {
                 for (int j = 0; j < 9; j++)
@@ -65,8 +73,10 @@ namespace CustomDlxLib
                     int columnNumberConstraintIndex = 9 * 9 * 2 + 9 * i;
                     int boxNumberConstraintIndex = 9 * 9 * 3 + blockIndex * 9;
 
+                    // if a cell in the sudoku is filled, only one row of nodes is created
                     if (value >= 0)
                     {
+                        // RC=RowColumn RN=RowNumber CN=ColumnNumber BN=BoxNumber
                         var RCColumnNode = columnsNodes[singleColumnIndex];
                         var RNColumnNode = columnsNodes[rowNumberConstraintIndex + value];
                         var CNColumnNode = columnsNodes[columnNumberConstraintIndex + value];
@@ -116,6 +126,7 @@ namespace CustomDlxLib
                         BNColumnNode.Up.Down = BNNode;
                         BNColumnNode.Up = BNNode;
                     }
+                    // otherwise 9 rows of nodes are created
                     else
                     {
                         for (int d = 0; d < 9; d++)
@@ -177,6 +188,9 @@ namespace CustomDlxLib
             }
         }
 
+        /// <summary>
+        /// Covers the column, it removes all the nodes of the column of the linked list
+        /// </summary>
         public void cover(Node c)
         {
             c.Right.Left = c.Left;
@@ -192,6 +206,9 @@ namespace CustomDlxLib
             }
         }
 
+        /// <summary>
+        /// Uncovers the column, it adds back all the nodes of the column to the linked list
+        /// </summary>
         public void uncover(Node c)
         {
             for (Node i = c.Up; i != c; i = i.Up)
@@ -208,6 +225,12 @@ namespace CustomDlxLib
             c.Left.Right = c;
         }
 
+        /// <summary>
+        /// Solve the exact cover problem.
+        /// Recursively search the solution using the principles of backtracking with the cover and uncover methods.
+        /// While all the conditions are met, we continue to cover the columns, otherwise we uncover them.
+        /// The solution is progressively stored in "solution", a linked list of nodes.
+        /// </summary>
         public bool search()
         {
             if (root.Right == root)
@@ -253,25 +276,21 @@ namespace CustomDlxLib
 
             return false;
         }
-
+        
+        /// <summary>
+        /// The class Node contains all the information about the left, right, up and down nodes as well as the rowIndex
+        /// in order to find the value once we resolve the exact cover problem and column in which the node is in.
+        /// We created a class ColumnNode inherited from Node that is a property of the columns. This ColumnNode
+        /// contains the information about the size of the column.
+        /// </summary>
         public class Node
         {
-            public Node Left = null;
-            public Node Right = null;
-            public Node Up = null;
-            public Node Down = null;
-            public ColumnNode Column = null;
-            public int RowIndex = -1;
-
-            public Node(Node left, Node right, Node up, Node down, ColumnNode column, int rowIndex)
-            {
-                Left = left;
-                Right = right;
-                Up = up;
-                Down = down;
-                Column = column;
-                RowIndex = rowIndex;
-            }
+            public Node Left;
+            public Node Right;
+            public Node Up;
+            public Node Down;
+            public ColumnNode Column;
+            public int RowIndex;
 
             public Node()
             {
@@ -283,15 +302,10 @@ namespace CustomDlxLib
                 RowIndex = rowIndex;
             }
         }
-
+        
         public class ColumnNode : Node
         {
-            internal int Size = 0;
-
-            public ColumnNode(int size)
-            {
-                Size = size;
-            }
+            internal int Size;
         }
     }
 }
