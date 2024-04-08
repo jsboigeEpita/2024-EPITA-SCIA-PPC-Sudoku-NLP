@@ -105,9 +105,11 @@ or
  conda install --file requirements.txt
 ```
 
-4. Download pre-trained model from Google Drive and move it within `Resources` folder
-[https://drive.google.com/file/d/1W953u2DMsJ_l2PeL-zCyPxXLHEXn2Y8G/view?usp=sharing](https://drive.google.com/file/d/19MVgdm-HiR4RonH-JTMNUXda68-0v6vX/view?usp=sharing)
-
-5. Indicate the pre-trained model path in `DeepLearning.py` and in notebook if necessary
-6. Run `Program.cs`script in `Sudoku.Benchmark` folder
-7. Interact with terminal and choose our `DeepLearningSolver` (7th position) among all sudoku solvers.
+4. Download pre-trained model from Google Drive and move it within `Resources` folder </br>
+[Google Drive](https://drive.google.com/file/d/19MVgdm-HiR4RonH-JTMNUXda68-0v6vX/view?usp=sharing)
+5. Download appropriate datasets </br>
+   [9 Millions Sudokus](https://www.kaggle.com/datasets/rohanrao/sudoku) </br>
+   [1 Million Sudokus](https://www.kaggle.com/datasets/bryanpark/sudoku)
+7. Indicate the pre-trained model path in `DeepLearning.py` and in notebook if necessary
+8. Run `Program.cs`script in `Sudoku.Benchmark` folder
+9. Interact with terminal and choose our `DeepLearningSolver` (7th position) among all sudoku solvers.
