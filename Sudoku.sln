@@ -38,9 +38,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sudoku.DeepLearning", "Sudo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sudoku.ORTools", "Sudoku.ORTools\Sudoku.ORTools.csproj", "{090E1975-E58A-48B0-B299-481EFE1ECF05}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku.NorvigBitArray", "Sudoku.NorvigBitArray\Sudoku.NorvigBitArray.csproj", "{0EA4822C-E839-442E-9CE2-0596366134F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sudoku.NorvigBitArray", "Sudoku.NorvigBitArray\Sudoku.NorvigBitArray.csproj", "{0EA4822C-E839-442E-9CE2-0596366134F6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku.CspAima", "Sudoku.CspAima\Sudoku.CspAima.csproj", "{8694707C-7C3E-4586-829B-F09EE25516D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sudoku.CspAima", "Sudoku.CspAima\Sudoku.CspAima.csproj", "{8694707C-7C3E-4586-829B-F09EE25516D5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sudoku.CombinatorialEvolution", "Sudoku.CombinatorialEvolution\Sudoku.CombinatorialEvolution.csproj", "{95277762-63C4-417D-B95D-285918C89B98}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sudoku.Recuit", "Sudoku.Recuit\Sudoku.Recuit.csproj", "{95BEDB28-77C5-4465-9BE5-66F5E981FDC7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -96,10 +100,6 @@ Global
 		{1A8C7D67-ABB9-4054-A94C-661C193FF7E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A8C7D67-ABB9-4054-A94C-661C193FF7E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A8C7D67-ABB9-4054-A94C-661C193FF7E7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8694707C-7C3E-4586-829B-F09EE25516D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8694707C-7C3E-4586-829B-F09EE25516D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8694707C-7C3E-4586-829B-F09EE25516D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8694707C-7C3E-4586-829B-F09EE25516D5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D88FB10F-103B-4AD1-B3C3-727C41CC6868}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D88FB10F-103B-4AD1-B3C3-727C41CC6868}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D88FB10F-103B-4AD1-B3C3-727C41CC6868}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -112,6 +112,18 @@ Global
 		{0EA4822C-E839-442E-9CE2-0596366134F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0EA4822C-E839-442E-9CE2-0596366134F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0EA4822C-E839-442E-9CE2-0596366134F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8694707C-7C3E-4586-829B-F09EE25516D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8694707C-7C3E-4586-829B-F09EE25516D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8694707C-7C3E-4586-829B-F09EE25516D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8694707C-7C3E-4586-829B-F09EE25516D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95277762-63C4-417D-B95D-285918C89B98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95277762-63C4-417D-B95D-285918C89B98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95277762-63C4-417D-B95D-285918C89B98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95277762-63C4-417D-B95D-285918C89B98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95BEDB28-77C5-4465-9BE5-66F5E981FDC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95BEDB28-77C5-4465-9BE5-66F5E981FDC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95BEDB28-77C5-4465-9BE5-66F5E981FDC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95BEDB28-77C5-4465-9BE5-66F5E981FDC7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

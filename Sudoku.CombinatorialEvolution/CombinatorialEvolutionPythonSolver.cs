@@ -1,9 +1,9 @@
 ﻿using Python.Runtime;
 using Sudoku.Shared;
 
-namespace Sudoku.PSO;
+namespace Sudoku.CombinatorialEvolution;
 
-public class PSOSolver : PythonSolverBase
+public class CombinatorialEvolutionSolver : PythonSolverBase
 {
 
     public override Shared.SudokuGrid Solve(Shared.SudokuGrid s)
@@ -17,13 +17,13 @@ public class PSOSolver : PythonSolverBase
         using (PyModule scope = Py.CreateScope())
         {
             // convert the Cells array object to a PyObject
-            PyObject pyCells = s.Cells.ToJaggedArray().ToPython();
+            PyObject pyCells = s.Cells.ToPython();
 
             // create a Python variable "instance"
             scope.Set("instance", pyCells);
 
             // run the Python script
-            string code = Resources.PSO_py;
+            string code = Resources.CombinatorialEvolution_py;
             scope.Exec(code);
 
             //Retrieve solved Sudoku variable

@@ -26,6 +26,9 @@
     <ProjectReference Include="..\Sudoku.Backtracking\Sudoku.Backtracking.csproj" />
     <ProjectReference Include="..\Sudoku.GraphColoration\Sudoku.GraphColoration.csproj" />
     <ProjectReference Include="..\Sudoku.Shared\Sudoku.Shared.csproj" />
+    <ProjectReference Include="..\Sudoku.PSO\Sudoku.PSO.csproj" />
+    <ProjectReference Include="..\Sudoku.Recuit\Sudoku.Recuit.csproj" />
+    <ProjectReference Include="..\Sudoku.CombinatorialEvolution\Sudoku.CombinatorialEvolution.csproj" />
     <ProjectReference Include="..\Sudoku.Z3\Sudoku.Z3.csproj" />
     <ProjectReference Include="..\Sudoku.Human\Sudoku.Human.csproj" />
     <ProjectReference Include="..\Sudoku.GeneticAlg\Sudoku.GeneticAlg.csproj" />
