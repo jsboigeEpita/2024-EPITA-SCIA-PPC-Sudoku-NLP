@@ -19,6 +19,18 @@ public struct Candidates : IEnumerable<int>
 		_data = possible ? ALL_POSSIBLE : NONE_POSSIBLE;
 	}
 
+	internal Candidates(Candidates candidate)
+	{
+		_data = candidate._data;
+	}
+
+	internal Candidates(List<int> keys) {
+		_data = NONE_POSSIBLE;
+		foreach (int i in keys) {
+            Set(i, true);
+        }
+	}
+
 	public readonly bool IsCandidate(int digit)
 	{
 		if (digit is < 1 or > 9)

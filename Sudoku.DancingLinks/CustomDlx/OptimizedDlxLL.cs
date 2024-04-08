@@ -31,6 +31,7 @@ namespace CustomDlxLib
                 int value = node.RowIndex % 9;
                 int j = (node.RowIndex / 9) % 9;
                 int i = node.RowIndex / 81;
+
                 s.Cells[i, j] = value + 1;
             }
             // var convertTime = (DateTime.Now - start).TotalMilliseconds;
