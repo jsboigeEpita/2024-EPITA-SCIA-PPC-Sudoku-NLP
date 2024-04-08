@@ -8,82 +8,81 @@ namespace Sudoku.ORTools
     {
         private const int Dimension = 9;
         private const int SubGrid = 3;
+        private readonly Solver _solver = new Solver("CpSimple");
         
         public SudokuGrid Solve(SudokuGrid s)
         {
             int[,] grid = s.Cells;
-            Solver solver = new Solver("CpSimple");
-            IntVar[,] matrix = CreateConstraints(solver, grid);
-            DecisionBuilder db = solver.MakePhase(matrix.Flatten(), Solver.INT_VAR_SIMPLE, Solver.INT_VALUE_SIMPLE);
             
-            solver.NewSearch(db);
+            IntVar[,] matrix = AddConstraints(_solver, grid);
+            DecisionBuilder db = _solver.MakePhase(matrix.Flatten(), Solver.INT_VAR_SIMPLE, Solver.INT_VALUE_SIMPLE);
+            
+            _solver.NewSearch(db);
 
-            while (solver.NextSolution())
+            while (_solver.NextSolution())
             {
-                SudokuGrid res = MakeSolution(matrix);
-                solver.EndSearch();
+                SudokuGrid res = new SudokuGrid();
+                for (int i = 0; i < Dimension; i++)
+                {
+                    for (int j = 0; j < Dimension; j++)
+                    {
+                        res.Cells[i, j] = (int) matrix[i, j].Value();
+                    }
+                }
+                _solver.EndSearch();
 
                 return res;
             }
 
-            throw new Exception("Unfeasible Sudoku");
+            throw new Exception("Sudoku grid has no solution.");
         }
 
-        private static IntVar[,] CreateConstraints(Solver solver, int[,] grid)
+        private static IntVar[,] AddConstraints(Solver solver, int[,] grid)
         {
-            IntVar[,] matrix = solver.MakeIntVarMatrix(Dimension, Dimension, 1, 9, "matrix");
+            IntVar[,] g = solver.MakeIntVarMatrix(Dimension, Dimension, 1, 9, "g");
 
-            // Add constraints for pre-filled cells
             for (int i = 0; i < Dimension; i++)
             {
                 for (int j = 0; j < Dimension; j++)
                 {
                     if (grid[i, j] != 0)
                     {
-                        solver.Add(matrix[i, j] == grid[i, j]);
+                        solver.Add(g[i, j] == grid[i, j]);
                     }
                 }
             }
-
-            // Add constraints for rows and columns to have distinct values
             for (int i = 0; i < Dimension; i++)
             {
-                solver.Add(solver.MakeAllDifferent((from j in Enumerable.Range(0, Dimension) select matrix[i, j]).ToArray()));
-                solver.Add(solver.MakeAllDifferent((from j in Enumerable.Range(0, Dimension) select matrix[j, i]).ToArray()));
+                var rowVariables = new IntVar[Dimension];
+                var colVariables = new IntVar[Dimension];
+
+                for (int j = 0; j < Dimension; j++)
+                {
+                    rowVariables[j] = g[i, j];
+                    colVariables[j] = g[j, i];
+                }
+
+                solver.Add(solver.MakeAllDifferent(rowVariables));
+                solver.Add(solver.MakeAllDifferent(colVariables));
             }
 
-            // Add constraints for each region to have distinct values
             for (int row = 0; row < Dimension; row += SubGrid)
             {
                 for (int col = 0; col < Dimension; col += SubGrid)
                 {
-                    IntVar[] regionVars = new IntVar[SubGrid * SubGrid];
-                    for (int r = 0; r < SubGrid; r++)
+                    IntVar[] squareVariables = new IntVar[SubGrid * SubGrid];
+                    for (int i = 0; i < SubGrid; i++)
                     {
-                        for (int c = 0; c < SubGrid; c++)
+                        for (int j = 0; j < SubGrid; j++)
                         {
-                            regionVars[r * SubGrid + c] = matrix[row + r, col + c];
+                            squareVariables[i * SubGrid + j] = g[row + i, col + j];
                         }
                     }
-                    solver.Add(solver.MakeAllDifferent(regionVars));
+                    solver.Add(solver.MakeAllDifferent(squareVariables));
                 }
             }
 
-            return matrix;
-        }
-        
-        private SudokuGrid MakeSolution(IntVar[,] grid)
-        {
-            SudokuGrid result = new SudokuGrid();
-            for (int i = 0; i < Dimension; i++)
-            {
-                for (int j = 0; j < Dimension; j++)
-                {
-                    result.Cells[i, j] = (int)grid[i, j].Value();
-                }
-            }
-
-            return result;
+            return g;
         }
     }
 }
