@@ -32,7 +32,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku.GeneticAlg", "Sudoku
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku.Proba", "Sudoku.Proba\Sudoku.Proba.csproj", "{1A8C7D67-ABB9-4054-A94C-661C193FF7E7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku.GeneticAlgorithm", "Sudoku.GeneticAlgorithm\Sudoku.GeneticAlgorithm.csproj", "{BA1998D9-55B5-429C-AE95-56A30BD8030E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku.ChocoRange", "Sudoku.ChocoRange\Sudoku.ChocoRange.csproj", "{BA1998D9-55B5-429C-AE95-56A30BD8030E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

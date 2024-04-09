@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Sudoku.GeneticAlgorithm {
+namespace Sudoku.ChocoRange {
     using System;
     
     
@@ -28,7 +28,7 @@ namespace Sudoku.GeneticAlgorithm {
         internal static System.Resources.ResourceManager ResourceManager {
             get {
                 // if (object.Equals(null, resourceMan)) {
-                    System.Resources.ResourceManager temp = new System.Resources.ResourceManager("Sudoku.GeneticAlgorithm.Resources", typeof(Resources).Assembly);
+                    System.Resources.ResourceManager temp = new System.Resources.ResourceManager("Sudoku.ChocoRange.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 // }
                 return resourceMan;
@@ -44,9 +44,9 @@ namespace Sudoku.GeneticAlgorithm {
                 resourceCulture = value;
             }
         }
-        internal static string GeneticAlgorithm_py {
+        internal static string ChocoRange_py {
             get {
-                return ResourceManager.GetString("GeneticAlgorithm.py", resourceCulture);
+                return ResourceManager.GetString("ChocoRange.py", resourceCulture);
             }
         }
     }

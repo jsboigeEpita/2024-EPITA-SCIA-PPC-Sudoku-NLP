@@ -3,9 +3,9 @@ using Sudoku.Shared;
 using System.Reflection;
 using System.IO;
 
-namespace Sudoku.GeneticAlgorithm
+namespace Sudoku.ChocoRange
 {
-    public class GeneticAlgorithm : PythonSolverBase
+    public class ChocoRange : PythonSolverBase
     {
         public override SudokuGrid Solve(SudokuGrid s)
         {
@@ -24,12 +24,12 @@ namespace Sudoku.GeneticAlgorithm
                 scope.Set("ourSudoku", pyCells);
 
 
-                // read the content of GeneticAlgorithm.py file
-                // string pathToPyFile = @"..\..\..\..\Sudoku.GeneticAlgorithm\Resources\GeneticAlgorithm.py";
+                // read the content of ChocoRange.py file
+                // string pathToPyFile = @"..\..\..\..\Sudoku.ChocoRange\Resources\ChocoRange.py";
                 // string code = File.ReadAllText(pathToPyFile);
 
                 // Normalement on utilise Resources, à fix...
-                string code = Resources.GeneticAlgorithm_py;
+                string code = Resources.ChocoRange_py;
 
                 // Console.WriteLine(code);
 

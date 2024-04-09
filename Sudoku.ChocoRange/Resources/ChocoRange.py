@@ -6,13 +6,13 @@ import sys
 
 current_path = os.path.dirname(os.path.abspath(sys.argv[0]))
 
-while not os.path.exists(os.path.join(current_path, "Sudoku.GeneticAlgorithm")):
+while not os.path.exists(os.path.join(current_path, "Sudoku.ChocoRange")):
         current_path = os.path.dirname(current_path)
 
         if current_path == os.path.dirname(current_path):
             raise FileNotFoundError("Unable to find the root directory of the project.")
 
-jar_path = os.path.join(current_path,"Sudoku.GeneticAlgorithm", "solver", "choco-parsers-4.10.14-light.jar")
+jar_path = os.path.join(current_path,"Sudoku.ChocoRange", "solver", "choco-parsers-4.10.14-light.jar")
 
 N = 9
 
