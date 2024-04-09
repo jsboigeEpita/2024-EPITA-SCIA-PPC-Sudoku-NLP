@@ -38,7 +38,7 @@ public class ChocoSolver : PythonSolverBase
     protected override void InitializePythonComponents()
     {
         //declare your pip packages here
-        //InstallPipModule("pychoco");
+        InstallPipModule("pychoco");
         base.InitializePythonComponents();
     }
 }
