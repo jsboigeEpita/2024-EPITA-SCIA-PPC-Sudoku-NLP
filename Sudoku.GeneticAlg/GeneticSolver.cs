@@ -7,7 +7,7 @@ namespace Sudoku.GeneticAlg
 {
     public class GeneticSolver : ISudokuSolver
     {
-        int population_size = 1000;
+        int population_size = 15000;
 
         public SudokuGrid Solve(SudokuGrid s)
         {
@@ -27,6 +27,9 @@ namespace Sudoku.GeneticAlg
                 var population = new Population(population_size, population_size, chromosome);
                 var ga = new GeneticAlgorithm(population, fitness, selection, crossover, mutation);
                 ga.Termination = new OrTermination(new FitnessStagnationTermination(20), new FitnessThresholdTermination(1));
+
+                ga.OperatorsStrategy = new TplOperatorsStrategy();
+	            ga.TaskExecutor = new TplTaskExecutor();
 
                 ga.GenerationRan += (sender, e) =>
                 {
