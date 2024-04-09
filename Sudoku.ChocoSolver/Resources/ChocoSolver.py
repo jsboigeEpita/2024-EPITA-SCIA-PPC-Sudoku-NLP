@@ -79,4 +79,4 @@ initial_grid = [
     [0, 0, 0, 0, 8, 0, 0, 7, 9]
 ]
 
-r = solve_sudoku(initial_grid)
+r = solve_sudoku(instance, search_type)
