@@ -24,11 +24,21 @@ public class Z3_V5_BitVect_Mask_Tactics_Subs : Z3Optimization
     {
         ResetSolver();
 
-        // Generates the constraints of the Sudoku
-        var constraints = new List<BoolExpr>(genericConstraints); // Use generic constraints
-
-        // Adds the constraints related to the Sudoku instance given as input
-        AddSudokuInstanceConstraints(s, ref constraints);
+        // Substitute the variables in the generic constraints with constants based on the given Sudoku instance
+        var substExprs = new List<BitVecExpr>();
+        var substVals = new List<BitVecExpr>();
+        for (int i = 0; i < Size; i++)
+        {
+            for (int j = 0; j < Size; j++)
+            {
+                if (s.Cells[i, j] != 0)
+                {
+                    substExprs.Add(X[i][j]);
+                    substVals.Add(GetConstExpr(s.Cells[i, j]));
+                }
+            }
+        }
+        var constraints = new List<BoolExpr>(genericConstraints.Select(c => (BoolExpr)c.Substitute(substExprs.ToArray(), substVals.ToArray())));
 
         // Adds the constraints to the solver and solves it
         solver.Assert(constraints.ToArray());
@@ -39,7 +49,7 @@ public class Z3_V5_BitVect_Mask_Tactics_Subs : Z3Optimization
         if (solver.Check() != Status.SATISFIABLE)
             return s;
 
-        return ExtractSolution();
+        return ExtractSolution(s);
     }
 
     private static void ResetSolver()
@@ -106,15 +116,6 @@ public class Z3_V5_BitVect_Mask_Tactics_Subs : Z3Optimization
         ).ToArray());
     }
 
-    private static void AddSudokuInstanceConstraints(SudokuGrid s, ref List<BoolExpr> constraints)
-    {
-        // Adds the constraints related to the Sudoku instance given as input
-        for (int i = 0; i < Size; i++)
-            for (int j = 0; j < Size; j++)
-                if (s.Cells[i, j] != 0)
-                    constraints.Add(ctx.MkEq(X[i][j], ctx.MkBV(s.Cells[i, j], 4)));
-    }
-
     private static void ApplyTactics()
     {
         // Define tactics and apply them to the solver
@@ -126,18 +127,26 @@ public class Z3_V5_BitVect_Mask_Tactics_Subs : Z3Optimization
         solver.Assert(result.Subgoals[0].Formulas);
     }
 
-    private static SudokuGrid ExtractSolution()
+    private static SudokuGrid ExtractSolution(SudokuGrid s)
     {
         // Extracts the Sudoku solution from the model returned by the solver
         var sudokuGrid = new SudokuGrid();
 
         for (int i = 0; i < Size; i++)
+        {
             for (int j = 0; j < Size; j++)
             {
-                var eval = solver.Model.Evaluate(X[i][j]) as BitVecNum;
-                sudokuGrid.Cells[i, j] = (int)eval.UInt64;
+                var eval = solver.Model.Evaluate(X[i][j]);
+                sudokuGrid.Cells[i, j] = eval is BitVecNum bvNum ? (int)bvNum.UInt64 : s.Cells[i, j];
             }
+        }
 
         return sudokuGrid;
     }
+
+    private static BitVecExpr GetConstExpr(int value)
+    {
+        return (BitVecExpr)ctx.MkNumeral(value, ctx.MkBitVecSort(4));
+    }
+
 }
