@@ -5,7 +5,7 @@ namespace Sudoku.GeneticAlgorithm.DlxCustomized;
 public class DlxCustomized
 {
     /// <summary>
-    /// NodeHead correspondant aux colonnes dans les matrices de contraintes
+    /// NodeHead correspondant aux colonnes Head dans les matrices de contraintes
     /// </summary>
     class NodeHead : Node
     {
@@ -17,26 +17,49 @@ public class DlxCustomized
         }
     }
 
+    /// <summary>
+    /// Node correspondant à un noeud de la matrice
+    /// </summary>
     class Node
     {
+        //Références au noeud adjacent
         internal Node right = null;
         internal Node left = null;
         internal Node up = null;
         internal Node down = null;
-        internal NodeHead item = null;
+        internal NodeHead nodeHead = null;
+        
+        //Indice de la ligne et de la colonne
         internal int rowIndex;
         internal int column ;
+        
+        //Valeur de la cellule
         internal int value;
 
         public Node(NodeHead t)
         {
-            item = t;
+            nodeHead = t;
         }
     }
     
+    /// <summary>
+    /// Premier node de la matrice
+    /// </summary>
     private NodeHead root;
+    
+    /// <summary>
+    /// Attribut pour arrêter l'algorithme X si la solution a été trouvé
+    /// </summary>
     private bool stop = false;
+    
+    /// <summary>
+    /// LinkedList où on met les solutions
+    /// </summary>
     private LinkedList<Node> solutions = new LinkedList<Node>();
+    
+    /// <summary>
+    /// Sudoku grid
+    /// </summary>
     private SudokuGrid sudoku;
     
     public DlxCustomized(SudokuGrid sudokuGrid)
@@ -48,6 +71,11 @@ public class DlxCustomized
         
     }
 
+    /// <summary>
+    /// Fonction pour résoudre le sudoku grid en le transformant en une matrice de contrainte où on appliquera ensuite l'algorithme de solution
+    /// et pour ensuite mettre les nouvelles valeurs dans le sudoku
+    /// </summary>
+    /// <returns>Sudoku résolu</returns>
     public SudokuGrid Solve()
     {
         Init();
@@ -59,6 +87,10 @@ public class DlxCustomized
         return sudoku;
     }
     
+    
+    /// <summary>
+    /// Initialisation de la matrice de contrainte
+    /// </summary>
     public void Init()
     {
         //Etape 1 : Création d'un array pour stocker les nodes
@@ -93,12 +125,12 @@ public class DlxCustomized
             {
                 int value = sudoku.Cells[i ,j];
 
-                Node tmpRCCNode;
-                Node tmpRNCNode;
-                Node tmpCNCNode;
-                Node tmpBNCNode;
+                Node tmpRCCNode; // Noeud temporaire pour une contrainte ligne-colonne sur la cellule
+                Node tmpRNCNode; // Noeud temporaire pour une contrainte ligne-valeur sur la cellule 
+                Node tmpCNCNode; // Noeud temporaire pour une contrainte colonne-valeur sur la cellule
+                Node tmpBNCNode; // Noeud temporaire pour une contrainte boîte-valeur sur la cellule
                 
-                //Etape 6 : On check si la cellule est vide 
+                //Etape 6 : On check si la cellule est vide correspondant donc à 1 ou 0 dans une matrice de contrainte en général
                 if (value == 0)
                 {
                     //Si oui on crée un node avec toute les possibilités pouvant être sur la case
@@ -110,14 +142,16 @@ public class DlxCustomized
 
                     int end = imatrix + 9;
 
-                    //On va donc l'ajouter dans notre matrice de contrainte et update la size des colonnes et les nodes adjacents
+                    //On va créer des nodes pour toute les valeurs possible de 1 - 9 sur cette indice pour toute les contraintes
                     for (; imatrix < end; imatrix++)
                     {
+                        //Création des noeud dans la matrice de contrainte
                         tmpRCCNode = new Node((NodeHead)tmp[RCC].down);
                         tmpRNCNode = new Node((NodeHead)tmp[RNC].down);
                         tmpCNCNode = new Node((NodeHead)tmp[CNC].down);
                         tmpBNCNode = new Node((NodeHead)tmp[BNC].down);
 
+                        //Attribution des valeurs et positions des row/column dans chaque noeud
                         tmpRCCNode.rowIndex = i;
                         tmpRCCNode.column = j;
                         tmpRCCNode.value = value;
@@ -131,12 +165,13 @@ public class DlxCustomized
                         tmpBNCNode.column = j;
                         tmpBNCNode.value = value++;
 
-
+                        //Incrémente ensuite la taille des éléments dans les colonnes de contraintes
                         ((NodeHead)tmp[RCC].down).size++;
                         ((NodeHead)tmp[RNC].down).size++;
                         ((NodeHead)tmp[CNC].down).size++;
                         ((NodeHead)tmp[BNC].down).size++;
 
+                        //Attribution des liens entre les noeuds
                         tmpRCCNode.right = tmpRNCNode;
                         tmpRNCNode.right = tmpCNCNode;
                         tmpCNCNode.right = tmpBNCNode;
@@ -171,7 +206,7 @@ public class DlxCustomized
                 else
                 {
                     
-                    //Si non alors on va juste update les colonnes adjacents nodes et update les sizes
+                    //Sinon on va juste mettre le noeud avec la valeur dans chaque contrainte
                     int RCC = 9 * i + j;
                     int RNC = 81 + 9 * i + value - 1;
                     int CNC = 162 + 9 * j + value - 1;
@@ -231,9 +266,10 @@ public class DlxCustomized
         }
     }
     
+    
     public void search()
     {
-        //Check si tous colonnes ont été covered
+        //Check si la matrice est vide
         if (root.right == root)
         {
             //Si vrai alors la solution a été trouvé
@@ -241,7 +277,7 @@ public class DlxCustomized
             return;
         }
 
-        //Step 2 : On prend la cellule avec le moins de contraintes càd le moins de choix possible dans un sudoku correspond au size ici
+        //Step 2 : On prend la colonne avec la moins de contrainte 
         NodeHead selected = (NodeHead)root.right;
         int c = selected.size;
         for (NodeHead currentNode = (NodeHead)root.right; currentNode != root; currentNode = (NodeHead)currentNode.right)
@@ -253,7 +289,7 @@ public class DlxCustomized
             }
         }
 
-        //Step 3 : On la désactive
+        //Step 3 : Désactive la colonne séléctionné
         cover(selected);
 
         //Step 4 : On refait une recherche de solution 
@@ -263,27 +299,29 @@ public class DlxCustomized
             //Step 5 : On rajoute le node dans la solution possible 
             solutions.AddLast(iNode);
             
-            //Step 6 : On désactive tous les nodes de la solution 
+            //Step 6 : On désactive tous les nodes dans les colonnes correspondantes => On supprime les lignes
             for (Node jNode = iNode.right; jNode != iNode; jNode = jNode.right)
             {
-                cover(jNode.item);
+                cover(jNode.nodeHead);
             }
 
             //Step 7 :On re-explore récursivement pour chercher d'autres solutions possible - Si on trouve on arrête
             search();
             if (stop)
                 return;
+            
             //On retire le noeud solution possible 
             solutions.RemoveLast();
 
-            //On re-active les noeud adjacents du noeud candidat
+            //On re-active les précédent noeuds désactivés => On remet les lignes pour revenir à la matrice de début de la boucle 
             for (Node jNode = iNode.left; jNode != iNode; jNode = jNode.left)
             {
-                uncover(jNode.item);
+                uncover(jNode.nodeHead);
             }
         }
-        //On réactive les noeuds et on recherche de nouvelles solution possible (backtracking)
+        //On active la colonne 
         uncover(selected);
+        //Si on retourne c'est qu'il n'y a pas eu de solution dans le sudoku
         return;
     }
     
@@ -301,7 +339,7 @@ public class DlxCustomized
             {
                 jNode.up.down = jNode.down;
                 jNode.down.up = jNode.up;
-                jNode.item.size--;
+                jNode.nodeHead.size--;
             }
         }
     }
@@ -317,7 +355,7 @@ public class DlxCustomized
             {
                 jNode.up.down = jNode;
                 jNode.down.up = jNode;
-                jNode.item.size++;
+                jNode.nodeHead.size++;
             }
         }
         node.left.right = node;
