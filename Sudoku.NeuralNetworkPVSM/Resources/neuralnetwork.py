@@ -94,7 +94,7 @@ model = get_model()
 train = False
 
 if train:
-    x_train, x_test, y_train, y_test = get_data(r'..\..\..\..\Sudoku.NeuralNetworkPVSM\Resources\sudoku.csv')
+    x_train, x_test, y_train, y_test = get_data(r'..\..\..\..\Sudoku.NeuralNetworkPVSM\Resources\sudoku.csv') # https://www.kaggle.com/datasets/bryanpark/sudoku
     optimizer = tf.keras.optimizers.Adam(0.001)
     model.compile(loss='sparse_categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
     history = model.fit(x_train, y_train, batch_size=64, epochs=5, validation_data=(x_test, y_test))
