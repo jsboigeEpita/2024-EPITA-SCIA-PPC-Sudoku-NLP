@@ -16,7 +16,8 @@ namespace CustomDlxLib
         public void Solve(SudokuGrid sudoku)
         {
             s = sudoku;
-            
+
+            // The following DateTime comments are used to measure the time taken by each step of the algorithm to make graphs
             // var start = DateTime.Now;
             Init();
             // var initTime = (DateTime.Now - start).TotalMilliseconds;
@@ -31,9 +32,9 @@ namespace CustomDlxLib
                 int value = node.RowIndex % 9;
                 int j = (node.RowIndex / 9) % 9;
                 int i = node.RowIndex / 81;
-
                 s.Cells[i, j] = value + 1;
             }
+
             // var convertTime = (DateTime.Now - start).TotalMilliseconds;
 
             // using var file = new StreamWriter("TLL_time.csv", true);
@@ -70,6 +71,23 @@ namespace CustomDlxLib
             // and de-linking/re-linking for 4 nodes when doing the cover/uncover)
             bool[] alreadyIn = new bool[243];
 
+            // this is more efficient than doing it while creating the nodes to reduce even further the number of nodes created
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    int value = s.Cells[i, j] - 1;
+
+                    if (value >= 0)
+                    {
+                        int blockIndex = j / 3 + i / 3 * 3;
+                        alreadyIn[9 * i + value] = true;
+                        alreadyIn[81 + 9 * j + value] = true;
+                        alreadyIn[162 + 9 * blockIndex + value] = true;
+                    }
+                }
+            }
+
             // create all nodes and link them to their neighbors
             for (int i = 0; i < 9; i++)
             {
@@ -87,10 +105,6 @@ namespace CustomDlxLib
                     if (value >= 0)
                     {
                         int rowIndex = 81 * i + 9 * j + value;
-
-                        alreadyIn[9 * i + value] = true;
-                        alreadyIn[81 + 9 * j + value] = true;
-                        alreadyIn[162 + 9 * blockIndex + value] = true;
 
                         // RC=RowColumn RN=RowNumber CN=ColumnNumber BN=BoxNumber
                         var rcColumnNode = columnsNodes[singleColumnIndex];
