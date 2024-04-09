@@ -7,9 +7,9 @@ import sys
 current_path = os.path.dirname(os.path.abspath(sys.argv[0]))
 
 if "bench_path" not in locals():
-    jar_path = os.path.join(current_path, "..\solver\choco-parsers-4.10.14-light.jar")
-else :
-    jar_path = os.path.join(current_path, "..\..\..\Sudoku.GeneticAlgorithm\solver\choco-parsers-4.10.14-light.jar")
+    jar_path = os.path.join(current_path, "..", "solver", "choco-parsers-4.10.14-light.jar")
+else:
+    jar_path = os.path.join(current_path, "..", "..", "..", "Sudoku.GeneticAlgorithm", "solver", "choco-parsers-4.10.14-light.jar")
 
 N = 9
 
