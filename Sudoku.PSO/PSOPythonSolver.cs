@@ -41,7 +41,7 @@ public class PSOSolver : PythonSolverBase
     protected override void InitializePythonComponents()
     {
         //declare your pip packages here
-        //InstallPipModule("numpy");
+        InstallPipModule("numpy");
         base.InitializePythonComponents();
     }
 

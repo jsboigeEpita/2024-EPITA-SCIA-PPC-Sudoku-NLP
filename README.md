@@ -1,5 +1,9 @@
 Bienvenue sur le dépôt du TP Sudoku.....
 
+*Update 23/03: j'ai effectué un revert pour le support de Pythonnet sous Mac ou Linux, il y a désormais un fichier de config pour désigner l'emplacement de la distribution Python*
+
+*Update 08/04: j'ai corrigé le mode Benchmark qui était deffectueux suite à une récente montée de version de Benchmark.net*
+
 ## Présentation des solvers
 
 Listez ici la documentation qui accompagne vos solvers.

@@ -20,9 +20,14 @@ namespace Sudoku.Backtracking
 		public SudokuGrid Solve(SudokuGrid s)
 		{
 			//launch the solver
+			callCount = 0;
 			Search(s, 0, 0);
+			Console.WriteLine("BacktrackingDotNetSolver: " + callCount + " search calls");
 			return s;
 		}
+
+		private int callCount = 0;
+
 		/// <summary>
 		/// Recursively searches for a solution to a Sudoku grid by backtracking
 		/// </summary>
@@ -53,7 +58,6 @@ namespace Sudoku.Backtracking
 			}
 			return false;
 		}
-
 
 		/// <summary>
 		/// Check if a value is valid to be placed in a specific cell of a Sudoku grid.
