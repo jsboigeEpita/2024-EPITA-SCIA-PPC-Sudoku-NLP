@@ -1,7 +1,7 @@
 using Sudoku.Shared;
 using Microsoft.Z3;
 
-public class Z3_V1_int_array : Z3Optimization
+public class Z3_V1_IntArray : Z3Optimization
     {
         private IntExpr[][] CreateEvalMatrix(Context ctx)
         {

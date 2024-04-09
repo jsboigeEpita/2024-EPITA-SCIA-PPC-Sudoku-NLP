@@ -1,7 +1,7 @@
 using Sudoku.Shared;
 using Microsoft.Z3;
 
-public class Z3V2_BitVector : Z3Optimization
+public class Z3_V2_BitVect : Z3Optimization
     {
         private static readonly int Size = 9;
         private static readonly int BlockSize = 3;
