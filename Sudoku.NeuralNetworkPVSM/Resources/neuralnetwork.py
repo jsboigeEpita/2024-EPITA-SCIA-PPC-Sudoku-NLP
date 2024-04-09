@@ -5,7 +5,7 @@ from tensorflow.keras.layers import Reshape, Dense, Dropout, Flatten,Activation
 from tensorflow.keras.layers import Conv1D, Conv2D, BatchNormalization, LayerNormalization, MaxPooling2D
 import numpy as np
 import pandas as pd
-
+from urllib import request
 def get_data(file):
 
     df = pd.read_csv(file)
@@ -94,7 +94,7 @@ model = get_model()
 train = False
 
 if train:
-    x_train, x_test, y_train, y_test = get_data(r'sudoku.csv')
+    x_train, x_test, y_train, y_test = get_data(r'..\..\..\..\Sudoku.NeuralNetworkPVSM\Resources\sudoku.csv')
     optimizer = tf.keras.optimizers.Adam(0.001)
     model.compile(loss='sparse_categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
     history = model.fit(x_train, y_train, batch_size=64, epochs=5, validation_data=(x_test, y_test))
@@ -103,15 +103,16 @@ if train:
     print(f"Training Loss: {training_loss11:.4f}, Training Accuracy: {training_accuracy11:.4f}")
     val_loss11, val_accuracy11 = model.evaluate(x_test,y_test)
     print(f"Done!\nValiation Loss: {val_loss11:.4f}, Validation Accuracy: {val_accuracy11:.4f}")
-    model.save(r'model.keras')
+    model.save(r'..\..\..\..\Sudoku.NeuralNetworkPVSM\Resources\model.keras')
 else:
     try:
-        model = keras.models.load_model(r'model.keras')
+        model = keras.models.load_model(r'..\..\..\..\Sudoku.NeuralNetworkPVSM\Resources\model.keras')
     except Exception as e:
-        print("Model not found!")
-        print("Please set train=True to train the model before inference.")
-        exit()
-
+        print("Model not found! Downloading pre-computed weights..")
+        remote_url = "https://www.pilou.org/PPC/model_rtx.keras"
+        local_path = r'..\..\..\..\Sudoku.NeuralNetworkPVSM\Resources\model.keras'
+        request.urlretrieve(remote_url, local_path)
+        model = keras.models.load_model(local_path)
 def display(board):
     for i in range(9):
         if i in [3, 6]:
