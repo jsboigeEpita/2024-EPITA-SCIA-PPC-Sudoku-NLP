@@ -15,6 +15,7 @@ namespace CustomDlxLib
         {
             s = sudoku;
             
+            // The following DateTime comments are used to measure the time taken by each step of the algorithm to make graphs
             // var start = DateTime.Now;
             Init();
             // var initTime = (DateTime.Now - start).TotalMilliseconds;

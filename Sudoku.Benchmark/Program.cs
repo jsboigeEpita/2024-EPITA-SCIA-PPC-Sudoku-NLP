@@ -16,9 +16,9 @@ namespace Sudoku.Benchmark
 	{
 
 #if DEBUG
-		private static bool IsDebug = true;
+		public static bool IsDebug = true;
 #else
-        private static bool IsDebug = false;
+        public static bool IsDebug = false;
 #endif
 
 		static IConfiguration Configuration;

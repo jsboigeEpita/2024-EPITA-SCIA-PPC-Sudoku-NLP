@@ -23,13 +23,13 @@ namespace Sudoku.DeepLearning
 		static DeepLearningSolver()
 		{
 			_modelAbsolutePath = Path.Combine(Environment.CurrentDirectory, ModelRelativePath);
-			EnsureModelDownloaded(ModelUrl, _modelAbsolutePath);
+			
 		}
 
 
 		public override Shared.SudokuGrid Solve(Shared.SudokuGrid s)
 		{
-
+			EnsureModelDownloaded(ModelUrl, _modelAbsolutePath);
 			//System.Diagnostics.Debugger.Break();
 
 			//For some reason, the Benchmark runner won't manage to get the mutex whereas individual execution doesn't cause issues
