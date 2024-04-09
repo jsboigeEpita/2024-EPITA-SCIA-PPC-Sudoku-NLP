@@ -36,6 +36,7 @@
     <ProjectReference Include="..\Sudoku.Proba\Sudoku.Proba.csproj" />
     <ProjectReference Include="..\Sudoku.DeepLearning\Sudoku.DeepLearning.csproj" />
     <ProjectReference Include="..\Sudoku.ChocoSolver\Sudoku.ChocoSolver.csproj" />
+    <ProjectReference Include="..\Sudoku.ChocoRange\Sudoku.ChocoRange.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.json">
