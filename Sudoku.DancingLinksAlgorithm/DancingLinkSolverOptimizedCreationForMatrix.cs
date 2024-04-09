@@ -39,11 +39,12 @@ public class DancingLinkSolverOptimizedCreationForMatrix : ISudokuSolver
                 //Matrix got constraint area for each constraint
                 if (value != 0)
                 {
+                    // each constraint have 81 columns
                     var rcConstraint = 9 * i + j;
                     var rnConstraint = 81 + 9 * i + value - 1;
                     var cnConstraint = 162 + 9 * j + value - 1;
                     var bConstraint = 243 + ((i / 3) * 3 + j / 3) * 9 + value - 1;
-
+                    
                     matrix[rowIndex, rcConstraint] = 1;
                     matrix[rowIndex, rnConstraint] = 1;
                     matrix[rowIndex, cnConstraint] = 1;
@@ -51,6 +52,7 @@ public class DancingLinkSolverOptimizedCreationForMatrix : ISudokuSolver
                 }
                 else
                 {
+                    // Loop for all possibles values 
                     for (int v = 1; v <= 9; v++)
                     {
                         var rcConstraint = 9 * i + j;
@@ -75,6 +77,7 @@ public class DancingLinkSolverOptimizedCreationForMatrix : ISudokuSolver
     private SudokuGrid SolutionToGrid(Solution dlxSolution, SudokuGrid s)
     {
         var solution = s.CloneSudoku();
+        // DlxSolution contains only row of solution
         foreach (int row in dlxSolution.RowIndexes)
         {
             int x = row / 81;

@@ -26,6 +26,7 @@ public class DancingLinkSolver : ISudokuSolver
     
     private static IImmutableList<Tuple<int, int, int, bool>> BuildInternalRowsForGrid(SudokuGrid grid)
     {
+        // Build the Constraint List
         var internalRows = new List<Tuple<int, int, int, bool>>();
 
         for (int row = 0; row < 9; row++)
@@ -61,6 +62,7 @@ public class DancingLinkSolver : ISudokuSolver
 
     private static IImmutableList<IImmutableList<int>> BuildDlxRows(IEnumerable<Tuple<int, int, int, bool>> internalRows)
     {
+        // Build a easier list for Dlx usage
         var dlxRows = new List<IImmutableList<int>>();
         foreach (var internalRow in internalRows)
         {
