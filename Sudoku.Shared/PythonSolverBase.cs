@@ -162,11 +162,11 @@ namespace Sudoku.Shared
 			//
 
 
-            Runtime.PythonDLL = "python37.dll";
-            Python.Deployment.Installer.Source = new Installer.DownloadInstallationSource()
-            {
-                DownloadUrl = @"https://www.python.org/ftp/python/3.7.3/python-3.7.3-embed-amd64.zip",
-            };
+			//Runtime.PythonDLL = "python37.dll";
+			//Python.Deployment.Installer.Source = new Installer.DownloadInstallationSource()
+			//{
+			//    DownloadUrl = @"https://www.python.org/ftp/python/3.7.3/python-3.7.3-embed-amd64.zip",
+			//};
 
 			//Runtime.PythonDLL = "python38.dll";
 			//Python.Deployment.Installer.Source = new Installer.DownloadInstallationSource()
@@ -192,19 +192,19 @@ namespace Sudoku.Shared
 			//
 			// see what the installer is doing
 
-			//Runtime.PythonDLL = "python310.dll";
-			//Python.Deployment.Installer.Source = new Installer.DownloadInstallationSource()
-			//{
-			//	DownloadUrl = @"https://www.python.org/ftp/python/3.10.8/python-3.10.8-embed-amd64.zip",
-			//};
-
-
-			Runtime.PythonDLL = "python311.dll";
-
+			Runtime.PythonDLL = "python310.dll";
 			Python.Deployment.Installer.Source = new Installer.DownloadInstallationSource()
 			{
-				DownloadUrl = @"https://www.python.org/ftp/python/3.11.2/python-3.11.2-embed-amd64.zip",
+				DownloadUrl = @"https://www.python.org/ftp/python/3.10.9/python-3.10.9-embed-amd64.zip",
 			};
+
+
+			//Runtime.PythonDLL = "python311.dll";
+
+			//Python.Deployment.Installer.Source = new Installer.DownloadInstallationSource()
+			//{
+			//	DownloadUrl = @"https://www.python.org/ftp/python/3.11.2/python-3.11.2-embed-amd64.zip",
+			//};
 
 
 			// see what the installer is doing
