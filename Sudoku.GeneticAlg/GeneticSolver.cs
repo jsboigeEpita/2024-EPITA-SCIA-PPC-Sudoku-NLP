@@ -17,7 +17,7 @@ namespace Sudoku.GeneticAlg
 
             var selection = new TournamentSelection();
             var crossover = new UniformCrossover();
-            var mutation = new UniformMutation();
+            var mutation = new CellMutation();
             var fitness = new SudokuFitness(sudoku);
             var chromosome = new SudokuChromosome(sudoku, mask);
             

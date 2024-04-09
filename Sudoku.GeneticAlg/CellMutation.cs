@@ -11,10 +11,14 @@ public class CellMutation : MutationBase
 
     protected override void PerformMutate(IChromosome chromosome, float probability)
     {
-        probability = 0.6f;
+        var sudokuChromosome = (SudokuChromosome)chromosome;
+        var fitness = chromosome.Fitness.HasValue ? chromosome.Fitness.Value : 0;
+        probability = (float)(1.0f - fitness);
+        probability = Math.Max(0.01f, Math.Min(probability, 0.7f)); // Example range: 1% to 50%
+        
+
         if (RandomizationProvider.Current.GetDouble() > probability)
         {
-            var sudokuChromosome = (SudokuChromosome)chromosome;
             var mask = sudokuChromosome.mask;
             var geneIndex = RandomizationProvider.Current.GetInt(0, 9);
 
@@ -30,7 +34,6 @@ public class CellMutation : MutationBase
             }
 
             var randomValue = possibleValues[RandomizationProvider.Current.GetInt(0, possibleValues.Count)];
-            Console.WriteLine($"Old value : {gene[cellPositionInGene]} New value : {randomValue}");
             gene[cellPositionInGene] = randomValue;
             sudokuChromosome.ReplaceGene(geneIndex, new Gene(gene));
         }
