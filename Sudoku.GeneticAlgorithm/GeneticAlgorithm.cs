@@ -1,5 +1,6 @@
 ﻿using Python.Runtime;
 using Sudoku.Shared;
+using System.Reflection;
 using System.IO;
 
 namespace Sudoku.GeneticAlgorithm
@@ -19,12 +20,13 @@ namespace Sudoku.GeneticAlgorithm
                 Console.WriteLine(pyCells);
 
                 // create a Python variable "ourSudoku"
+                scope.Set("bench_path", "true");
                 scope.Set("ourSudoku", pyCells);
 
 
                 // read the content of GeneticAlgorithm.py file
-                //string pathToPyFile = @"..\..\..\..\Sudoku.GeneticAlgorithm\Resources\GeneticAlgorithm.py";
-                //string code = File.ReadAllText(pathToPyFile);
+                // string pathToPyFile = @"..\..\..\..\Sudoku.GeneticAlgorithm\Resources\GeneticAlgorithm.py";
+                // string code = File.ReadAllText(pathToPyFile);
 
                 // Normalement on utilise Resources, à fix...
                 string code = Resources.GeneticAlgorithm_py;

@@ -1,6 +1,15 @@
 # from timeit import default_timer
 import numpy as np
 import pulp
+import os
+import sys
+
+current_path = os.path.dirname(os.path.abspath(sys.argv[0]))
+
+if "bench_path" not in locals():
+    jar_path = os.path.join(current_path, "..\solver\choco-parsers-4.10.14-light.jar")
+else :
+    jar_path = os.path.join(current_path, "..\..\..\Sudoku.GeneticAlgorithm\solver\choco-parsers-4.10.14-light.jar")
 
 N = 9
 
@@ -52,7 +61,7 @@ def solveSudoku(instance):
                 problem += choices[r][c][instance[r][c]] == 1
     
     # Résoudre le problème
-    problem.solve(pulp.CHOCO_CMD(msg=False))
+    problem.solve(pulp.CHOCO_CMD(path=jar_path, msg=False, keepFiles=True))
     
     # Construire la solution
     solution = [[0 for _ in range(N)] for _ in range(N)]
@@ -61,6 +70,10 @@ def solveSudoku(instance):
             for v in range(1, N + 1):
                 if pulp.value(choices[r][c][v]) == 1:
                     solution[r][c] = v
+    
+    #os.remove("SudokuSolver-pulp.mps")
+    #os.remove("SudokuSolver-pulp.sol")
+
     return solution
 
 result = np.array(solveSudoku(ourSudoku))
