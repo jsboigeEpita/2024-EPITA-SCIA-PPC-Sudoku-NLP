@@ -45,10 +45,10 @@ namespace Sudoku.Benchmark
             }
 			else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD))
 			{
-				pythonConfig = Configuration.GetSection("PythonConfig:Linux").Get<PythonConfiguration>();
-                //LinuxInstaller.InstallPath = "/root/.pyenv/versions/3.10.5";
-                //LinuxInstaller.PythonDirectoryName = "/root/.pyenv/versions/3.10.5/bin";
-                //LinuxInstaller.LibFileName = "/root/.pyenv/versions/3.10.5/lib/libpython3.10.so";
+				//pythonConfig = Configuration.GetSection("PythonConfig:Linux").Get<PythonConfiguration>();
+                LinuxInstaller.InstallPath = "/root/.pyenv/versions/3.10.5";
+                LinuxInstaller.PythonDirectoryName = "/root/.pyenv/versions/3.10.5/bin";
+                LinuxInstaller.LibFileName = "/root/.pyenv/versions/3.10.5/lib/libpython3.10.so";
 			}
 
 			if (pythonConfig != null)

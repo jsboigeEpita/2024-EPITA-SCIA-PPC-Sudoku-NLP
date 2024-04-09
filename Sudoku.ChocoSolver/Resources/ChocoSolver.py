@@ -1,6 +1,5 @@
 from pychoco.model import Model
 
-
 def solve_sudoku(initial_grid, search_type='', print_stats=False):
 
     # Create a Choco model
