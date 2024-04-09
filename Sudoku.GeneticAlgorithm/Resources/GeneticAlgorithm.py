@@ -74,8 +74,8 @@ def solveSudoku(instance):
                 if pulp.value(choices[r][c][v]) == 1:
                     solution[r][c] = v
     
-    #os.remove("SudokuSolver-pulp.mps")
-    #os.remove("SudokuSolver-pulp.sol")
+    os.remove("SudokuSolver-pulp.mps")
+    os.remove("SudokuSolver-pulp.sol")
 
     return solution
 
