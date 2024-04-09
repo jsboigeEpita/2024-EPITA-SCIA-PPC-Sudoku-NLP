@@ -109,9 +109,10 @@ else:
         model = keras.models.load_model(r'..\..\..\..\Sudoku.NeuralNetworkPVSM\Resources\model.keras')
     except Exception as e:
         print("Model not found! Downloading pre-computed weights..")
-        remote_url = "https://www.pilou.org/PPC/model_rtx.keras"
+        remote_url = "https://www.pilou.org/PPC/model_rtx_final.keras"
         local_path = r'..\..\..\..\Sudoku.NeuralNetworkPVSM\Resources\model.keras'
         request.urlretrieve(remote_url, local_path)
+        print("Model weights downloaded. Loading..")
         model = keras.models.load_model(local_path)
 def display(board):
     for i in range(9):
