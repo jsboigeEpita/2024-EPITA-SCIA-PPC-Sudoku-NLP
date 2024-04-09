@@ -29,9 +29,11 @@ namespace Sudoku.Benchmark
         {
             try
             {
-                Shared.SudokuGrid toReturn = puzzle.CloneSudoku();
+                SudokuGrid toReturn = puzzle.CloneSudoku();
+                //Debugger.Launch();
+                //Debugger.Break();
 
-                Task task = Task.Factory.StartNew(() => toReturn = Solver.Solve(toReturn));
+				Task task = Task.Factory.StartNew(() => toReturn = Solver.Solve(toReturn));
                 task.Wait(maxDuration);
                 if (!task.IsCompleted)
                 {
