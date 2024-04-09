@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Puzzles", "Puzzles", "{5351
 		Puzzles\Sudoku_top95.txt = Puzzles\Sudoku_top95.txt
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sudoku.ChocoSolver", "Sudoku.ChocoSolver\Sudoku.ChocoSolver.csproj", "{C841CD71-F39B-4761-BE73-BB85124E5195}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sudoku.Backtracking", "Sudoku.Backtracking\Sudoku.Backtracking.csproj", "{1C50AE77-2CE9-4BD8-ADFE-3C3A255FFC78}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sudoku.PSO", "Sudoku.PSO\Sudoku.PSO.csproj", "{ACFD48BC-E434-4F98-B539-47437308B18C}"
@@ -60,6 +62,10 @@ Global
 		{3F6D87E5-3288-46C4-B192-F91D5FBB075B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F6D87E5-3288-46C4-B192-F91D5FBB075B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F6D87E5-3288-46C4-B192-F91D5FBB075B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C841CD71-F39B-4761-BE73-BB85124E5195}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C841CD71-F39B-4761-BE73-BB85124E5195}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C841CD71-F39B-4761-BE73-BB85124E5195}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C841CD71-F39B-4761-BE73-BB85124E5195}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1C50AE77-2CE9-4BD8-ADFE-3C3A255FFC78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1C50AE77-2CE9-4BD8-ADFE-3C3A255FFC78}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C50AE77-2CE9-4BD8-ADFE-3C3A255FFC78}.Release|Any CPU.ActiveCfg = Release|Any CPU

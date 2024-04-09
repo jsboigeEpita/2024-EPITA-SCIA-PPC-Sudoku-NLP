@@ -35,18 +35,21 @@ namespace Sudoku.Shared
 
 		}
 
-		protected static async Task InstallPythonComponentsAsync()
-		{
-
-			if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-			{
-				await InstallMac();
-			}
-			else
-			{
-				await InstallEmbedded();
-			}
-		}
+		        protected static async Task InstallPythonComponentsAsync()
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                await InstallMac();
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                await InstallLinux();
+            }
+            else
+            {
+                await InstallEmbedded();
+            }
+        }
 
 		public static void InstallPipModule(string moduleName, string version = "", bool force = false)
 		{
@@ -57,16 +60,20 @@ namespace Sudoku.Shared
 
 
 		private static async Task InstallPipModuleAsync(string moduleName, string version = "", bool force = false)
-		{
-			if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-			{
-				await MacInstaller.PipInstallModule(moduleName, version, force);
-			}
-			else
-			{
-				await Installer.PipInstallModule(moduleName, version, force);
-			}
-		}
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                await MacInstaller.PipInstallModule(moduleName, version, force);
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                await LinuxInstaller.PipInstallModule(moduleName, version, force);
+            }
+            else
+            {
+                await Installer.PipInstallModule(moduleName, version, force);
+            }
+        }
 
 		private static async Task InstallMac()
 		{
@@ -117,22 +124,49 @@ namespace Sudoku.Shared
 			await MacInstaller.TryInstallPip();
 		}
 
+        private static async Task InstallLinux()
+        {
+            string pythonLibrary = LinuxInstaller.LibFileName;
+
+            Runtime.PythonDLL = pythonLibrary;
+
+            // Check if the Python library exists
+            if (!File.Exists(pythonLibrary))
+            {
+                throw new FileNotFoundException($"Python library '{pythonLibrary}' not found. Please ensure that Python is properly installed on your Linux system.");
+            }
+
+            // Set the necessary environment variables
+            string pythonHome = LinuxInstaller.InstallPath;
+            string pythonPath = $"{pythonHome}/{LinuxInstaller.PythonDirectoryName}";
+
+            Environment.SetEnvironmentVariable("PYTHONHOME", pythonHome, EnvironmentVariableTarget.Process);
+            Environment.SetEnvironmentVariable("PYTHONPATH", pythonPath, EnvironmentVariableTarget.Process);
+
+            // Initialize the Python engine
+            PythonEngine.Initialize();
+
+            // Install pip if necessary
+            await LinuxInstaller.TryInstallPip();
+
+            // Add any additional setup code for Linux
+            // ...
+        }
 
 
-
-		private static async Task InstallEmbedded()
-		{
+        private static async Task InstallEmbedded()
+        {
 
 			// // install in local directory. if you don't set it will install in local app data of your user account
 			//Python.Deployment.Installer.InstallPath = Path.GetFullPath(".");
 			//
 
 
-			//Runtime.PythonDLL = "python37.dll";
-			//Python.Deployment.Installer.Source = new Installer.DownloadInstallationSource()
-			//{
-			//    DownloadUrl = @"https://www.python.org/ftp/python/3.7.3/python-3.7.3-embed-amd64.zip",
-			//};
+            Runtime.PythonDLL = "python37.dll";
+            Python.Deployment.Installer.Source = new Installer.DownloadInstallationSource()
+            {
+                DownloadUrl = @"https://www.python.org/ftp/python/3.7.3/python-3.7.3-embed-amd64.zip",
+            };
 
 			//Runtime.PythonDLL = "python38.dll";
 			//Python.Deployment.Installer.Source = new Installer.DownloadInstallationSource()
@@ -181,8 +215,8 @@ namespace Sudoku.Shared
 
 			await Installer.TryInstallPip();
 
-			//Python.Deployment.Installer.SetupPython().Wait();
-			//Installer.TryInstallPip();
+			Python.Deployment.Installer.SetupPython().Wait();
+			Installer.TryInstallPip();
 
 		}
 

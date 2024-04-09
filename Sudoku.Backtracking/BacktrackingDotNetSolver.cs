@@ -37,7 +37,6 @@ namespace Sudoku.Backtracking
 		/// <returns>True if a solution is found, false otherwise</returns>
 		private bool Search(SudokuGrid s, int row, int col)
 		{
-			callCount++;
 			//pass to the next row if all the cells in the column are checked     
 			if (col == 9)
 			{
@@ -59,7 +58,6 @@ namespace Sudoku.Backtracking
 			}
 			return false;
 		}
-
 
 		/// <summary>
 		/// Check if a value is valid to be placed in a specific cell of a Sudoku grid.
