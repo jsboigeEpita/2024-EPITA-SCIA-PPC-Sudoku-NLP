@@ -4,7 +4,7 @@ using System;
 
 namespace Sudoku.ORTools
 {
-    public class OrToolsSatipSolver : ISudokuSolver
+    public class OrToolsSatSolver : ISudokuSolver
     {
         private const int Dimension = 9;
         private const int SubGrid = 3;
@@ -23,19 +23,6 @@ namespace Sudoku.ORTools
             {
                 throw new InvalidOperationException("Sudoku grid has no solution.");
             }
-        }
-
-        private IntVar[] FlattenGrid(CpModel model)
-        {
-            IntVar[] g = new IntVar[Dimension * Dimension];
-            for (int i = 0; i < Dimension; i++)
-            {
-                for (int j = 0; j < Dimension; j++)
-                {
-                    g[i * Dimension + j] = model.NewIntVar(1, Dimension, $"Cell({i},{j})");
-                }
-            }
-            return g;
         }
 
         private SudokuGrid MakeSolution(CpSolver solver, IntVar[,] grid)
