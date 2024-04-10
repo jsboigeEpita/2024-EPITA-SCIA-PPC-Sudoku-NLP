@@ -6,7 +6,7 @@ using DlxLib;
 namespace Sudoku.GeneticAlgorithm;
 
 
-public class DancingLinkSolverWithDlxMatrix : ISudokuSolver
+public class DancingLinkSolverOptimizedCreationForMatrix : ISudokuSolver
 {
     /// <summary>
     /// Solves the given Sudoku grid using a backtracking algorithm.
@@ -39,11 +39,12 @@ public class DancingLinkSolverWithDlxMatrix : ISudokuSolver
                 //Matrix got constraint area for each constraint
                 if (value != 0)
                 {
+                    // each constraint have 81 columns
                     var rcConstraint = 9 * i + j;
                     var rnConstraint = 81 + 9 * i + value - 1;
                     var cnConstraint = 162 + 9 * j + value - 1;
                     var bConstraint = 243 + ((i / 3) * 3 + j / 3) * 9 + value - 1;
-
+                    
                     matrix[rowIndex, rcConstraint] = 1;
                     matrix[rowIndex, rnConstraint] = 1;
                     matrix[rowIndex, cnConstraint] = 1;
@@ -51,6 +52,7 @@ public class DancingLinkSolverWithDlxMatrix : ISudokuSolver
                 }
                 else
                 {
+                    // Loop for all possibles values 
                     for (int v = 1; v <= 9; v++)
                     {
                         var rcConstraint = 9 * i + j;
@@ -68,35 +70,19 @@ public class DancingLinkSolverWithDlxMatrix : ISudokuSolver
                 }
             }
         }
-
         var solutions = new Dlx()
             .Solve(matrix);;
-        return SolutionToGrid(solutions.First(), matrix, s);
+        return SolutionToGrid(solutions.First(), s);
     }
-    private SudokuGrid SolutionToGrid(Solution dlxSolution, int[,] matrix, SudokuGrid s)
+    private SudokuGrid SolutionToGrid(Solution dlxSolution, SudokuGrid s)
     {
         var solution = s.CloneSudoku();
+        // DlxSolution contains only row of solution
         foreach (int row in dlxSolution.RowIndexes)
         {
-            int x = 0, y = 0, nb = 0;
-            for (int j = 0; j < 81; j++)
-            {
-                if (matrix[row, j] == 1)
-                {
-                    x = j / 9;
-                    y = j % 9;
-                    break;
-                }
-            }
-
-            for (int j = 81; j < 162; j++)
-            {
-                if (matrix[row, j] == 1)
-                {
-                    nb = (j - 81) % 9 + 1;  
-                    break;
-                }
-            }
+            int x = row / 81;
+            int y = (row % 81) / 9;
+            int nb = (row % 9) + 1;
 
             if (solution.Cells[x, y] == 0)
                 solution.Cells[x, y] = nb;
