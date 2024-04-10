@@ -132,21 +132,27 @@ def display(board):
 
 
 def solve_itrative(model, grid):
+    #Ici on vas prendre la case avec la plus grande probabilité de la solution prédite
     grid = grid.copy()
-    value_set = False
+
     while True:
-        predicted_solution = model.predict(grid)
-        value_set = False
+        predict_solution = model.predict(grid)
+        max_prob = 0
+
+        # Get the index of the cell with the highest probability and is empty
         for i in range(9):
             for j in range(9):
                 if grid[0, i, j] == -0.5:
-                    grid[0, i, j] = np.argmax(predicted_solution[0, i, j]) + 1
-                    grid[0, i, j] = (grid[0, i, j]) / 9
-                    grid[0, i, j] -= 0.5
-                    value_set = True
-                    break
-            if value_set:
-                break
+                    if np.max(predict_solution[0, i, j]) > max_prob:
+                        max_prob = np.max(predict_solution[0, i, j])
+                        max_i = i
+                        max_j = j
+
+        # Set the value of the cell with the highest probability
+        grid[0, max_i, max_j] = np.argmax(predict_solution[0, max_i, max_j]) + 1
+        grid[0, max_i, max_j] = (grid[0, max_i, max_j]) / 9
+        grid[0, max_i, max_j] -= 0.5
+
         if -0.5 not in grid:
             break
     return grid
