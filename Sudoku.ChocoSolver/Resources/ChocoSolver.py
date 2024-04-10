@@ -1,6 +1,6 @@
 from pychoco.model import Model
 
-def solve_sudoku(initial_grid):
+def solve_sudoku(initial_grid, search_type='', print_stats=False):
 
     # Create a Choco model
     model = Model("Sudoku Solver")
@@ -24,9 +24,40 @@ def solve_sudoku(initial_grid):
         for j in range(9):
             if initial_grid[i][j] != 0:
                 model.arithm(grid[i][j], "=", initial_grid[i][j]).post()
-
+    
     # Solve the Sudoku
     solver = model.get_solver()
+    intvars = [cell for row in grid for cell in row]
+
+    if search_type == 'dom_over_w_deg':
+        solver.set_dom_over_w_deg_search(*intvars)
+    elif search_type == 'dom_over_w_deg_ref':
+        solver.set_dom_over_w_deg_ref_search(*intvars)
+    elif search_type == 'activity_based':
+        solver.set_activity_based_search(*intvars)
+    elif search_type == 'min_dom_lb':
+        solver.set_min_dom_lb_search(*intvars)
+    elif search_type == 'min_dom_ub':
+        solver.set_min_dom_ub_search(*intvars)
+    elif search_type == 'random':
+        solver.set_random_search(*intvars)
+    elif search_type == 'conflict_history':
+        solver.set_conflict_history_search(*intvars)
+    elif search_type == 'input_order_lb':
+        solver.set_input_order_lb_search(*intvars)
+    elif search_type == 'input_order_ub':
+        solver.set_input_order_ub_search(*intvars)
+    elif search_type == 'failure_length_based':
+        solver.set_failure_length_based_search(*intvars)
+    elif search_type == 'failure_rate_based':
+        solver.set_failure_rate_based_search(*intvars)
+    else:
+        solver.set_default_search()
+
+    if print_stats:
+        print("Solver statistics with search type: {}".format(search_type))
+        solver.show_statistics()
+        
     if solver.solve():
         # If a solution is found, extract the values and return the solved grid
         solved_grid = [[grid[i][j].get_value() for j in range(9)] for i in range(9)]
@@ -34,6 +65,7 @@ def solve_sudoku(initial_grid):
     else:
         print("No solution found.")
         return None
+ 
 
 initial_grid = [
     [5, 3, 0, 0, 7, 0, 0, 0, 0],
@@ -47,5 +79,4 @@ initial_grid = [
     [0, 0, 0, 0, 8, 0, 0, 7, 9]
 ]
 
-r = solve_sudoku(instance)
-
+r = solve_sudoku(instance, search_type)

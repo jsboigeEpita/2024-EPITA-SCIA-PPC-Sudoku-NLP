@@ -5,7 +5,14 @@ from tensorflow.keras.layers import Reshape, Dense, Dropout, Flatten,Activation
 from tensorflow.keras.layers import Conv1D, Conv2D, BatchNormalization, LayerNormalization, MaxPooling2D
 import numpy as np
 import pandas as pd
+import os
 from urllib import request
+
+path = os.getcwd()
+root_path = path[:path.rfind('/')]
+model_path = 'model.keras'
+sudoku_path = root_path + os.path.normpath('/Sudoku.NeuralNetworkPVSM/Resources/sudoku.csv')
+
 def get_data(file):
 
     df = pd.read_csv(file)
@@ -94,7 +101,7 @@ model = get_model()
 train = False
 
 if train:
-    x_train, x_test, y_train, y_test = get_data(r'..\..\..\..\Sudoku.NeuralNetworkPVSM\Resources\sudoku.csv') # https://www.kaggle.com/datasets/bryanpark/sudoku
+    x_train, x_test, y_train, y_test = get_data(sudoku_path) # https://www.kaggle.com/datasets/bryanpark/sudoku
     optimizer = tf.keras.optimizers.Adam(0.001)
     model.compile(loss='sparse_categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
     history = model.fit(x_train, y_train, batch_size=64, epochs=5, validation_data=(x_test, y_test))
@@ -103,17 +110,16 @@ if train:
     print(f"Training Loss: {training_loss11:.4f}, Training Accuracy: {training_accuracy11:.4f}")
     val_loss11, val_accuracy11 = model.evaluate(x_test,y_test)
     print(f"Done!\nValiation Loss: {val_loss11:.4f}, Validation Accuracy: {val_accuracy11:.4f}")
-    model.save(r'..\..\..\..\Sudoku.NeuralNetworkPVSM\Resources\model.keras')
+    model.save(model_path)
 else:
     try:
-        model = keras.models.load_model(r'..\..\..\..\Sudoku.NeuralNetworkPVSM\Resources\model.keras')
+        model = keras.models.load_model(model_path)
     except Exception as e:
-        print("Model not found! Downloading pre-computed weights..")
+        print("Model not found! Downloading pre-computed weights (500 MB)...")
         remote_url = "https://www.pilou.org/PPC/model_rtx_final.keras"
-        local_path = r'..\..\..\..\Sudoku.NeuralNetworkPVSM\Resources\model.keras'
-        request.urlretrieve(remote_url, local_path)
+        request.urlretrieve(remote_url, model_path)
         print("Model weights downloaded. Loading..")
-        model = keras.models.load_model(local_path)
+        model = keras.models.load_model(model_path)
 def display(board):
     for i in range(9):
         if i in [3, 6]:
@@ -125,14 +131,38 @@ def display(board):
         print()
 
 
+def solve_itrative(model, grid):
+    grid = grid.copy()
+    value_set = False
+    while True:
+        predicted_solution = model.predict(grid)
+        value_set = False
+        for i in range(9):
+            for j in range(9):
+                if grid[0, i, j] == -0.5:
+                    grid[0, i, j] = np.argmax(predicted_solution[0, i, j]) + 1
+                    grid[0, i, j] = (grid[0, i, j]) / 9
+                    grid[0, i, j] -= 0.5
+                    value_set = True
+                    break
+            if value_set:
+                break
+        if -0.5 not in grid:
+            break
+    return grid
+
 def predict_sudoku(model, sudoku):
-    # Prétraiter le Sudoku pour le rendre compatible avec le modèle
-    sudoku_input = np.array(sudoku).reshape(1, 9, 9, 1) / 9 - 0.5
-    # Faire la prédiction
-    predicted_solution = model.predict(sudoku_input)
-    # Récupérer la solution prédite et la reformater
-    predicted_solution = np.argmax(predicted_solution, axis=-1).reshape(9, 9) + 1
-    return predicted_solution
+    #Normalize the sudoku
+    sudoku = np.array(sudoku).reshape(1, 9, 9, 1) / 9 - 0.5
+    predicted_sudoku = solve_itrative(model, sudoku)
+    # Denormalize the predicted sudoku
+    predicted_sudoku = (predicted_sudoku + 0.5) * 9
+    #Reshape to a 9x9 matrix
+    predicted_sudoku = predicted_sudoku.reshape(9, 9)
+    #Set to int values
+    predicted_sudoku = predicted_sudoku.astype(int)
+    return predicted_sudoku
+
 
 game = predict_sudoku(model, np_instance)
 display(np_instance)
