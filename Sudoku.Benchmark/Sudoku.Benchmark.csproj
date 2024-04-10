@@ -15,6 +15,9 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Sudoku.NorvigBitArray\Sudoku.NorvigBitArray.csproj" />
+    <ProjectReference Include="..\Sudoku.CspAima\Sudoku.CspAima.csproj" />
+    <ProjectReference Include="..\Sudoku.NeuralNetworkPVSM\Sudoku.NeuralNetworkPVSM.csproj" />
     <ProjectReference Include="..\Sudoku.Norvig\Sudoku.Norvig.csproj" />
     <ProjectReference Include="..\Sudoku.DancingLinks\Sudoku.DancingLinks.csproj" />
     <ProjectReference Include="..\Sudoku.ORTools\Sudoku.ORTools.csproj" />
@@ -24,9 +27,16 @@
     <ProjectReference Include="..\Sudoku.Backtracking\Sudoku.Backtracking.csproj" />
     <ProjectReference Include="..\Sudoku.GraphColoration\Sudoku.GraphColoration.csproj" />
     <ProjectReference Include="..\Sudoku.Shared\Sudoku.Shared.csproj" />
+    <ProjectReference Include="..\Sudoku.PSO\Sudoku.PSO.csproj" />
+    <ProjectReference Include="..\Sudoku.Recuit\Sudoku.Recuit.csproj" />
+    <ProjectReference Include="..\Sudoku.CombinatorialEvolution\Sudoku.CombinatorialEvolution.csproj" />
+    <ProjectReference Include="..\Sudoku.Z3\Sudoku.Z3.csproj" />
     <ProjectReference Include="..\Sudoku.Human\Sudoku.Human.csproj" />
     <ProjectReference Include="..\Sudoku.GeneticAlg\Sudoku.GeneticAlg.csproj" />
     <ProjectReference Include="..\Sudoku.Proba\Sudoku.Proba.csproj" />
+    <ProjectReference Include="..\Sudoku.DeepLearning\Sudoku.DeepLearning.csproj" />
+    <ProjectReference Include="..\Sudoku.ChocoSolver\Sudoku.ChocoSolver.csproj" />
+    <ProjectReference Include="..\Sudoku.ChocoRange\Sudoku.ChocoRange.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.json">

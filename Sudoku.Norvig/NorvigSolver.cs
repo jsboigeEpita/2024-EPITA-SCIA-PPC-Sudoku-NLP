@@ -7,27 +7,20 @@ public class NorvigSolver : ISudokuSolver
 {
     private short[] _possibleValues; // a 1D array that represent all possible value of a given cell of the sudoku
 
-    private HashSet<int>[,] _units;
-    private HashSet<int>[] _peers;
 
     public NorvigSolver()
     {
         _possibleValues = new short[Tools.SURFACE];
-        _units = new HashSet<int>[Tools.SURFACE, 3];
-        _peers = new HashSet<int>[Tools.SURFACE];
-        Tools.FillUnits(_units);
-        Tools.FillPeers(_peers);
     }
 
     public SudokuGrid Solve(SudokuGrid s)
     {
+        // Reset of grid: every cell has every number as a possible value.
         Parallel.For(0, Tools.SURFACE, (i, state) => _possibleValues[i] = 0x1FF);
         Constrain(s);
 
         if (!NoMorePossibleValues())
-        {
             Search();
-        }
 
         FillGrid(s);
         return s;
@@ -42,16 +35,17 @@ public class NorvigSolver : ISudokuSolver
         // if no cell has multiple possibilites, the search has succeeded
         if (cell == -1)
             return true;
-
+        
         for (short i = 1; i < 0x1FF; i = (short)(i << 1))
         {
+            // ignore all i which are not a possible value of the cell
             if ((_possibleValues[cell] & i) == 0)
                 continue;
 
             int digit = Tools.ConvertBitwiseToDecimal(i);
 
             short[] save = (short[])_possibleValues.Clone();
-
+            
             Fill(cell, digit);
             bool hasSucceeded = Search();
             if (hasSucceeded)
@@ -68,13 +62,14 @@ public class NorvigSolver : ISudokuSolver
     {
         uint lowestNbBitsSet = 9;
         int highestCell = -1;
-        for (int i = 0; i < Tools.SURFACE; i++)
+        for (int cell = 0; cell < Tools.SURFACE; cell++)
         {
-            uint setBits = System.Runtime.Intrinsics.X86.Popcnt.PopCount((uint)_possibleValues[i]);
+            // find the number of bits equals to one = find the number of possible values of cell
+            uint setBits = System.Runtime.Intrinsics.X86.Popcnt.PopCount((uint)_possibleValues[cell]);
 
             if (setBits < lowestNbBitsSet && setBits != 1)
             {
-                highestCell = i;
+                highestCell = cell;
                 lowestNbBitsSet = setBits;
             }
         }
@@ -110,6 +105,8 @@ public class NorvigSolver : ISudokuSolver
             for (int j = 0; j < Tools.SIZE; j++)
             {
                 int cell = i * Tools.SIZE + j;
+                // if a cell of the given sudoku grid is not empty (i.e. a value is already set)
+                // we fill our grid of possible values at that cell
                 if (s.Cells[i, j] != 0)
                 {
                     Fill(cell, s.Cells[i, j]);
@@ -125,6 +122,7 @@ public class NorvigSolver : ISudokuSolver
 
         bool eliminated = true;
 
+        // is equivalent to the `all` function in python
         for (int newDigit = 1; newDigit < 10; newDigit++)
         {
             if (newDigit == digit)
@@ -163,7 +161,7 @@ public class NorvigSolver : ISudokuSolver
         // we eliminate that possibility for each of the cell's peers
         if (Tools.IsOnlyOneBitSet(newPossibleValues))
         {
-            var peers = _peers[cell];
+            var peers = Tools.peers[cell];
 
             int digit2 = Tools.ConvertBitwiseToDecimal(newPossibleValues);
 
@@ -180,7 +178,7 @@ public class NorvigSolver : ISudokuSolver
 
         for (int i = 0; i < 3; i++)
         {
-            HashSet<int> unit = _units[cell, i];
+            HashSet<int> unit = Tools.units[cell, i];
             // construction of the list of units that has `digit` as a possibility
             IEnumerable<int> possibleDigitPlaces = unit.Where(x => (bitmask & _possibleValues[x]) != 0);
             if (!possibleDigitPlaces.Any() ||

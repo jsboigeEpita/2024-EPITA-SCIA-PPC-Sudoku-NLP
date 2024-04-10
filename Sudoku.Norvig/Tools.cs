@@ -4,9 +4,12 @@ public class Tools
 {
     public const int SIZE = 9;
     public const int SURFACE = 81;
-#if true
-    public static void FillPeers(HashSet<int>[] peers)
+
+    public static readonly HashSet<int>[] peers = FillPeers();
+    public static readonly HashSet<int>[,] units = FillUnits();
+    public static HashSet<int>[] FillPeers()
     {
+        var peersToFill = new HashSet<int>[SURFACE];
         Parallel.For(0, SURFACE, (i, state) =>
         {
             HashSet<int> set = new HashSet<int>();
@@ -14,12 +17,14 @@ public class Tools
             AddRow(i, set);
             AddSquare(i, set);
             set.Remove(i);
-            peers[i] = set;
+            peersToFill[i] = set;
         });
+        return peersToFill;
     }
     
-    public static void FillUnits(HashSet<int>[,] units)
+    public static HashSet<int>[,] FillUnits()
     {
+        var unitsToFill = new HashSet<int>[SURFACE, 3];
         Parallel.For(0, SURFACE, (i, state) =>
         {
             HashSet<int> columns = new HashSet<int>();
@@ -30,11 +35,12 @@ public class Tools
             AddRow(i, rows);
             AddSquare(i, squares);
 
-            units[i, 0] = columns;
-            units[i, 1] = rows;
-            units[i, 2] = squares;
+            unitsToFill[i, 0] = columns;
+            unitsToFill[i, 1] = rows;
+            unitsToFill[i, 2] = squares;
 
         });
+        return unitsToFill;
     }
 
     public static string Picture(short[] possibleValues)
@@ -131,5 +137,4 @@ public class Tools
         for (int i = inferiorLimit; i < SURFACE; i += SIZE)
             set.Add(i);
     }
-#endif
 }

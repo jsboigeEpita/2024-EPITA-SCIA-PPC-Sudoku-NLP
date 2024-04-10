@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -379,6 +379,5 @@ namespace Sudoku.Shared
         }
 
         public int NbEmptyCells() => Cells.Cast<int>().Count(c => c == 0);
-
     }
 }
