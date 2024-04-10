@@ -7,7 +7,7 @@ namespace Sudoku.GeneticAlg
 {
     public class GeneticSolver : ISudokuSolver
     {
-        int population_size = 15000;
+        int population_size = 10000;
 
         public SudokuGrid Solve(SudokuGrid s)
         {
@@ -17,8 +17,8 @@ namespace Sudoku.GeneticAlg
 
             var selection = new TournamentSelection();
             var crossover = new UniformCrossover();
-            var mutation = new CellMutation();
             var fitness = new SudokuFitness(sudoku);
+            var mutation = new UniformMutation();
             var chromosome = new SudokuChromosome(sudoku, mask);
             
             Console.WriteLine("GA running...");

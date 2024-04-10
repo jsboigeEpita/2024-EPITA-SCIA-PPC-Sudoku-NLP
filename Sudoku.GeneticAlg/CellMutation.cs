@@ -4,20 +4,22 @@ namespace Sudoku.GeneticAlg;
 
 public class CellMutation : MutationBase
 {
-    public CellMutation()
+    
+    public SudokuFitness Fitness;
+    public CellMutation(SudokuFitness fitness)
     {
         IsOrdered = true;
+        Fitness = fitness;
     }
 
     protected override void PerformMutate(IChromosome chromosome, float probability)
     {
+        var fitness = Fitness.Evaluate(chromosome);
         var sudokuChromosome = (SudokuChromosome)chromosome;
-        var fitness = chromosome.Fitness.HasValue ? chromosome.Fitness.Value : 0;
         probability = (float)(1.0f - fitness);
-        probability = Math.Max(0.01f, Math.Min(probability, 0.7f)); // Example range: 1% to 50%
+        probability = Math.Max(0.01f, Math.Min(probability, 0.2f)); // Example range: 1% to 50%
         
-
-        if (RandomizationProvider.Current.GetDouble() > probability)
+        if (RandomizationProvider.Current.GetDouble() <= probability)
         {
             var mask = sudokuChromosome.mask;
             var geneIndex = RandomizationProvider.Current.GetInt(0, 9);
