@@ -7,11 +7,11 @@ namespace Sudoku.ORTools
     {
         private const int Dimension = 9;
         private const int SubGrid = 3;
-        private readonly Solver _solver = Solver.CreateSolver("SCIP");
 
         public SudokuGrid Solve(SudokuGrid s)
         {
-            if (_solver == null)
+            Solver solver = Solver.CreateSolver("SCIP");
+            if (solver == null)
             {
                 throw new InvalidOperationException("Solver initialization failed.");
             }
@@ -23,7 +23,7 @@ namespace Sudoku.ORTools
                 {
                     for (int k = 0; k < Dimension; k++)
                     {
-                        cells[i, j, k] = _solver.MakeIntVar(0, 1, $"Cell({i},{j},{k})");
+                        cells[i, j, k] = solver.MakeIntVar(0, 1, $"Cell({i},{j},{k})");
                     }
                 }
             }
@@ -33,36 +33,45 @@ namespace Sudoku.ORTools
             {
                 for (int j = 0; j < Dimension; j++)
                 {
-                    LinearExpr cellExpr = cells[i, j, 0];
-                    for (int k = 1; k < Dimension; k++)
-                    {
-                        cellExpr += cells[i, j, k];
-                    }
-
-                    _solver.Add(cellExpr == 1);
+                    solver.Add(cells[i, j, 0] + cells[i, j, 1] + cells[i, j, 2] + cells[i, j, 3] +
+                        cells[i, j, 4] + cells[i, j, 5] + cells[i, j, 6] + cells[i, j, 7] +
+                        cells[i, j, 8] == 1);
                 }
             }
 
-            // Each row, column, and 3x3 subgrid must have distinct values.
+            // Each row must have distinct values.
             for (int i = 0; i < Dimension; i++)
             {
-                for (int j = 0; j < Dimension; j++)
+                for (int k = 0; k < Dimension; k++)
                 {
-                    LinearExpr rowExpr = cells[i, 0, j];
-                    LinearExpr colExpr = cells[0, i, j];
-                    LinearExpr subgridExpr = cells[(i / SubGrid) * SubGrid, (j / SubGrid) * SubGrid,
-                        i % SubGrid * SubGrid + j % SubGrid];
-                    for (int k = 1; k < Dimension; k++)
-                    {
-                        rowExpr += cells[i, k, j];
-                        colExpr += cells[k, i, j];
-                        subgridExpr += cells[(i / SubGrid) * SubGrid + k / SubGrid,
-                            (j / SubGrid) * SubGrid + k % SubGrid, i % SubGrid * SubGrid + j % SubGrid];
-                    }
+                    solver.Add(cells[i, 0, k] + cells[i, 1, k] + cells[i, 2, k] + cells[i, 3, k] +
+                        cells[i, 4, k] + cells[i, 5, k] + cells[i, 6, k] + cells[i, 7, k] +
+                        cells[i, 8, k] == 1);
+                }
+            }
 
-                    _solver.Add(rowExpr == 1);
-                    _solver.Add(colExpr == 1);
-                    _solver.Add(subgridExpr == 1);
+            // Each column must have distinct values.
+            for (int j = 0; j < Dimension; j++)
+            {
+                for (int k = 0; k < Dimension; k++)
+                {
+                    solver.Add(cells[0, j, k] + cells[1, j, k] + cells[2, j, k] + cells[3, j, k] +
+                        cells[4, j, k] + cells[5, j, k] + cells[6, j, k] + cells[7, j, k] +
+                        cells[8, j, k] == 1);
+                }
+            }
+
+            // Each 3x3 subgrid must have distinct values.
+            for (int i = 0; i < Dimension; i += 3)
+            {
+                for (int j = 0; j < Dimension; j += 3)
+                {
+                    for (int k = 0; k < Dimension; k++)
+                    {
+                        solver.Add(cells[i, j, k] + cells[i, j + 1, k] + cells[i, j + 2, k] +
+                            cells[i + 1, j, k] + cells[i + 1, j + 1, k] + cells[i + 1, j + 2, k] +
+                            cells[i + 2, j, k] + cells[i + 2, j + 1, k] + cells[i + 2, j + 2, k] == 1);
+                    }
                 }
             }
 
@@ -74,13 +83,13 @@ namespace Sudoku.ORTools
                     int value = s.Cells[i, j];
                     if (value > 0)
                     {
-                        _solver.Add(cells[i, j, value - 1] == 1);
+                        solver.Add(cells[i, j, value - 1] == 1);
                     }
                 }
             }
 
             // Solve the problem.
-            Solver.ResultStatus resultStatus = _solver.Solve();
+            Solver.ResultStatus resultStatus = solver.Solve();
 
             if (resultStatus != Solver.ResultStatus.OPTIMAL && resultStatus != Solver.ResultStatus.FEASIBLE)
             {
