@@ -5,8 +5,8 @@ import os
 import sys
 
 
-import subprocess
-import platform
+# import subprocess
+# import platform
 
 # def install_glpk_package():
 #     if platform.system() == "Darwin":
@@ -83,7 +83,7 @@ def solve_with_solver(solver, options, instance=ourSudoku):
 
     # Lookup table pour les solveurs
     solver_lookup = {
-        "GLPK_CMD": lambda: problem.solve(pulp.GLPK_CMD(msg=False, options=options)),
+        "GLPK_CMD": lambda: problem.solve(pulp.PULP_CBC_CMD(msg=False, options=options)),
         "PYGLPK": lambda: problem.solve(pulp.PYGLPK(msg=False, options=options)),
         "CPLEX_CMD": lambda: problem.solve(pulp.CPLEX_CMD(msg=False, options=options)),
         "CPLEX_PY": lambda: problem.solve(pulp.CPLEX_PY(msg=False, options=options)),
@@ -127,9 +127,9 @@ def solve_with_solver(solver, options, instance=ourSudoku):
 
 # Configuration des solveurs et des paramètres à tester
 configs = [
-    {"solver": "CBC", "options": []},
+    # {"solver": "CBC", "options": []},
     {"solver": "CHOCO", "options": []},
-    {"solver": "GLPK_CMD", "options": []}
+    # {"solver": "GLPK_CMD", "options": []}
 ]
 
 # Mesurer le temps d'exécution pour chaque configuration
@@ -142,6 +142,8 @@ for config in configs:
     results.append({"solver": config["solver"], "time": execution_time, "solution": result})
 
 # Afficher les résultats et le sudoku résolu
+result = results[0]
+
 for result in results:
     print(f"Solveur: {result['solver']}, Temps d'exécution: {result['time']} secondes")
     print("Solution:")
