@@ -175,7 +175,7 @@ namespace Sudoku.Benchmark
 				}
 
 			}).Where(s => s.GetType() != typeof(EmptySolver))).Select(s => new SolverPresenter() { Solver = s }).ToList();
-			_Solvers = SudokuGrid.GetSolvers().Where(s => s.Value.Value.GetType().Name.ToLowerInvariant().StartsWith("backtrackingpython")).Select(s => new SolverPresenter() { Solver = s.Value.Value }).ToList();
+			//_Solvers = SudokuGrid.GetSolvers().Where(s => s.Value.Value.GetType().Name.ToLowerInvariant().StartsWith("backtrackingpython")).Select(s => new SolverPresenter() { Solver = s.Value.Value }).ToList();
 			
 		}
 
