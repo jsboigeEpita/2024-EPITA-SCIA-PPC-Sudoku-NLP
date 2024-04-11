@@ -55,6 +55,7 @@ if "ourSudoku" not in locals():
     )
     print("---------------Avant résolution----------------")
     print(np.array(ourSudoku))
+    print()
 
 
 def solve_with_solver(solver, options, instance=ourSudoku):
@@ -120,6 +121,11 @@ def solve_with_solver(solver, options, instance=ourSudoku):
                 if pulp.value(choices[r][c][v]) == 1:
                     solution[r][c] = v
 
+    if os.path.exists("SudokuSolver-pulp.mps"):
+        os.remove("SudokuSolver-pulp.mps")
+    if os.path.exists("SudokuSolver-pulp.sol"):
+        os.remove("SudokuSolver-pulp.sol")
+    
     return solution
 
 
@@ -127,9 +133,9 @@ def solve_with_solver(solver, options, instance=ourSudoku):
 
 # Configuration des solveurs et des paramètres à tester
 configs = [
-    # {"solver": "CBC", "options": []},
     {"solver": "CHOCO", "options": []},
-    # {"solver": "GLPK_CMD", "options": []}
+    {"solver": "CBC", "options": []},
+    {"solver": "GLPK_CMD", "options": []}
 ]
 
 # Mesurer le temps d'exécution pour chaque configuration
