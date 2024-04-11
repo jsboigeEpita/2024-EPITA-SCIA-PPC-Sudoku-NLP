@@ -6,42 +6,6 @@ from itertools import permutations
 N = 9
 
 
-if "instance" not in locals():
-    instance = np.array(
-        [
-            [0, 0, 0, 0, 9, 4, 0, 3, 0],
-            [0, 0, 0, 5, 1, 0, 0, 0, 7],
-            [0, 8, 9, 0, 0, 0, 0, 4, 0],
-            [0, 0, 0, 0, 0, 0, 2, 0, 8],
-            [0, 6, 0, 2, 0, 1, 0, 5, 0],
-            [1, 0, 2, 0, 0, 0, 0, 0, 0],
-            [0, 7, 0, 0, 0, 0, 5, 2, 0],
-            [9, 0, 0, 0, 6, 5, 0, 0, 0],
-            [0, 4, 0, 9, 7, 0, 0, 0, 0],
-        ],
-        dtype=int,
-    )
-
-    instance = (
-        (0, 0, 0, 4, 0, 9, 6, 7, 0),
-        (0, 0, 0, 0, 7, 6, 9, 0, 0),
-        (0, 0, 0, 0, 0, 0, 0, 0, 3),
-        (0, 0, 0, 0, 0, 1, 7, 4, 0),
-        (6, 4, 0, 0, 0, 0, 0, 1, 8),
-        (0, 2, 1, 6, 0, 0, 0, 0, 0),
-        (1, 0, 0, 0, 0, 0, 0, 0, 0),
-        (0, 0, 4, 3, 2, 0, 0, 0, 0),
-        (0, 6, 2, 9, 0, 4, 0, 0, 0),
-    )
-    # s = "..53.....8......2..7..1.5..4....53...1..7...6..32...8..6.5....9..4....3......97.."
-
-    # Split the string into chunks of 9 characters
-    # chunks = [s[i : i + 9] for i in range(0, len(s), 9)]
-
-    # Convert each character into an integer, treating '.' as 0
-    # instance = [[int(char) if char != "." else 0 for char in chunk] for chunk in chunks]
-
-
 def init_cells() -> np.ndarray:
     cells = np.arange(N**2)
     cells = np.reshape(cells, (N, N))
@@ -256,6 +220,8 @@ class solveSudoku:
             number_new_decisions = len(simplified_decision_indexes) - np.count_nonzero(
                 self.grid
             )
+            # if number_new_decisions == 0:
+            #     break
             for simplified_decision_index in simplified_decision_indexes:
                 self.grid[simplified_decision_index] = (
                     np.argmax(self.decision_values[simplified_decision_index]) + 1
@@ -270,16 +236,15 @@ class solveSudoku:
         return np.count_nonzero(self.grid) == 81
 
 
-start = default_timer()
-solve_sudoku = solveSudoku(instance)
-if solve_sudoku.solve():
-    # print(solve_sudoku.grid.reshape(9, 9))
-    result = solve_sudoku.grid.reshape(9, 9).astype(np.int32)
-    # r = list(solve_sudoku.grid)
-    ...
-else:
-    print(solve_sudoku.grid.reshape(9, 9))
-    print("Aucune solution trouvee")
+def proba_solver(puzzle: np.ndarray) -> np.ndarray:
+    try:    
+        solve_sudoku = solveSudoku(puzzle)
+        solve_sudoku.solve()
+        infered_solution_array = solve_sudoku.grid.reshape(9, 9).astype(np.int32)
+        return infered_solution_array
+    except:
+        return puzzle
 
-execution = default_timer() - start
-print("Le temps de resolution est de : ", execution, " seconds as a floating point value")
+
+if "instance" in locals():
+    result = proba_solver(np.array(instance, dtype=int))

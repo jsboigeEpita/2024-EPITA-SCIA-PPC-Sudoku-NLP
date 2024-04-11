@@ -44,6 +44,7 @@ public class ProbaSolver : PythonSolverBase
     {
         //declare your pip packages here
         InstallPipModule("numpy");
+        InstallPipModule("veroku");
         base.InitializePythonComponents();
     }
 
