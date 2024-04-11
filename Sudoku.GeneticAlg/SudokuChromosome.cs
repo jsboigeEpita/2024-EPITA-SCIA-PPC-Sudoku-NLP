@@ -10,7 +10,7 @@ namespace Sudoku.GeneticAlg;
 public class SudokuChromosome : ChromosomeBase
 {
     private readonly SudokuGrid intialSudoku;
-    private readonly Dictionary<int, List<int>> mask;
+    public Dictionary<int, List<int>> mask;
     private static readonly Random Random = new Random();
 
     int newCellValue = -1;
@@ -54,9 +54,8 @@ public class SudokuChromosome : ChromosomeBase
         return (-1, -1);
     }
 
-        
 
-    // Create A random Gene among the possible values according to the mask
+    /*Another implementaion that  generate gene according to the probabily : we fill the cell that has less possibility according to the mask first*/
     public override Gene GenerateGene(int geneIndex)
     {
 
@@ -68,67 +67,6 @@ public class SudokuChromosome : ChromosomeBase
         for(int i = 0; i < 9; i++)
             tmp_dict.Add(i, new List<int>(mask[geneIndex * 9 + i]));
 
-
-        List<int> randomOrder = Shuffle(Enumerable.Range(0, 9).ToList()); 
-
-        foreach (int cellPositionOfNewGene in randomOrder)
-        {
-
-            if (tmp_dict[cellPositionOfNewGene].Count == 0) 
-                continue;
-
-            do 
-            {
-                int randomIndex = Random.Next(0, tmp_dict[cellPositionOfNewGene].Count);
-                newCellValue = tmp_dict[cellPositionOfNewGene][randomIndex];
-
-            } while (NewGene.Contains(newCellValue));
-
-
-            removeValue(tmp_dict, newCellValue, cellPositionOfNewGene);
-
-            // We edited the mask -> we might have some obvious values that poped up after the edit
-
-            while (true)
-            {
-                (int Key, int Value)= get_unique_values(tmp_dict);
-                if (Key == -1)
-                    break;
-
-                NewGene[Key]= Value;
-                removeValue(tmp_dict, Value, Key);
-            }
-
-        }
-
-        return new Gene(NewGene);
-
-    }
-
-
-     static List<int> Shuffle(List<int> list, int list_size = 9)
-    {
-        int n = list_size;
-        while (n > 1)
-        {
-            n--;
-            int k = Random.Next(n + 1);
-            int value = list[k];
-            list[k] = list[n];
-            list[n] = value;
-        }
-        return list;
-    }
-
-    /*Another implementaion that  generate gene according to the probabily : we fill the cell that has less possibility according to the mask first*/
-    public Gene GenerateGene2(int geneIndex)
-    {
-
-        int[] NewGene = Enumerable.Range(0,9).Select(i => intialSudoku.Cells[geneIndex,i]).ToArray();  //  Select the intial row of the actual gene 
-
-        Dictionary<int, List<int>> tmp_dict = new Dictionary<int, List<int>>();
-        for(int i = 0; i < 9; i++)
-            tmp_dict.Add(i, new List<int>(mask[geneIndex * 9 + i]));
 
 
         // Sort the cell index of a row by probability -> We start by the gene with less possible values  
@@ -169,14 +107,5 @@ public class SudokuChromosome : ChromosomeBase
         return new Gene(NewGene);
 
     }
-
-
-
-
-
-
-
-
-
 
 }
