@@ -139,10 +139,9 @@ for config in configs:
     result = solve_with_solver(config["solver"], config["options"])
     end_time = timer()
     execution_time = end_time - start_time
-    results.append({"solver": config["solver"], "time": execution_time, "solution": result})
+    results.append({"solver": config["solver"], "time": execution_time, "solution": np.array(result)})
 
 # Afficher les résultats et le sudoku résolu
-result = results[0]
 
 for result in results:
     print(f"Solveur: {result['solver']}, Temps d'exécution: {result['time']} secondes")
@@ -153,3 +152,5 @@ for result in results:
 # Identifier le solveur le plus rapide
 fastest = min(results, key=lambda x: x['time'])
 print(f"Le solveur le plus rapide est {fastest['solver']} avec un temps d'exécution de {fastest['time']} secondes.")
+
+result = results[0]['solution']
