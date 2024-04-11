@@ -111,8 +111,10 @@ namespace Sudoku.Benchmark
 				case 2:
 					Benchmark();
 					break;
-				default:
+				case 3:
 					return true;
+				default:
+					break;
 			}
 
 			return false;

@@ -1,7 +1,9 @@
 ﻿﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Columns;
 using BenchmarkDotNet.Configs;
@@ -109,23 +111,24 @@ namespace Sudoku.Benchmark
 			this.AddColumn(new RankColumn(NumeralSystem.Arabic));
 			
 			this.AddLogger(ConsoleLogger.Default);
-			this.AddExporter(new CsvExporter(CsvSeparator.Comma, SummaryStyle.Default));
+			//this.AddExporter(new CsvExporter(CsvSeparator.Comma, SummaryStyle.Default));
 			this.UnionRule = ConfigUnionRule.AlwaysUseLocal;
-
+			//AppDomain.CurrentDomain.AssemblyResolve += CurrentDomainOnAssemblyResolve;
 		}
 
 		public static Job GetBaseJob()
 		{
-			var baseJob = Job.Dry
+			var baseJob = Job.Default
 				.WithId("Solving Sudokus")
 				.WithPlatform(Platform.X64)
 				.WithJit(Jit.Default)
-				.WithRuntime(CoreRuntime.Core80)
+				.WithRuntime(CoreRuntime.Core31)
 				.WithLaunchCount(1)
 				.WithWarmupCount(1)
 				.WithIterationCount(3)
 				.WithInvocationCount(3)
-				.WithUnrollFactor(1);
+				.WithUnrollFactor(1)
+				.WithToolchain(InProcessEmitToolchain.Instance);
 			//if (Program.IsDebug)
 			//{
 			//	baseJob = baseJob.WithCustomBuildConfiguration("Debug");
@@ -133,7 +136,22 @@ namespace Sudoku.Benchmark
 
 			return baseJob;
 		}
+
+
+		//static Assembly CurrentDomainOnAssemblyResolve(object sender, ResolveEventArgs args)
+		//{
+		//	Console.WriteLine(args.Name);
+		//	if (!args.Name.StartsWith("Python.Runtime"))
+		//		return null;
+		//	//string pythonRuntimeDll = Environment.GetEnvironmentVariable(EnvironmentVariableName);
+		//	//if (string.IsNullOrEmpty(pythonRuntimeDll))
+		//	//	pythonRuntimeDll = Path.Combine(BenchmarkTests.DeploymentRoot, "baseline", "Python.Runtime.dll");
+		//	string pythonRuntimeDll = Path.Combine(Environment.CurrentDirectory, "Python.Runtime.dll");
+		//	return Assembly.LoadFrom(pythonRuntimeDll);
+		//}
+
 	}
+
 
 
 	[Orderer(SummaryOrderPolicy.FastestToSlowest)]
@@ -157,7 +175,7 @@ namespace Sudoku.Benchmark
 				}
 
 			}).Where(s => s.GetType() != typeof(EmptySolver))).Select(s => new SolverPresenter() { Solver = s }).ToList();
-			//_Solvers = SudokuGrid.GetSolvers().Where(s => ! s.Value.Value.GetType().Name.ToLowerInvariant().StartsWith("pso")).Select(s => new SolverPresenter() { Solver = s.Value.Value }).ToList();
+			_Solvers = SudokuGrid.GetSolvers().Where(s => s.Value.Value.GetType().Name.ToLowerInvariant().StartsWith("backtrackingpython")).Select(s => new SolverPresenter() { Solver = s.Value.Value }).ToList();
 			
 		}
 
@@ -186,7 +204,7 @@ namespace Sudoku.Benchmark
 
 			try
 			{
-				SolverPresenter.SolveWithTimeLimit(_WarmupSudoku, TimeSpan.FromSeconds(10));
+				SolverPresenter.SolveWithTimeLimit(_WarmupSudoku, TimeSpan.FromSeconds(100));
 			}
 			catch (Exception e)
 			{

@@ -5,7 +5,7 @@
   <ItemGroup>
     <PackageReference Include="GeneticSharp" Version="3.1.4" />
     <PackageReference Include="Python.Deployment" Version="2.0.5" />
-    <PackageReference Include="pythonnet" Version="3.1.0-preview2024-03-03" />
+    <PackageReference Include="pythonnet" Version="3.0.1" />
     <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>

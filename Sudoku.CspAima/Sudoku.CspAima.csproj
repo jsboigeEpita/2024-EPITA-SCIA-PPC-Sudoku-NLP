@@ -14,12 +14,6 @@
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
   </ItemGroup>
 
-
-  <ItemGroup>
-      <PackageReference Include="python" Version="3.13.0-a5" />
-      <PackageReference Include="pythonnet" Version="3.1.0-preview2024-03-03" />
-    </ItemGroup>
-
   <ItemGroup>
     <EmbeddedResource Update="Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

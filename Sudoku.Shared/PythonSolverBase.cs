@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Python.Deployment;
 using Python.Runtime;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Sudoku.Shared
 {
@@ -237,10 +240,11 @@ namespace Sudoku.Shared
 		/// <summary>
 		/// Injecte le script de conversion dans le scope Python
 		/// </summary>
+		[ObsoleteAttribute("no more conversion script because of a Benchmark.net bug")]
 		protected void AddNumpyConverterScript(PyModule scope)
 		{
-			string numpyConverterCode = Resources.numpy_converter_py;
-			scope.Exec(numpyConverterCode);
+			//string numpyConverterCode = Resources.numpy_converter_py;
+			//scope.Exec(numpyConverterCode);
 		}
 
 
@@ -249,10 +253,11 @@ namespace Sudoku.Shared
 		/// </summary>
 		public static PyObject AsNumpyArray(int[,] sCells, PyModule scope)
 		{
-			var pyObject = sCells.ToPython();
-			PyObject asNumpyArray = scope.Get("asNumpyArray");
-			PyObject pyCells = asNumpyArray.Invoke(pyObject);
-			return pyCells;
+			PyObject np = scope.Import("numpy");
+			int height = sCells.GetLength(0);
+			int width = sCells.GetLength(1);
+			PyObject pyArray = np.InvokeMethod("array", sCells.ToPython());
+			return pyArray;
 		}
 
 		/// <summary>
@@ -260,12 +265,25 @@ namespace Sudoku.Shared
 		/// </summary>
 		public static int[,] AsManagedArray(PyModule scope, PyObject pyCells)
 		{
-			PyObject asNetArray = scope.Get("asNetArray");
-			PyObject netResult = asNetArray.Invoke(pyCells);
+			// Convertit le tableau NumPy en une liste de listes Python
+			PyObject pyList = pyCells.InvokeMethod("tolist");
 
-			// Convertissez le PyObject résultant en tableau .NET
-			var managedResult = netResult.AsManagedObject(typeof(int[,])) as int[,];
-			return managedResult;
+			// Obtient le nombre de lignes et de colonnes pour dimensionner le tableau .NET
+			int height = (int)pyList.Length();
+			int width = (int)pyList[0].Length();
+			int[,] managedArray = new int[height, width];
+
+			for (int i = 0; i < height; i++)
+			{
+				PyObject row = pyList[i];
+				for (int j = 0; j < width; j++)
+				{
+					// Convertit chaque élément en int avant de l'ajouter au tableau .NET
+					managedArray[i, j] = row[j].As<int>();
+				}
+			}
+
+			return managedArray;
 		}
 
 
