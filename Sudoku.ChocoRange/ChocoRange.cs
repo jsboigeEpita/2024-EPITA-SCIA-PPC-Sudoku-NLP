@@ -31,14 +31,14 @@ namespace Sudoku.ChocoRange
                 // Normalement on utilise Resources, à fix...
                 string code = Resources.ChocoRange_py;
 
-                // Console.WriteLine(code);
+                Console.WriteLine(code);
 
                 // execute the Python script
                 scope.Exec(code);
-                PyObject result = scope.Get("result");
+                PyObject fastest = scope.Get("fastest");
 
                 // Convertissez le résultat NumPy en tableau .NET
-                var managedResult = AsManagedArray(scope, result);
+                var managedResult = AsManagedArray(scope, fastest);
 
                 Console.WriteLine("APRES LA CHOCO RESOLUTION !");
                 
