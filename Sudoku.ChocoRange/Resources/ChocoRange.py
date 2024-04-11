@@ -159,4 +159,4 @@ for result in results:
 fastest = min(results, key=lambda x: x['time'])
 print(f"Le solveur le plus rapide est {fastest['solver']} avec un temps d'exécution de {fastest['time']} secondes.")
 
-result = results[0]['solution']
+result = results[0]['solution'] #CHOCO SOLVER EST PLACER EN [0]

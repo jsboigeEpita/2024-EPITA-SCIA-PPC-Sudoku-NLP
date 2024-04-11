@@ -30,7 +30,7 @@ namespace Sudoku.ChocoRange
                     // Lire le contenu du fichier ChocoRange.py
                     string code = Resources.ChocoRange_py;
 
-                    Console.WriteLine(code);
+                    // Console.WriteLine(code);
 
                     // Exécuter le script Python
                     scope.Exec(code);
