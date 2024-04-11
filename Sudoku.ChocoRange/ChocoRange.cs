@@ -31,7 +31,7 @@ namespace Sudoku.ChocoRange
                 // Normalement on utilise Resources, à fix...
                 string code = Resources.ChocoRange_py;
 
-                Console.WriteLine(code);
+                // Console.WriteLine(code);
 
                 // execute the Python script
                 scope.Exec(code);
